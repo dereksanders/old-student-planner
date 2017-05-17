@@ -28,15 +28,6 @@ public class GradesPlot {
 		lineChart.setLegendVisible(false);
 
 		for (Term t : Planner.terms) {
-			if (t.name.equals("Fall")) {
-				t.grade = 80;
-			}
-			if (t.name.equals("Summer")) {
-				t.grade = 70;
-			}
-			if (t.name.equals("Winter")) {
-				t.grade = 95;
-			}
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
 		}
 

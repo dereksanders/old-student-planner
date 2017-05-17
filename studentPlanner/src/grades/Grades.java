@@ -40,7 +40,6 @@ public class Grades {
 		VBox gBody = new VBox(20);
 
 		gChooseTerm = new ChoiceBox<>(Planner.terms);
-		gChooseCourse = new ChoiceBox<>();
 
 		if (Planner.currentlySelectedTerm != null) {
 			gChooseTerm.setValue(Planner.currentlySelectedTerm);
@@ -48,6 +47,8 @@ public class Grades {
 
 		selectedTermsCourses = Planner.termCourses.get(Planner.currentlySelectedTerm);
 		coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
+
+		gChooseCourse = new ChoiceBox<>(coursesToDisplay);
 
 		Label gSelectedLabel = new Label("Currently selected: ");
 		HBox classGrades = new HBox(50);
@@ -87,6 +88,8 @@ public class Grades {
 	}
 
 	private static void listGrades(Course selected) {
+
+		Planner.t.update();
 
 		TextField grade = new TextField();
 		grade.setPromptText("Enter Grade %");
@@ -131,38 +134,70 @@ public class Grades {
 
 		displayGrades.getChildren().clear();
 
-		Label assignDesc = new Label();
 		Label courseSummary = new Label("");
-		Label termSummary = new Label();
+		Label termSummary = new Label("");
+
+		/* Course summary */
 
 		double percentDone = 0;
-		double courseGrade = 0;
 		double cumulative = 0;
+		double gradeSoFar = 0;
 
-		if (core.Planner.termCourses.get(core.Planner.currentlySelectedTerm) != null) {
-			for (Course c : core.Planner.termCourses.get(core.Planner.currentlySelectedTerm)) {
-				for (Deliverable d : c.deliverables) {
-					assignDesc.setText(assignDesc.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: "
-							+ d.weight + "%\n");
-					if (d.due.isBefore(core.Planner.t.current)) {
-						cumulative += (d.weight) / (d.grade);
-						courseGrade += (d.weight) * (d.grade);
-						percentDone += (d.weight);
-					}
+		for (Deliverable d : selected.deliverables) {
+
+			courseSummary.setText(
+					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
+
+			if (d.due.isBefore(core.Planner.t.current)
+					|| d.due.toLocalDate().isEqual(core.Planner.t.current.toLocalDate())) {
+				cumulative += (d.weight) / (d.grade);
+				percentDone += (d.weight);
+				gradeSoFar += d.weight * (d.grade / 100);
+			}
+		}
+
+		if (percentDone != 0) {
+			gradeSoFar = gradeSoFar / percentDone;
+		}
+
+		courseSummary.setText(courseSummary.getText() + "Grade so far: " + gradeSoFar + "%, with " + percentDone
+				+ "% of the course completed.");
+		courseSummary.setText(courseSummary.getText() + "\n" + "Total grade: " + cumulative + "%.");
+
+		/* Term summary */
+
+		termSummary.setText("Grades for " + gChooseTerm.getValue() + ":\n");
+
+		double average = 0;
+
+		for (Course c : Planner.termCourses.get(gChooseTerm.getValue())) {
+
+			percentDone = 0;
+			cumulative = 0;
+			gradeSoFar = 0;
+
+			for (Deliverable d : c.deliverables) {
+				if (d.due.isBefore(core.Planner.t.current)) {
+					cumulative += (d.weight) / (d.grade);
+					percentDone += (d.weight);
+					gradeSoFar += d.weight * (d.grade / 100);
 				}
 			}
 
-			double gradeSoFar = 0;
 			if (percentDone != 0) {
-				gradeSoFar = courseGrade / percentDone;
+				gradeSoFar = gradeSoFar / percentDone;
 			}
-			courseSummary
-					.setText("Grade so far: " + gradeSoFar + "%, with " + percentDone + "% of the course completed.");
-			courseSummary.setText(courseSummary.getText() + "\n" + "Total grade: " + cumulative + "%");
 
-			termSummary.setText("");
+			average += gradeSoFar;
 
-			displayGrades.getChildren().addAll(assignDesc, courseSummary);
+			termSummary.setText(termSummary.getText() + c + ": " + gradeSoFar + "%, with " + percentDone
+					+ "% of the course completed. Total grade: " + cumulative + "%.\n");
 		}
+
+		average = average / Planner.termCourses.get(gChooseTerm.getValue()).size();
+
+		termSummary.setText(termSummary.getText() + "Term average (so far): " + average + "%.");
+
+		displayGrades.getChildren().addAll(courseSummary, termSummary);
 	}
 }

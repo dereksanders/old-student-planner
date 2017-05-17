@@ -49,6 +49,19 @@ public class Course implements Comparable<Course> {
 	}
 
 	@Override
+	public boolean equals(Object o) {
+
+		if (o instanceof Course) {
+			if (this.name.equals(((Course) o).name) && this.departmentID.equals(((Course) o).departmentID)
+					&& this.code == ((Course) o).code) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
+	@Override
 	public int compareTo(Course o) {
 		if (this.departmentID.compareTo(o.departmentID) == 0) {
 			if (this.code < o.code) {

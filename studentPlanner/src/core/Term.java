@@ -10,7 +10,7 @@ public class Term implements Comparable<Term> {
 	public String name;
 	public LocalDate start;
 	public LocalDate end;
-	public double grade = 50;
+	public double grade;
 
 	/* Course Schedule params */
 	public int maxDay;

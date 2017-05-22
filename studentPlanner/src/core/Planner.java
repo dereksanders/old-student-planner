@@ -12,6 +12,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -26,8 +27,8 @@ import utility.GenericLinkedHashTable;
 
 public class Planner extends Application {
 
-	public static int width = 1753;
-	public static int height = 925;
+	public static int width = 1575;
+	public static int height = 775;
 
 	public static BorderPane scbp;
 	public static BorderPane tcbp;
@@ -136,31 +137,42 @@ public class Planner extends Application {
 			CourseSchedule.drawSchedule(currentlySelectedDate);
 		}
 
-		HBox options = new HBox(20);
+		HBox scheduleOptions = new HBox(20);
 		Button goToGrades = new Button("Grades");
-		options.getChildren().add(goToGrades);
+		scheduleOptions.getChildren().add(goToGrades);
 
-		scbp.setTop(options);
+		HBox gradeOptions = new HBox(20);
+		Button goToSchedule = new Button("Schedule");
+		gradeOptions.getChildren().add(goToSchedule);
+
+		scbp.setTop(scheduleOptions);
 		scbp.setCenter(csbp);
 
 		BorderPane gradeEntry = Grades.init();
 		BorderPane gradePlot = GradesPlot.init();
 
 		BorderPane gbp = new BorderPane();
+		gbp.setTop(gradeOptions);
 		gbp.setLeft(gradeEntry);
 		gbp.setRight(gradePlot);
 
 		Scene scheduleAndCalendar = new Scene(scbp, width, height);
+		scheduleAndCalendar.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
+
 		Scene gradeEntryAndPlot = new Scene(gbp, width, height);
+		gradeEntryAndPlot.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
 
 		goToGrades.setOnAction(e -> {
 			window.setScene(gradeEntryAndPlot);
 		});
 
+		goToSchedule.setOnAction(e -> {
+			window.setScene(scheduleAndCalendar);
+		});
+
 		/* Application window */
 		window.setTitle("Student Planner");
-		// TODO: ADD WINDOW ICONS
-		// window.getIcons().add(new Image("res//s.png"));
+		window.getIcons().add(new Image(getClass().getResourceAsStream("icon.png")));
 		window.setScene(scheduleAndCalendar);
 		window.setResizable(true);
 		window.show();

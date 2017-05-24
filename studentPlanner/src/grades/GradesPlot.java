@@ -10,6 +10,8 @@ import javafx.scene.layout.BorderPane;
 
 public class GradesPlot {
 
+	private static LineChart<String, Number> lineChart;
+
 	public static BorderPane init() {
 
 		BorderPane gpbp = new BorderPane();
@@ -20,7 +22,7 @@ public class GradesPlot {
 		NumberAxis yAxis = new NumberAxis();
 		yAxis.setLabel("Grade %");
 
-		LineChart<String, Number> lineChart = new LineChart<String, Number>(xAxis, yAxis);
+		lineChart = new LineChart<String, Number>(xAxis, yAxis);
 		lineChart.setTitle("Grade Monitoring");
 
 		XYChart.Series<String, Number> series = new XYChart.Series<>();
@@ -34,5 +36,17 @@ public class GradesPlot {
 		lineChart.getData().add(series);
 		gpbp.setCenter(lineChart);
 		return gpbp;
+	}
+
+	protected static void update() {
+
+		XYChart.Series<String, Number> series = new XYChart.Series<>();
+
+		for (Term t : Planner.terms) {
+			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
+		}
+
+		lineChart.getData().clear();
+		lineChart.getData().add(series);
 	}
 }

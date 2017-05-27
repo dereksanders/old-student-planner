@@ -1,11 +1,8 @@
 package core;
 
+import java.io.File;
 import java.time.LocalDate;
-import java.util.HashMap;
-
 import courseSchedule.CourseSchedule;
-import grades.Grades;
-import grades.GradesPlot;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -21,39 +18,33 @@ import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import json.Parser;
 import termCalendar.TermCalendar;
-import utility.GenericLinkedHashTable;
+import utility.IOManager;
+import utility.JSONParser;
 
+/**
+ * The Class Planner.
+ */
 public class Planner extends Application {
 
-	public static int width = 1575;
-	public static int height = 775;
+	public static Scene scheduleAndCalendar;
+	public static int scheduleAndCalendarWidth = 1575;
+	public static int scheduleAndCalendarHeight = 775;
 
-	public static BorderPane scbp;
-	public static BorderPane tcbp;
-	public static BorderPane csbp;
-	public static BorderPane gbp;
+	public static int gradeEntryAndPlotWidth = 1575;
+	public static int gradeEntryAndPlotHeight = 775;
 
-	// Student profile & define data structures
+	public static BorderPane tc;
+	public static BorderPane cstc;
+
 	public static String saveDir = "res";
+	public static String backupDir = "res//backup";
 	public static TimeDateThread t;
 	public static int today;
 	public static int todaysDate;
-	public static Term currentlySelectedTerm;
-	public static LocalDate currentlySelectedDate;
-	public static ObservableList<Term> terms;
-	public static ObservableList<Course> courses;
-	public static HashMap<Color, Course> courseColors;
-	public static String[] save;
-	public static String activeProfile;
-	public static int showWithinThreshold = 14;
+	public static Profile active;
 
-	public static GenericLinkedHashTable<Term, Course> termCourses;
-	public static GenericLinkedHashTable<String, Meeting> dayMeetings;
-	public static GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
-
-	// Border Styles
+	/* All styles of border strokes that are used in the application */
 	public static BorderStroke fullBorderStroke = new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
 			CornerRadii.EMPTY, BorderStroke.THIN);
 
@@ -102,73 +93,105 @@ public class Planner extends Application {
 	public static Font h1 = new Font(24);
 	public static Font b1 = new Font(14);
 
+	/**
+	 * The main method.
+	 *
+	 * @param args
+	 *            the arguments
+	 */
 	public static void main(String[] args) {
 		launch(args);
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javafx.application.Application#start(javafx.stage.Stage)
+	 */
 	@Override
 	public void start(Stage window) throws Exception {
 
-		// Initialize data structures and load student profile
+		/* Initialize preset colours used in the application */
 		selectableColors = FXCollections.observableArrayList();
 		selectableColors.addAll(appBlue, appRed, appYellow, appGreen);
-		terms = FXCollections.observableArrayList();
-		courses = FXCollections.observableArrayList();
-		courseColors = new HashMap<>();
-		dayMeetings = new GenericLinkedHashTable<>(7, false);
-		termCourses = new GenericLinkedHashTable<>(100, false);
-		dateEvents = new GenericLinkedHashTable<>(366, true);
-		activeProfile = "default";
 
 		initTimeThread();
 
-		scbp = new BorderPane();
+		/*
+		 * Find the last modified .json file. If it does not exist, returns
+		 * null.
+		 */
+		File lastModified = IOManager.lastModifiedJSON(saveDir);
 
-		BorderPane csbp = CourseSchedule.init();
-
-		Parser.loadAll(activeProfile);
-
-		currentlySelectedTerm = findTerm(currentlySelectedDate);
-
-		if (currentlySelectedTerm != null) {
-			CourseSchedule.drawSchedule(currentlySelectedTerm, currentlySelectedDate);
-			TermCalendar.redrawCalendars();
-		} else {
-			CourseSchedule.drawSchedule(currentlySelectedDate);
+		/* If no profiles exist, create a new one. */
+		if (lastModified == null) {
+			active = new Profile("default");
+			JSONParser.saveProfile(active);
+		}
+		/* Load the most recently modified profile. */
+		else {
+			active = JSONParser.loadProfile(lastModified);
 		}
 
-		HBox scheduleOptions = new HBox(20);
+		/* Select today's date. */
+		active.currentlySelectedDate = t.current.toLocalDate();
+
+		/* Course Schedule & Term Calendar Layout */
+		cstc = new BorderPane();
+		HBox cstcOptions = new HBox(20);
 		Button goToGrades = new Button("Grades");
-		scheduleOptions.getChildren().add(goToGrades);
+		cstcOptions.getChildren().add(goToGrades);
 
-		HBox gradeOptions = new HBox(20);
-		Button goToSchedule = new Button("Schedule");
-		gradeOptions.getChildren().add(goToSchedule);
+		/* Initialize Course Schedule */
+		BorderPane cs = CourseSchedule.init();
+		CourseSchedule.drawSchedule(active.currentlySelectedTerm, active.currentlySelectedDate);
+		CourseSchedule.setTodaysMeetings();
 
-		scbp.setTop(scheduleOptions);
-		scbp.setCenter(csbp);
+		cstc.setTop(cstcOptions);
+		cstc.setCenter(cs);
 
-		BorderPane gradeEntry = Grades.init();
-		BorderPane gradePlot = GradesPlot.init();
-
-		BorderPane gbp = new BorderPane();
-		gbp.setTop(gradeOptions);
-		gbp.setLeft(gradeEntry);
-		gbp.setRight(gradePlot);
-
-		Scene scheduleAndCalendar = new Scene(scbp, width, height);
+		/* Initialize Course Schedule & Term Calendar Scene */
+		scheduleAndCalendar = new Scene(cstc, scheduleAndCalendarWidth, scheduleAndCalendarHeight);
 		scheduleAndCalendar.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
 
-		Scene gradeEntryAndPlot = new Scene(gbp, width, height);
-		gradeEntryAndPlot.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
+		/*
+		 * Only draw the Term Calendar if the selected Term is not null, which
+		 * should only occur when the Profile has no Terms.
+		 */
+		if (active.currentlySelectedTerm != null) {
+			System.out.println("Initializing Term Calendar..");
+			initTermCalendar();
+		}
 
-		goToGrades.setOnAction(e -> {
-			window.setScene(gradeEntryAndPlot);
-		});
+		/* Grades & Grades Plot Layout */
+		// BorderPane ggpLayout = new BorderPane();
+		// BorderPane gradeEntry = Grades.init();
+		// BorderPane gradePlot = GradesPlot.init();
+		//
+		// HBox gradeOptions = new HBox(20);
+		// Button goToSchedule = new Button("Schedule");
+		// gradeOptions.getChildren().add(goToSchedule);
+		//
+		// ggpLayout.setTop(gradeOptions);
+		// ggpLayout.setLeft(gradeEntry);
+		// ggpLayout.setRight(gradePlot);
 
-		goToSchedule.setOnAction(e -> {
-			window.setScene(scheduleAndCalendar);
-		});
+		/* Initialize Grades & Grades Plot Scene */
+		// Scene gradesAndPlot = new Scene(ggpLayout, gradeEntryAndPlotWidth,
+		// gradeEntryAndPlotHeight);
+		// gradesAndPlot.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
+
+		/*
+		 * Scene select options. These are placed below the scene declarations
+		 * as they need access to them.
+		 */
+		// goToSchedule.setOnAction(e -> {
+		// window.setScene(scheduleAndCalendar);
+		// });
+
+		// goToGrades.setOnAction(e -> {
+		// window.setScene(gradesAndPlot);
+		// });
 
 		/* Application window */
 		window.setTitle("Student Planner");
@@ -178,33 +201,52 @@ public class Planner extends Application {
 		window.show();
 	}
 
+	/**
+	 * Inits the term calendar.
+	 */
 	public static void initTermCalendar() {
-		if (tcbp == null) {
-			tcbp = TermCalendar.init();
+
+		if (tc == null) {
+			System.out.println("Term Calendar is null. Constructing Term Calendar..");
+			tc = TermCalendar.init();
 			TermCalendar.redrawCalendars();
-			scbp.setRight(tcbp);
+			cstc.setRight(tc);
 		}
 	}
 
+	/**
+	 * Inits the time thread.
+	 */
 	public void initTimeThread() {
 
 		t = new TimeDateThread();
 		t.update();
 		today = t.current.getDayOfWeek().getValue();
 		todaysDate = t.current.getDayOfMonth();
-		currentlySelectedDate = t.current.toLocalDate();
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see javafx.application.Application#stop()
+	 */
 	@Override
 	public void stop() throws Exception {
 		System.out.println("Saving and exiting..");
-		saveProfile(activeProfile);
+		JSONParser.saveProfile(Planner.active);
 	}
 
-	public static Term findTerm(LocalDate d) {
+	/**
+	 * Find the term for the specified date.
+	 *
+	 * @param date
+	 *            the date
+	 * @return the term
+	 */
+	public static Term findTerm(LocalDate date) {
 		Term result = null;
-		for (Term t : terms) {
-			if ((t.start.isBefore(d) || t.start.equals(d)) && (t.end.isAfter(d) || t.end.equals(d))) {
+		for (Term t : Planner.active.terms) {
+			if ((t.start.isBefore(date) || t.start.equals(date)) && (t.end.isAfter(date) || t.end.equals(date))) {
 				result = t;
 				break;
 			}
@@ -212,15 +254,27 @@ public class Planner extends Application {
 		return result;
 	}
 
+	/**
+	 * Gets the next color in the sequence of application colors.
+	 *
+	 * @return the next color
+	 */
 	public static Color getNextColor() {
 		for (Color c : selectableColors) {
-			if (!courseColors.containsKey(c)) {
+			if (!Planner.active.courseColors.containsKey(c)) {
 				return c;
 			}
 		}
 		return Color.WHITE;
 	}
 
+	/**
+	 * Color to hex.
+	 *
+	 * @param color
+	 *            the color
+	 * @return the string
+	 */
 	public static String colorToHex(Color color) {
 		String hex1;
 		String hex2;
@@ -251,18 +305,4 @@ public class Planner extends Application {
 		}
 		return hex2;
 	}
-
-	public static void saveProfile(String profileName) {
-
-		for (Course c : Planner.courses) {
-
-			Parser.saveJSONObject(profileName, c);
-		}
-	}
-
-	public static void loadProfile(String profileName) {
-
-		Parser.loadAll(profileName);
-	}
-
 }

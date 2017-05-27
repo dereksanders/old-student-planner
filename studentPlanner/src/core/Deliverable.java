@@ -24,7 +24,7 @@ public class Deliverable extends CalendarEvent {
 	@Override
 	public String toString() {
 
-		return Planner.courseColors.get(Color.web(this.colour)) + " " + this.name;
+		return Planner.active.courseColors.get(Color.web(this.colour)) + " " + this.name;
 	}
 
 	@Override

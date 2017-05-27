@@ -4,7 +4,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 
 import courseSchedule.CourseSchedule;
-import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 
 public class Meeting implements Comparable<Meeting> {
@@ -70,7 +69,7 @@ public class Meeting implements Comparable<Meeting> {
 		return conflicts;
 	}
 
-	public ArrayList<Meeting> conflictsWith(ObservableList<Course> courses) {
+	public ArrayList<Meeting> conflictsWithCourses(ArrayList<Course> courses) {
 		ArrayList<Meeting> allMeetings = new ArrayList<>();
 		for (Course c : courses) {
 			allMeetings.addAll(c.meetings);
@@ -80,10 +79,10 @@ public class Meeting implements Comparable<Meeting> {
 
 	public static void deleteMeetings(ArrayList<Meeting> conflicts) {
 		for (Meeting m : conflicts) {
-			Planner.courseColors.get(Color.web(m.colour)).meetings.remove(m);
-			Planner.dayMeetings.del(m.dayOfWeek, m);
+			Planner.active.courseColors.get(Color.web(m.colour)).meetings.remove(m);
+			Planner.active.dayMeetings.del(m.dayOfWeek, m);
 			CourseSchedule.setTodaysMeetings();
-			for (Term t : Planner.courseColors.get(Color.web(m.colour)).terms) {
+			for (Term t : Planner.active.courseTerms.get(Planner.active.courseColors.get(Color.web(m.colour)))) {
 				CourseSchedule.removeFromSchedule(m, t);
 			}
 		}

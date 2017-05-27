@@ -19,6 +19,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -48,8 +49,9 @@ public class EditCalendarEvent {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Event");
+		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
 		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
-		for (CalendarEvent e : Planner.dateEvents.get(d)) {
+		for (CalendarEvent e : Planner.active.dateEvents.get(d)) {
 			events.add(e);
 		}
 		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(events);
@@ -87,9 +89,9 @@ public class EditCalendarEvent {
 		chooseEvent.setValue(events.get(0));
 		Button delete = new Button("Delete Event");
 		delete.setOnAction(e -> {
-			Planner.dateEvents.del(d, currentlySelected);
+			Planner.active.dateEvents.del(d, currentlySelected);
 			if (currentlySelected instanceof Deliverable) {
-				Planner.courseColors.get(Color.web(((Deliverable) currentlySelected).colour)).deliverables
+				Planner.active.courseColors.get(Color.web(((Deliverable) currentlySelected).colour)).deliverables
 						.remove(currentlySelected);
 			}
 			TermCalendar.redrawCalendars();

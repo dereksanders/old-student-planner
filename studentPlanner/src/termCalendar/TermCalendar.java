@@ -62,7 +62,7 @@ public class TermCalendar {
 		upcomingThreshold.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				Planner.showWithinThreshold = thresholds.get(newIndex.intValue());
+				Planner.active.showWithinThreshold = thresholds.get(newIndex.intValue());
 				updateUpcomingEvents();
 			}
 		});
@@ -81,7 +81,7 @@ public class TermCalendar {
 
 	public static void redrawCalendars() {
 		termViewBox.getChildren().clear();
-		termViewBox.getChildren().add(drawCalendar(Planner.currentlySelectedTerm));
+		termViewBox.getChildren().add(drawCalendar(Planner.active.currentlySelectedTerm));
 		termViewBox.getChildren().add(upcoming);
 	}
 
@@ -145,7 +145,7 @@ public class TermCalendar {
 						Button add = new Button("" + date);
 						add.setMinWidth(40);
 						add.setMinHeight(40);
-						PriorityQueue<CalendarEvent> ce = Planner.dateEvents.get(LocalDate.of(
+						PriorityQueue<CalendarEvent> ce = Planner.active.dateEvents.get(LocalDate.of(
 								term.start.plusMonths(i).getYear(), term.start.plusMonths(i).getMonthValue(), date));
 						if (ce != null && !ce.isEmpty()) {
 							if (ce.peek() instanceof Deliverable) {
@@ -232,9 +232,9 @@ public class TermCalendar {
 
 	private static void updateUpcomingEvents() {
 		String desc = "";
-		for (int i = 0; i <= Planner.showWithinThreshold; i++) {
-			if (Planner.dateEvents.get(Planner.t.current.toLocalDate().plusDays(i)) != null
-					&& !Planner.dateEvents.get(Planner.t.current.toLocalDate().plusDays(i)).isEmpty()) {
+		for (int i = 0; i <= Planner.active.showWithinThreshold; i++) {
+			if (Planner.active.dateEvents.get(Planner.t.current.toLocalDate().plusDays(i)) != null
+					&& !Planner.active.dateEvents.get(Planner.t.current.toLocalDate().plusDays(i)).isEmpty()) {
 				if (i == 0) {
 					desc += "Today: \n";
 				} else if (i == 1) {
@@ -242,7 +242,7 @@ public class TermCalendar {
 				} else {
 					desc += Pretty.prettyDate(Planner.t.current.toLocalDate().plusDays(i)) + ": \n";
 				}
-				for (CalendarEvent e : Planner.dateEvents.get(Planner.t.current.toLocalDate().plusDays(i))) {
+				for (CalendarEvent e : Planner.active.dateEvents.get(Planner.t.current.toLocalDate().plusDays(i))) {
 					desc += e + "\n";
 				}
 				desc += "\n";

@@ -2,12 +2,14 @@ package courseSchedule;
 
 import java.time.LocalDate;
 
+import core.Planner;
 import core.Term;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -25,6 +27,7 @@ public class AddTerm {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Term");
+		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
 		TextField name = new TextField();
 		name.setPromptText("Term Name (e.g. Fall)");
 		Label startTitle = new Label("Start: ");

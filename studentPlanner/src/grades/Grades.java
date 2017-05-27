@@ -1,17 +1,18 @@
 package grades;
 
-import java.util.PriorityQueue;
-
+import java.util.ArrayList;
 import core.Course;
 import core.Deliverable;
 import core.Planner;
 import core.Term;
+import gradesPlot.GradesPlot;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
@@ -24,9 +25,9 @@ public class Grades {
 	public static Label thisCoursesTests;
 	public static HBox selectedDisplay;
 	public static VBox displayGrades;
-	public static ChoiceBox<Course> gChooseCourse;
-	public static ChoiceBox<Term> gChooseTerm;
-	private static PriorityQueue<Course> selectedTermsCourses;
+	public static ComboBox<Course> gChooseCourse;
+	public static ComboBox<Term> gChooseTerm;
+	private static ArrayList<Course> selectedTermsCourses;
 	private static ObservableList<Course> coursesToDisplay;
 
 	public static BorderPane init() {
@@ -39,20 +40,20 @@ public class Grades {
 		HBox gHeader = new HBox(50);
 		VBox gBody = new VBox(20);
 
-		gChooseTerm = new ChoiceBox<>(Planner.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(Planner.active.terms);
+		gChooseTerm = new ComboBox<>(termChoices);
 
-		if (Planner.currentlySelectedTerm != null) {
-			gChooseTerm.setValue(Planner.currentlySelectedTerm);
+		if (Planner.active.currentlySelectedTerm != null) {
+			selectedTermsCourses = Planner.active.currentlySelectedTerm.courses;
+			coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
 		}
 
-		selectedTermsCourses = Planner.termCourses.get(Planner.currentlySelectedTerm);
-		coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
-
-		gChooseCourse = new ChoiceBox<>(coursesToDisplay);
+		gChooseCourse = new ComboBox<>(coursesToDisplay);
 
 		Label gSelectedLabel = new Label("Currently selected: ");
 		HBox classGrades = new HBox(50);
 		classGrades.getChildren().addAll(gSelectedLabel, gChooseCourse);
+
 		selectedDisplay = new HBox(50);
 		displayGrades = new VBox(10);
 		gBody.getChildren().addAll(gChooseTerm, classGrades, selectedDisplay, displayGrades);
@@ -64,27 +65,84 @@ public class Grades {
 		gChooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				selectedTermsCourses = Planner.termCourses.get(Planner.terms.get(newIndex.intValue()));
-				coursesToDisplay.clear();
-				coursesToDisplay.addAll(selectedTermsCourses);
-				updateChooseCourse();
+				selectedTermsCourses = Planner.active.terms.get(newIndex.intValue()).courses;
+				coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
+				System.out.println(coursesToDisplay);
 			}
 		});
 
 		gChooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				listGrades(coursesToDisplay.get(newIndex.intValue()));
+				if (newIndex.intValue() < 1) {
+					listGrades(coursesToDisplay.get(0));
+				} else {
+					listGrades(coursesToDisplay.get(newIndex.intValue()));
+				}
 			}
 		});
 
 		return gbp;
+
 	}
 
-	private static void updateChooseCourse() {
-		gChooseCourse = new ChoiceBox<>(coursesToDisplay);
-		gChooseCourse.setValue(coursesToDisplay.get(0));
-		listGrades(gChooseCourse.getValue());
+	private static void listGrades(Term selected) {
+
+		Label termSummaryTitle = new Label("Term Summary");
+		termSummaryTitle.setFont(Planner.h1);
+		termSummaryTitle.setTextFill(Planner.appBlue);
+
+		Label termSummary = new Label("");
+
+		/* Term summary */
+
+		termSummary.setText("Grades for " + gChooseTerm.getValue() + ":\n");
+
+		double avgSoFar = 0;
+		double avg = 0;
+
+		for (Course c : selected.courses) {
+
+			double percentDone = 0;
+			double cumulative = 0;
+			double gradeSoFar = 0;
+
+			for (Deliverable d : c.deliverables) {
+				if (d.due.isBefore(core.Planner.t.current)) {
+					if (d.grade != 0) {
+						cumulative += d.grade * (d.weight / 100);
+					}
+					percentDone += (d.weight);
+					gradeSoFar += d.weight * (d.grade);
+				}
+			}
+
+			if (percentDone != 0) {
+				gradeSoFar = gradeSoFar / percentDone;
+			}
+
+			c.grade = cumulative;
+
+			avg += cumulative;
+			avgSoFar += gradeSoFar;
+
+			termSummary.setText(termSummary.getText() + c + ": " + gradeSoFar + "%, with " + percentDone
+					+ "% of the course completed. Total grade: " + cumulative + "%.\n");
+		}
+
+		System.out.println(avgSoFar);
+
+		int numCourses = selected.courses.size();
+
+		avg = avg / numCourses;
+		selected.grade = avg;
+
+		avgSoFar = avgSoFar / numCourses;
+
+		termSummary.setText(termSummary.getText() + "Term average (so far): " + avgSoFar + "%.\nTerm average (total): "
+				+ avg + "%");
+
+		displayGrades.getChildren().addAll(termSummaryTitle, termSummary);
 	}
 
 	private static void listGrades(Course selected) {
@@ -127,6 +185,7 @@ public class Grades {
 			}
 
 			listGrades(selected);
+			GradesPlot.update();
 		});
 
 		selectedDisplay.getChildren().clear();
@@ -134,8 +193,11 @@ public class Grades {
 
 		displayGrades.getChildren().clear();
 
+		Label courseSummaryTitle = new Label("Course Summary");
+		courseSummaryTitle.setFont(Planner.h1);
+		courseSummaryTitle.setTextFill(Planner.appBlue);
+
 		Label courseSummary = new Label("");
-		Label termSummary = new Label("");
 
 		/* Course summary */
 
@@ -150,9 +212,11 @@ public class Grades {
 
 			if (d.due.isBefore(core.Planner.t.current)
 					|| d.due.toLocalDate().isEqual(core.Planner.t.current.toLocalDate())) {
-				cumulative += (d.weight) / (d.grade);
-				percentDone += (d.weight);
-				gradeSoFar += d.weight * (d.grade / 100);
+				if (d.grade != 0) {
+					cumulative += d.grade * (d.weight / 100);
+				}
+				percentDone += d.weight;
+				gradeSoFar += d.weight * d.grade;
 			}
 		}
 
@@ -164,40 +228,10 @@ public class Grades {
 				+ "% of the course completed.");
 		courseSummary.setText(courseSummary.getText() + "\n" + "Total grade: " + cumulative + "%.");
 
-		/* Term summary */
+		displayGrades.getChildren().addAll(courseSummaryTitle, courseSummary);
 
-		termSummary.setText("Grades for " + gChooseTerm.getValue() + ":\n");
-
-		double average = 0;
-
-		for (Course c : Planner.termCourses.get(gChooseTerm.getValue())) {
-
-			percentDone = 0;
-			cumulative = 0;
-			gradeSoFar = 0;
-
-			for (Deliverable d : c.deliverables) {
-				if (d.due.isBefore(core.Planner.t.current)) {
-					cumulative += (d.weight) / (d.grade);
-					percentDone += (d.weight);
-					gradeSoFar += d.weight * (d.grade / 100);
-				}
-			}
-
-			if (percentDone != 0) {
-				gradeSoFar = gradeSoFar / percentDone;
-			}
-
-			average += gradeSoFar;
-
-			termSummary.setText(termSummary.getText() + c + ": " + gradeSoFar + "%, with " + percentDone
-					+ "% of the course completed. Total grade: " + cumulative + "%.\n");
+		for (Term t : Planner.active.courseTerms.get(selected)) {
+			listGrades(t);
 		}
-
-		average = average / Planner.termCourses.get(gChooseTerm.getValue()).size();
-
-		termSummary.setText(termSummary.getText() + "Term average (so far): " + average + "%.");
-
-		displayGrades.getChildren().addAll(courseSummary, termSummary);
 	}
 }

@@ -15,6 +15,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -68,6 +69,7 @@ public class AddMeeting {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Meeting");
+		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
 		Button confirm = new Button("Confirm changes");
 		Button cancel = new Button("Cancel");
 		confirm.setOnAction(e -> {

@@ -2,15 +2,18 @@ package core;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 import utility.Pretty;
 
 public class Term implements Comparable<Term> {
 
 	public String name;
+	public String ID;
 	public LocalDate start;
 	public LocalDate end;
 	public double grade;
+	public ArrayList<Course> courses;
 
 	/* Course Schedule params */
 	public int maxDay;
@@ -19,8 +22,10 @@ public class Term implements Comparable<Term> {
 
 	public Term(String name, LocalDate start, LocalDate end) {
 		this.name = name;
+		this.ID = name + "_" + start.getYear();
 		this.start = start;
 		this.end = end;
+		this.courses = new ArrayList<>();
 
 		/* Default course schedule params */
 		this.maxDay = 5;
@@ -45,7 +50,7 @@ public class Term implements Comparable<Term> {
 		this.minStart = LocalTime.of(8, 30);
 		this.maxEnd = LocalTime.of(15, 00);
 
-		for (Course c : Planner.termCourses.get(this)) {
+		for (Course c : this.courses) {
 			for (Meeting m : c.meetings) {
 				updateParams(m);
 			}
@@ -70,6 +75,16 @@ public class Term implements Comparable<Term> {
 	@Override
 	public int compareTo(Term arg0) {
 
-		return 0;
+		if (this.start.isBefore(arg0.start)) {
+			return -1;
+		}
+		/*
+		 * This should never happen as term dates should be mutually exclusive.
+		 */
+		else if (this.start.equals(arg0.start)) {
+			return 0;
+		} else {
+			return 1;
+		}
 	}
 }

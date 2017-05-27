@@ -32,28 +32,43 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import termCalendar.TermCalendar;
+import utility.JSONParser;
 import utility.Pretty;
 
+/**
+ * The Class CourseSchedule.
+ */
 public class CourseSchedule {
 
-	public static Label title;
-	public static Button addCourse;
-	public static Button editCourse;
-	public static Button editTerm;
 	public static Label todaysMeetings;
+	public static Button editCourse;
+
+	/* Visual schedule elements */
 	public static GridPane scheduleLayout;
 	public static Label[] daysOfTheWeek = { new Label("Monday"), new Label("Tuesday"), new Label("Wednesday"),
 			new Label("Thursday"), new Label("Friday"), new Label("Saturday"), new Label("Sunday") };
 	public static Label[] times;
 	public static Button[][] meetingButtons;
+
+	/* Dependent on selected Term's parameters */
 	public static int daysInSchedule;
 	public static int timesInSchedule;
 	public static int timesOffset;
 
+	/**
+	 * Initializes the Course Schedule.
+	 *
+	 * @return the border pane
+	 */
 	public static BorderPane init() {
 
+		/* GridPane containing the entire Course Schedule view */
 		BorderPane csbp = new BorderPane();
 
+		/* GridPane containing the main part of the Course Schedule */
+		scheduleLayout = new GridPane();
+
+		/* Initialize time labels along the axis of the schedule. */
 		times = new Label[48];
 		int hour = 0;
 		for (int i = 0; i < 48; i += 2) {
@@ -62,117 +77,197 @@ public class CourseSchedule {
 			hour++;
 		}
 
+		/*
+		 * TODO: This label needs to be updated every time the time thread is.
+		 */
 		Label time = new Label(Planner.t.current.format(DateTimeFormatter.ISO_LOCAL_TIME));
 
-		scheduleLayout = new GridPane();
-		title = new Label("Course Schedule");
+		Label title = new Label("Course Schedule");
 		title.setTextFill(Planner.appBlue);
 		title.setFont(Planner.h1);
 
 		todaysMeetings = new Label("Today's Meetings:");
 		setTodaysMeetings();
 
-		/* SELECT WEEK */
+		/* Select week */
 
+		/*
+		 * Initially, the present week is shown when the user starts the
+		 * application
+		 */
 		CheckBox showCurrentWeek = new CheckBox("Show current week");
 		showCurrentWeek.setSelected(true);
+
 		DatePicker selectWeek = new DatePicker();
 		selectWeek.valueProperty().addListener(new ChangeListener<LocalDate>() {
 			@Override
 			public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldDate, LocalDate newDate) {
-				Planner.currentlySelectedDate = newDate;
-				if (Planner.findTerm(Planner.currentlySelectedDate) != null) {
-					Planner.currentlySelectedTerm = Planner.findTerm(Planner.currentlySelectedDate);
-					CourseSchedule.drawSchedule(Planner.findTerm(Planner.currentlySelectedDate),
-							Planner.currentlySelectedDate);
-					TermCalendar.redrawCalendars();
-				} else {
-					CourseSchedule.drawSchedule(Planner.currentlySelectedDate);
-				}
+				updateWeekSelected(newDate);
 			}
 		});
+
+		/*
+		 * Since the checkbox to show the current week is active on startup,
+		 * this should initially be disabled.
+		 */
 		selectWeek.setVisible(false);
+
 		showCurrentWeek.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
+
+				/*
+				 * Actions to perform when the checkbox to show the current week
+				 * is toggled.
+				 */
+
+				/* If the new value is to show the current week. */
 				if (newVal) {
+
+					/* Disable selecting a different week. */
 					selectWeek.setVisible(false);
-					Planner.currentlySelectedDate = Planner.t.current.toLocalDate();
-					selectWeek.setValue(Planner.currentlySelectedDate);
-					if (Planner.findTerm(Planner.currentlySelectedDate) != null) {
-						Planner.currentlySelectedTerm = Planner.findTerm(Planner.currentlySelectedDate);
-						CourseSchedule.drawSchedule(Planner.findTerm(Planner.currentlySelectedDate),
-								Planner.currentlySelectedDate);
-						TermCalendar.redrawCalendars();
-					} else {
-						CourseSchedule.drawSchedule(Planner.currentlySelectedDate);
-					}
-				} else {
+
+					LocalDate present = Planner.t.current.toLocalDate();
+					selectWeek.setValue(present);
+					updateWeekSelected(present);
+				}
+
+				/* If the new value is to allow choosing a different week. */
+				else {
 					selectWeek.setVisible(true);
 					selectWeek.requestFocus();
 				}
 			}
 		});
 
-		/* ADD COURSE */
+		/* Edit course */
+		Button editCourse = new Button("Edit Course");
 
-		addCourse = new Button("Add Course");
-		if (Planner.terms.size() == 0) {
-			addCourse.setDisable(true);
-		}
-		addCourse.setOnAction(e -> {
-			Course add = AddCourse.display();
-			if (add != null) {
-				courseAddStuff(add);
-				Planner.saveProfile(Planner.activeProfile);
-			}
-		});
+		if (!Planner.active.coursesExist()) {
 
-		/* EDIT COURSE */
-
-		editCourse = new Button("Edit Course");
-		if (Planner.courses.size() == 0) {
+			/*
+			 * If no courses exist, the "Edit Course" button should be disabled.
+			 */
 			editCourse.setDisable(true);
 		}
+
 		editCourse.setOnAction(e -> {
+
+			/* Open Edit Course window */
 			Course edited = EditCourse.display();
+
+			/* If the user has confirmed changes to an existing course */
 			if (edited != null) {
 
-				for (Meeting m : edited.meetings) {
-					for (Term t : edited.terms) {
-						t.updateParams(m);
-					}
+				Planner.active.resetTermParams(edited.start, edited.end);
+
+				/*
+				 * If the edited course belongs to the currently selected term,
+				 * redraw schedule and calendar.
+				 */
+				if (Planner.active.currentlySelectedTerm.courses.contains(edited)) {
+
+					CourseSchedule.drawSchedule(Planner.active.currentlySelectedTerm,
+							Planner.active.currentlySelectedDate);
 				}
 
-				if (Planner.findTerm(Planner.currentlySelectedDate) != null) {
-					CourseSchedule.drawSchedule(Planner.findTerm(Planner.currentlySelectedDate),
-							Planner.currentlySelectedDate);
-				} else {
-					CourseSchedule.drawSchedule(Planner.currentlySelectedDate);
-				}
-
+				/*
+				 * TODO: What about CalendarEvents belonging to the edited
+				 * course?
+				 */
 				TermCalendar.redrawCalendars();
+
+				/* Save changes to Profile */
+				JSONParser.saveProfile(Planner.active);
 			}
-			Planner.saveProfile(Planner.activeProfile);
 		});
 
-		/* EDIT TERM */
+		/* Add course */
+		Button addCourse = new Button("Add Course");
 
-		editTerm = new Button("Edit Term");
-		if (Planner.terms.size() == 0) {
+		if (Planner.active.terms.size() == 0) {
+
+			/*
+			 * Only allow user to add courses if they have at least one term in
+			 * their profile.
+			 */
+			addCourse.setDisable(true);
+		}
+
+		addCourse.setOnAction(e -> {
+
+			/* Open Add Course window */
+			Course addedCourse = AddCourse.display();
+
+			/* If the user has defined a course to add. */
+			if (addedCourse != null) {
+				Planner.active.addCourse(addedCourse);
+
+				/*
+				 * Redraw calendar if added course is in selected term and it
+				 * has meetings.
+				 */
+				if (Planner.active.courseTerms.get(addedCourse).contains(Planner.active.currentlySelectedTerm)
+						&& addedCourse.meetings.size() > 0) {
+
+					System.out.println("Redrawing schedule after course addition..");
+					drawSchedule(Planner.active.currentlySelectedTerm, Planner.active.currentlySelectedDate);
+				}
+
+				/*
+				 * Enable Edit Course button in case this is the first course
+				 * added.
+				 */
+				editCourse.setDisable(false);
+			}
+		});
+
+		/* Edit Term */
+		Button editTerm = new Button("Edit Term");
+
+		if (Planner.active.terms.size() == 0) {
+
+			/*
+			 * If no terms exist, the "Edit Term" button should be disabled.
+			 */
 			editTerm.setDisable(true);
 		}
+
 		editTerm.setOnAction(e -> {
+
+			/* Open "Edit Term" window */
 			EditTerm.display();
 		});
 
-		/* ADD TERM */
-
+		/* Add Term */
 		Button addTerm = new Button("Add Term");
+
 		addTerm.setOnAction(e -> {
+
+			/* Open Add Term window */
 			Term add = AddTerm.display();
+
+			/* If the user has defined a Term to add. */
 			if (add != null) {
-				termAddStuff(add);
+
+				Planner.active.addTerm(add);
+
+				/*
+				 * If the profile previously had zero Terms:
+				 * 
+				 * 1) Enable the Edit Term and Add Course buttons.
+				 * 
+				 * 2) Select the new Term & its start date as it's the Profile's
+				 * only Term.
+				 * 
+				 * 3) Initialize the Term Calendar.
+				 */
+				if (Planner.active.terms.size() == 1) {
+					editTerm.setDisable(false);
+					addCourse.setDisable(false);
+					updateWeekSelected(Planner.active.terms.get(0).start);
+					Planner.initTermCalendar();
+				}
 			}
 		});
 
@@ -189,43 +284,54 @@ public class CourseSchedule {
 		return csbp;
 	}
 
-	public static void courseAddStuff(Course add) {
-		for (Term t : add.terms) {
-			Planner.termCourses.put(t, add);
-		}
-		Planner.courses.add(add);
-		Planner.courseColors.put(Color.web(add.colour), add);
-		for (Meeting m : add.meetings) {
-			for (Term t : add.terms) {
-				t.updateParams(m);
-			}
-			if (Planner.findTerm(Planner.currentlySelectedDate) != null) {
-				CourseSchedule.drawSchedule(Planner.findTerm(Planner.currentlySelectedDate),
-						Planner.currentlySelectedDate);
+	/**
+	 * Update week selected.
+	 *
+	 * @param newDate
+	 *            the new date
+	 */
+	private static void updateWeekSelected(LocalDate newDate) {
+
+		Planner.active.currentlySelectedDate = newDate;
+		Term termOfNewDate = Planner.findTerm(newDate);
+
+		/*
+		 * If a term exists for the selected date, draw its schedule.
+		 */
+		if (termOfNewDate != null) {
+
+			Planner.active.currentlySelectedTerm = termOfNewDate;
+			CourseSchedule.drawSchedule(termOfNewDate, newDate);
+
+			/*
+			 * If a term exists, also initialize or draw its calendar.
+			 */
+			if (Planner.tc == null) {
+				Planner.initTermCalendar();
 			} else {
-				CourseSchedule.drawSchedule(Planner.currentlySelectedDate);
+				TermCalendar.redrawCalendars();
 			}
-			Planner.dayMeetings.put(m.dayOfWeek, m);
-			CourseSchedule.setTodaysMeetings();
 		}
-		if (Planner.courses.size() > 0) {
-			editCourse.setDisable(false);
+
+		/*
+		 * If no term exists, draw an empty schedule for that date.
+		 */
+		else {
+			CourseSchedule.drawSchedule(newDate);
+
+			/*
+			 * TODO: Do we need to stop a previous term calendar from still
+			 * being displayed?
+			 */
 		}
 	}
 
-	public static void termAddStuff(Term add) {
-		Planner.terms.add(add);
-		Planner.currentlySelectedTerm = add;
-		if (Planner.terms.size() == 1) {
-			addCourse.setDisable(false);
-			editTerm.setDisable(false);
-			Planner.initTermCalendar();
-		}
-	}
-
+	/**
+	 * Sets the todays meetings.
+	 */
 	public static void setTodaysMeetings() {
 		String desc = "";
-		PriorityQueue<Meeting> td = Planner.dayMeetings.get(Planner.t.current.getDayOfWeek().toString());
+		PriorityQueue<Meeting> td = Planner.active.dayMeetings.get(Planner.t.current.getDayOfWeek().toString());
 		if (td != null && td.size() > 0) {
 			for (Meeting m : td) {
 				desc += m.toString() + "\n";
@@ -235,11 +341,25 @@ public class CourseSchedule {
 		todaysMeetings.setText("Today's Meetings:\n" + desc);
 	}
 
+	/**
+	 * Draw schedule.
+	 *
+	 * @param d
+	 *            the d
+	 */
 	public static void drawSchedule(LocalDate d) {
 
 		drawSchedule(null, d);
 	}
 
+	/**
+	 * Draw schedule.
+	 *
+	 * @param term
+	 *            the term
+	 * @param d
+	 *            the d
+	 */
 	public static void drawSchedule(Term term, LocalDate d) {
 
 		Planner.t.update();
@@ -265,7 +385,6 @@ public class CourseSchedule {
 					30);
 
 		} else {
-
 			daysInSchedule = 5;
 			timesInSchedule = Time.getDistance(new Time(8, 30), new Time(15, 00), 30);
 			timesOffset = Time.getDistance(new Time(0, 0), new Time(8, 30), 30);
@@ -273,7 +392,9 @@ public class CourseSchedule {
 
 		int dayOfWeek = d.getDayOfWeek().getValue();
 
-		/* Finds the first day of the week to be displayed. */
+		/*
+		 * Finds the first day of the week to be displayed.
+		 */
 		LocalDate firstOfWeek = LocalDate.of(d.getYear(), d.getMonthValue(), d.getDayOfMonth())
 				.minusDays(dayOfWeek - 1);
 
@@ -282,7 +403,9 @@ public class CourseSchedule {
 			Label dayLabel = new Label(daysOfTheWeek[i].getText() + "\n" + firstOfWeek.plusDays(i).getDayOfMonth()
 					+ Pretty.getDateEnding(Integer.toString(firstOfWeek.plusDays(i).getDayOfMonth())));
 
-			/* The current day is italicized in blue */
+			/*
+			 * The current day is italicized in blue
+			 */
 			if (firstOfWeek.plusDays(i).isEqual(Planner.t.current.toLocalDate())) {
 
 				dayLabel.setFont(Font.font("Verdana", FontPosture.ITALIC, 14));
@@ -293,7 +416,9 @@ public class CourseSchedule {
 			GridPane.setHalignment(dayLabel, HPos.CENTER);
 		}
 
-		/* Times along the top of the course schedule. */
+		/*
+		 * Times along the top of the course schedule.
+		 */
 		int p = 0;
 		for (int j = timesOffset; j < timesInSchedule + timesOffset; j++) {
 
@@ -344,119 +469,192 @@ public class CourseSchedule {
 
 		/* Add all of the selected term's courses to the schedule. */
 		if (term != null) {
-			PriorityQueue<Course> coursesOnSchedule = Planner.termCourses.get(term);
-			if (coursesOnSchedule != null) {
-				for (Course c : coursesOnSchedule) {
-					for (Meeting m : c.meetings) {
-						addToSchedule(c, m, term);
-					}
+			for (Course c : term.courses) {
+				for (Meeting m : c.meetings) {
+					addToSchedule(c, m, term);
 				}
 			}
 		}
 	}
 
-	private static void addToSchedule(Course c, Meeting m, Term term) {
+	/**
+	 * Adds the meeting to the Course Schedule.
+	 *
+	 * @param course
+	 *            the course
+	 * @param meeting
+	 *            the meeting
+	 * @param term
+	 *            the term
+	 */
+	private static void addToSchedule(Course course, Meeting meeting, Term term) {
 
-		int mDay = m.dayOfWeekInt;
+		int mDay = meeting.dayOfWeekInt;
 
+		/*
+		 * Get the distance from the first time in the Course Schedule to the
+		 * start time of the meeting.
+		 */
 		int timeDist = Time.getDistance(new Time(term.minStart.getHour(), term.minStart.getMinute()),
-				new Time(m.start.getHour(), m.start.getMinute()), 30);
+				new Time(meeting.start.getHour(), meeting.start.getMinute()), 30);
 
-		Time meetingStart = new Time(m.start.getHour(), m.start.getMinute());
-		Time meetingEnd = new Time(m.end.getHour(), m.end.getMinute());
+		/*
+		 * Convert LocalDateTime meeting start & end to Time objects for easier
+		 * comparison.
+		 */
+		Time meetingStart = new Time(meeting.start.getHour(), meeting.start.getMinute());
+		Time meetingEnd = new Time(meeting.end.getHour(), meeting.end.getMinute());
 
+		/* Determine how long the meeting is. */
 		int length = meetingEnd.compareTo(meetingStart);
 
-		int p = 0;
+		/* Counter for each cell being added. */
+		int cellNumber = 0;
 
 		for (int i = 0; i < length; i += 30) {
 
-			Button mButton = meetingButtons[mDay - 1][timeDist + p];
+			/* Find next cell of meeting. */
+			Button mButton = meetingButtons[mDay - 1][timeDist + cellNumber];
 
+			/*
+			 * Styling for first cell of meeting which contains text describing
+			 * it.
+			 */
 			if (i == 0) {
 
-				mButton.setText(c.toString() + "\n" + m.meetingType);
+				mButton.setText(course.toString() + "\n" + meeting.meetingType);
 				mButton.setFont(Planner.scheduleFont);
 
 				/*
 				 * Decide if text is white or black based on brightness of
 				 * background colour.
 				 */
-				if (Color.web(c.colour).getBrightness() < 0.7) {
+				if (Color.web(course.colour).getBrightness() < 0.7) {
 					mButton.setTextFill(Color.WHITE);
 				} else {
 					mButton.setTextFill(Color.BLACK);
 				}
 			}
 
+			/*
+			 * Border styling for all cells except for last. TODO: What about
+			 * border styling for last cell? TODO: These are wrong.
+			 */
 			if (i + 30 < length) {
 
-				if ((mDay - 1) == 0 && (timeDist + p) == 0) {
-
+				/* Border styling for cell in top left corner. */
+				if ((mDay - 1) == 0 && (timeDist + cellNumber) == 0) {
 					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
-
-				} else if ((mDay - 1) == 0) {
-
+				}
+				/*
+				 * Border styling for cells along far left column (except for
+				 * top left).
+				 */
+				else if ((mDay - 1) == 0) {
 					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
-
-				} else if ((timeDist + p) == 0) {
-
+				}
+				/* Border styling for cells along top row. */
+				else if ((timeDist + cellNumber) == 0) {
 					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
-
-				} else {
-
+				}
+				/* Border styling for all other cells. */
+				else {
 					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
 				}
 			}
 
-			Background backg = new Background(new BackgroundFill(Color.web(c.colour), CornerRadii.EMPTY, Insets.EMPTY));
+			/* Background styling for meeting cells */
+			Background backg = new Background(
+					new BackgroundFill(Color.web(course.colour), CornerRadii.EMPTY, Insets.EMPTY));
 			mButton.setBackground(backg);
 
-			Tooltip tp = new Tooltip(c.name + "\n" + m.location);
+			/* Define tooltip when meeting is hovered over. */
+			Tooltip tp = new Tooltip(course.name + "\n" + meeting.location);
 			mButton.setTooltip(tp);
-			p++;
+
+			cellNumber++;
 		}
 	}
 
-	public static void removeFromSchedule(Meeting m, Term term) {
-		int mDay = m.dayOfWeekInt;
+	/**
+	 * Removes the meeting from the Course Schedule.
+	 *
+	 * @param meeting
+	 *            the meeting
+	 * @param term
+	 *            the term
+	 */
+	public static void removeFromSchedule(Meeting meeting, Term term) {
 
+		int mDay = meeting.dayOfWeekInt;
+
+		/*
+		 * Get the distance from the first time in the Course Schedule to the
+		 * start time of the meeting.
+		 */
 		int timeDist = Time.getDistance(new Time(term.minStart.getHour(), term.minStart.getMinute()),
-				new Time(m.start.getHour(), m.start.getMinute()), 30);
+				new Time(meeting.start.getHour(), meeting.start.getMinute()), 30);
 
-		int length = m.end.compareTo(m.start);
-		int p = 0;
+		int length = meeting.end.compareTo(meeting.start);
+		int cellNumber = 0;
+
+		/*
+		 * For each cell occupied in the Course Schedule by the removed meeting.
+		 */
 		for (int i = 0; i < length; i += 30) {
-			Button mButton = meetingButtons[mDay - 1][timeDist + p];
-			if (timeDist + p == 0 & mDay == 0) {
+
+			Button mButton = meetingButtons[mDay - 1][timeDist + cellNumber];
+
+			/*
+			 * Reset border to how it should be for an empty cell in the Course
+			 * Schedule (based on position in the grid).
+			 */
+
+			/* Border styling for top left cell. */
+			if (timeDist + cellNumber == 0 & mDay == 0) {
 				mButton.setBorder(new Border(Planner.fullBorderStroke));
-			} else if (timeDist + p == 0) {
+			}
+
+			/* Border styling for cells in top row. */
+			else if (timeDist + cellNumber == 0) {
 				mButton.setBorder(new Border(Planner.noTopBorderStroke));
-			} else if (mDay == 0) {
+			}
+
+			/* Border styling for cells in left column */
+			else if (mDay == 0) {
 				mButton.setBorder(new Border(Planner.noLeftBorderStroke));
-			} else {
+			}
+
+			/* Border styling for other cells. */
+			else {
 				mButton.setBorder(new Border(Planner.noTopLeftBorderStroke));
 			}
+
+			/* More default styling for empty cell */
 			mButton.setText("");
 			Background backg = new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY));
 			mButton.setBackground(backg);
-			p++;
+
+			cellNumber++;
 		}
 
-		if (term.maxDay == m.dayOfWeekInt) {
+		/* Reset Term params if necessary. */
+		if (term.maxDay == meeting.dayOfWeekInt) {
 			term.resetParams();
 		}
-		if (term.minStart.equals(m.start)) {
+		if (term.minStart.equals(meeting.start)) {
 			term.resetParams();
 		}
-		if (term.maxEnd.equals(m.end)) {
+		if (term.maxEnd.equals(meeting.end)) {
 			term.resetParams();
 		}
 
-		if (Planner.findTerm(Planner.currentlySelectedDate) != null) {
-			drawSchedule(Planner.findTerm(Planner.currentlySelectedDate), Planner.currentlySelectedDate);
-		} else {
-			drawSchedule(Planner.currentlySelectedDate);
+		/*
+		 * Redraw schedule in case meeting removed is in the currently selected
+		 * Term.
+		 */
+		if (term.equals(Planner.active.currentlySelectedTerm)) {
+			updateWeekSelected(Planner.active.currentlySelectedDate);
 		}
 	}
 }

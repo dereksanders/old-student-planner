@@ -1,4 +1,4 @@
-package grades;
+package gradesPlot;
 
 import core.Planner;
 import core.Term;
@@ -29,7 +29,7 @@ public class GradesPlot {
 		series.setName("My grades");
 		lineChart.setLegendVisible(false);
 
-		for (Term t : Planner.terms) {
+		for (Term t : Planner.active.terms) {
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
 		}
 
@@ -38,11 +38,11 @@ public class GradesPlot {
 		return gpbp;
 	}
 
-	protected static void update() {
+	public static void update() {
 
 		XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-		for (Term t : Planner.terms) {
+		for (Term t : Planner.active.terms) {
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
 		}
 

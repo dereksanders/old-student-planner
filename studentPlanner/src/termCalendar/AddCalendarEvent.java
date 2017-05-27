@@ -19,6 +19,7 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
@@ -32,6 +33,7 @@ public class AddCalendarEvent {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Calendar Event");
+		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
 		Label date = new Label(d.toString());
 		ObservableList<String> types = FXCollections.observableArrayList();
 		types.addAll("Deliverable", "Personal");
@@ -42,17 +44,16 @@ public class AddCalendarEvent {
 			}
 		}
 		ObservableList<Course> courses = FXCollections.observableArrayList();
-		if (Planner.termCourses.get(Planner.currentlySelectedTerm) != null) {
-			for (Course c : Planner.termCourses.get(Planner.currentlySelectedTerm)) {
-				courses.add(c);
-			}
+		for (Course c : Planner.active.currentlySelectedTerm.courses) {
+			courses.add(c);
 		}
+
 		ChoiceBox<Course> cChoice = new ChoiceBox<>(courses);
 		if (courses.size() == 0) {
 			cChoice.setVisible(false);
 			types.removeAll("Deliverable");
 		} else {
-			cChoice.setValue(Planner.courses.get(0));
+			cChoice.setValue(courses.get(0));
 		}
 		ChoiceBox<String> typeChoice = new ChoiceBox<>(types);
 		TextField name = new TextField();
@@ -110,7 +111,7 @@ public class AddCalendarEvent {
 							LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 							Double.parseDouble(weight.getText()), 0, cChoice.getValue().colour);
 					cChoice.getValue().deliverables.add(add);
-					Planner.dateEvents.put(d, add);
+					Planner.active.dateEvents.put(d, add);
 					success = true;
 				} catch (NumberFormatException er) {
 					error.setText("Weight must be a valid decimal number.");
@@ -119,7 +120,7 @@ public class AddCalendarEvent {
 				Personal add = new Personal(name.getText(),
 						LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 						LocalDateTime.of(d, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)), "");
-				Planner.dateEvents.put(d, add);
+				Planner.active.dateEvents.put(d, add);
 				success = true;
 			}
 			if (success) {

@@ -1,11 +1,15 @@
 package utility;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+import core.Planner;
 
 /**
  * The Class IOManager.
@@ -89,9 +93,28 @@ public class IOManager {
 		return rawData;
 	}
 
-	// TODO
-	// java.nio.file.FileSystemException: res\default\MATH110.json: The process
-	// cannot access the file because it is being used by another process.
+	public static void createDirectory(String directory) {
+		try {
+			Files.createDirectory(Paths.get(directory));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void removeDirectory(String directory) {
+		try {
+			Files.delete(Paths.get(directory));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Delete file.
+	 *
+	 * @param filename
+	 *            the filename
+	 */
 	public static void deleteFile(String filename) {
 
 		Path file = Paths.get(filename);
@@ -103,5 +126,54 @@ public class IOManager {
 			e.printStackTrace();
 		}
 
+	}
+
+	/**
+	 * Finds the last modified .json file in the directory.
+	 *
+	 * @param directory
+	 *            the directory
+	 * @return the file
+	 */
+	public static File lastModifiedJSON(String directory) {
+
+		File[] profiles = findJSONFiles(directory);
+
+		if (profiles.length == 0) {
+
+			System.out.println("No profiles found. Returning null.");
+			return null;
+
+		} else {
+
+			File lastModified = profiles[0];
+
+			if (profiles.length > 1) {
+				for (int i = 1; i < profiles.length; i++) {
+					if (profiles[i].lastModified() < lastModified.lastModified()) {
+
+						lastModified = profiles[i];
+					}
+				}
+			}
+			return lastModified;
+		}
+	}
+
+	/**
+	 * Finds all .json files in the directory.
+	 *
+	 * @param directory
+	 *            the directory name
+	 * @return the file[]
+	 */
+	public static File[] findJSONFiles(String directory) {
+		File dir = new File(directory);
+
+		return dir.listFiles(new FilenameFilter() {
+			public boolean accept(File dir, String filename) {
+				return filename.endsWith(".json");
+			}
+		});
 	}
 }

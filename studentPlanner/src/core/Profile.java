@@ -2,9 +2,9 @@ package core;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashMap;
-
 import javafx.scene.paint.Color;
+import utility.GenericEntry;
+import utility.GenericHashTable;
 import utility.GenericLinkedHashTable;
 import utility.JSONParser;
 
@@ -17,7 +17,7 @@ public class Profile {
 	public Term currentlySelectedTerm;
 	public LocalDate currentlySelectedDate;
 	public ArrayList<Term> terms;
-	public HashMap<Color, Course> courseColors;
+	public GenericHashTable<Color, Course> courseColors;
 	public int showWithinThreshold = 14;
 	public GenericLinkedHashTable<Course, Term> courseTerms;
 	public GenericLinkedHashTable<String, Meeting> dayMeetings;
@@ -37,8 +37,8 @@ public class Profile {
 		/* Initialize ObservableArrayList of all terms in the current profile */
 		this.terms = new ArrayList<>();
 
-		/* Initialize HashMap of Colors mapped to Courses */
-		this.courseColors = new HashMap<>();
+		/* Initialize GenericHashTable of Colors mapped to Courses */
+		this.courseColors = new GenericHashTable<>(366);
 
 		/*
 		 * Initialize GenericLinkedHashTable of day Strings (e.g. Monday,
@@ -110,7 +110,7 @@ public class Profile {
 			dayMeetings.put(m.dayOfWeek, m);
 			currentlySelectedTerm.updateParams(m);
 		}
-		this.courseColors.put(Color.web(addedCourse.colour), addedCourse);
+		this.courseColors.put(new GenericEntry<Color, Course>(Color.web(addedCourse.colour), addedCourse));
 		JSONParser.saveProfile(this);
 	}
 

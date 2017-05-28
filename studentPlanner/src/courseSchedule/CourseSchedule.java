@@ -167,8 +167,7 @@ public class CourseSchedule {
 				 */
 				if (Planner.active.currentlySelectedTerm.courses.contains(edited)) {
 
-					CourseSchedule.drawSchedule(Planner.active.currentlySelectedTerm,
-							Planner.active.currentlySelectedDate);
+					updateWeekSelected(Planner.active.currentlySelectedDate);
 				}
 
 				/*
@@ -551,15 +550,15 @@ public class CourseSchedule {
 				 * top left).
 				 */
 				else if ((mDay - 1) == 0) {
-					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
+					mButton.setBorder(new Border(Planner.noTopBottomBorderStroke));
 				}
 				/* Border styling for cells along top row. */
 				else if ((timeDist + cellNumber) == 0) {
-					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
+					mButton.setBorder(new Border(Planner.noBottomLeftBorderStroke));
 				}
 				/* Border styling for all other cells. */
 				else {
-					mButton.setBorder(new Border(Planner.noBottomBorderStroke));
+					mButton.setBorder(new Border(Planner.noTopBottomLeftBorderStroke));
 				}
 			}
 

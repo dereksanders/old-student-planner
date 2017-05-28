@@ -3,6 +3,8 @@ package core;
 import java.io.File;
 import java.time.LocalDate;
 import courseSchedule.CourseSchedule;
+import grades.Grades;
+import gradesPlot.GradesPlot;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -72,9 +74,21 @@ public class Planner extends Application {
 			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
+	public static BorderStroke noTopBottomBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
+			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+			BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
+
+	public static BorderStroke noTopBottomLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
+			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
+
 	public static BorderStroke noBottomBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
 			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
 			BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
+
+	public static BorderStroke noBottomLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
+			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
 	public static BorderStroke noRightLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
 			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
@@ -164,34 +178,33 @@ public class Planner extends Application {
 		}
 
 		/* Grades & Grades Plot Layout */
-		// BorderPane ggpLayout = new BorderPane();
-		// BorderPane gradeEntry = Grades.init();
-		// BorderPane gradePlot = GradesPlot.init();
-		//
-		// HBox gradeOptions = new HBox(20);
-		// Button goToSchedule = new Button("Schedule");
-		// gradeOptions.getChildren().add(goToSchedule);
-		//
-		// ggpLayout.setTop(gradeOptions);
-		// ggpLayout.setLeft(gradeEntry);
-		// ggpLayout.setRight(gradePlot);
+		BorderPane ggpLayout = new BorderPane();
+		BorderPane gradeEntry = Grades.init();
+		BorderPane gradePlot = GradesPlot.init();
+
+		HBox gradeOptions = new HBox(20);
+		Button goToSchedule = new Button("Schedule");
+		gradeOptions.getChildren().add(goToSchedule);
+
+		ggpLayout.setTop(gradeOptions);
+		ggpLayout.setLeft(gradeEntry);
+		ggpLayout.setRight(gradePlot);
 
 		/* Initialize Grades & Grades Plot Scene */
-		// Scene gradesAndPlot = new Scene(ggpLayout, gradeEntryAndPlotWidth,
-		// gradeEntryAndPlotHeight);
-		// gradesAndPlot.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
+		Scene gradesAndPlot = new Scene(ggpLayout, gradeEntryAndPlotWidth, gradeEntryAndPlotHeight);
+		gradesAndPlot.getStylesheets().add(getClass().getResource("core.css").toExternalForm());
 
 		/*
 		 * Scene select options. These are placed below the scene declarations
 		 * as they need access to them.
 		 */
-		// goToSchedule.setOnAction(e -> {
-		// window.setScene(scheduleAndCalendar);
-		// });
+		goToSchedule.setOnAction(e -> {
+			window.setScene(scheduleAndCalendar);
+		});
 
-		// goToGrades.setOnAction(e -> {
-		// window.setScene(gradesAndPlot);
-		// });
+		goToGrades.setOnAction(e -> {
+			window.setScene(gradesAndPlot);
+		});
 
 		/* Application window */
 		window.setTitle("Student Planner");
@@ -260,8 +273,9 @@ public class Planner extends Application {
 	 * @return the next color
 	 */
 	public static Color getNextColor() {
+
 		for (Color c : selectableColors) {
-			if (!Planner.active.courseColors.containsKey(c)) {
+			if (!Planner.active.courseColors.contains(c)) {
 				return c;
 			}
 		}

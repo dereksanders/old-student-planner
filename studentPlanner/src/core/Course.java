@@ -14,12 +14,12 @@ public class Course implements Comparable<Course> {
 	public LocalDate start;
 	public LocalDate end;
 	public ArrayList<Meeting> meetings;
-	public ArrayList<Deliverable> deliverables;
+	public ArrayList<CalendarEvent> deliverables;
 	public double grade;
 	public String colour;
 
 	public Course(String name, String departmentID, int code, LocalDate start, LocalDate end,
-			ArrayList<Meeting> meetings, ArrayList<Deliverable> deliverables, String colour) {
+			ArrayList<Meeting> meetings, ArrayList<CalendarEvent> deliverables, String colour) {
 		this.name = name;
 		this.departmentID = departmentID;
 		this.code = code;

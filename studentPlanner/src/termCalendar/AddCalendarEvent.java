@@ -4,9 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import core.CalendarEvent;
 import core.Course;
-import core.Deliverable;
-import core.Personal;
 import core.Planner;
 import core.Time;
 import javafx.beans.value.ChangeListener;
@@ -59,7 +58,7 @@ public class AddCalendarEvent {
 		TextField name = new TextField();
 		name.setPromptText(typeChoice.getValue() + " title");
 		TextField weight = new TextField();
-		weight.setPromptText(typeChoice.getValue() + " weight (enter as decimal, e.g. 0.20 for 20%)");
+		weight.setPromptText(typeChoice.getValue() + " weight %");
 		HBox selectTime = new HBox();
 		Label startTime = new Label("Time:");
 		Label dash = new Label(" - ");
@@ -86,18 +85,16 @@ public class AddCalendarEvent {
 					startTime.setText("Time:");
 					cChoice.setVisible(false);
 					weight.setVisible(false);
-				} else if (types.get(current.intValue()).equals("Assignment")
-						|| types.get(current.intValue()).equals("Test")
-						|| types.get(current.intValue()).equals("Presentation")) {
+					endTimes.setVisible(true);
+					dash.setVisible(true);
+				} else if (types.get(current.intValue()).equals("Deliverable")) {
 					cChoice.setVisible(true);
 					weight.setVisible(true);
-					if (types.get(current.intValue()).equals("Assignment")) {
-						startTime.setText("Due Time:");
-					} else {
-						startTime.setText("Time:");
-					}
+					startTime.setText("Due Time:");
+					endTimes.setVisible(false);
+					dash.setVisible(false);
 				}
-				weight.setPromptText(types.get(current.intValue()) + " weight (enter as decimal, e.g. 0.20 for 20%)");
+				weight.setPromptText(types.get(current.intValue()) + " weight %");
 			}
 		});
 		typeChoice.setValue(types.get(0));
@@ -107,9 +104,9 @@ public class AddCalendarEvent {
 			boolean success = false;
 			if (typeChoice.getValue().equals("Deliverable")) {
 				try {
-					Deliverable add = new Deliverable(name.getText(),
+					CalendarEvent add = new CalendarEvent(name.getText(),
 							LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-							Double.parseDouble(weight.getText()), 0, cChoice.getValue().colour);
+							Double.parseDouble(weight.getText()), cChoice.getValue().colour);
 					cChoice.getValue().deliverables.add(add);
 					Planner.active.dateEvents.put(d, add);
 					success = true;
@@ -117,9 +114,9 @@ public class AddCalendarEvent {
 					error.setText("Weight must be a valid decimal number.");
 				}
 			} else if (typeChoice.getValue().equals("Personal")) {
-				Personal add = new Personal(name.getText(),
+				CalendarEvent add = new CalendarEvent(name.getText(),
 						LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-						LocalDateTime.of(d, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)), "");
+						LocalDateTime.of(d, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
 				Planner.active.dateEvents.put(d, add);
 				success = true;
 			}

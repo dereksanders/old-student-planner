@@ -4,8 +4,6 @@ import java.time.LocalDate;
 import java.util.PriorityQueue;
 
 import core.CalendarEvent;
-import core.Deliverable;
-import core.Personal;
 import core.Planner;
 import core.Term;
 import javafx.beans.value.ChangeListener;
@@ -13,17 +11,13 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -48,10 +42,10 @@ public class TermCalendar {
 
 		upcomingEventsLabel = new Label("");
 		Label termCal = new Label("Term Calendar");
-		termCal.setFont(Planner.h1);
-		termCal.setTextFill(Planner.appBlue);
+		Planner.setTitleStyle(termCal);
 		HBox header = new HBox(50);
 		Label upcomingTitle = new Label("Upcoming");
+		Planner.setTitleStyle(upcomingTitle);
 		HBox upcomingShow = new HBox();
 		Label showWithin = new Label("Show events within: ");
 		ObservableList<Integer> thresholds = FXCollections.observableArrayList();
@@ -69,7 +63,6 @@ public class TermCalendar {
 		upcomingThreshold.setValue(14);
 		Label showWithinDays = new Label(" days.");
 		upcomingShow.getChildren().addAll(showWithin, upcomingThreshold, showWithinDays);
-		upcomingTitle.setFont(Planner.h1);
 		upcoming.getChildren().addAll(upcomingTitle, upcomingShow, upcomingEventsLabel);
 		BorderPane.setAlignment(upcoming, Pos.CENTER);
 		header.getChildren().add(termCal);
@@ -105,6 +98,7 @@ public class TermCalendar {
 
 			Label title = new Label(firstOfMonth.getMonth().toString().substring(0, 1)
 					+ firstOfMonth.getMonth().toString().substring(1).toLowerCase() + ", " + firstOfMonth.getYear());
+			title.setStyle(title.getStyle() + "-fx-font-size: 12.0pt;" + "-fx-font-weight: bold;");
 
 			BorderPane.setAlignment(title, Pos.CENTER);
 			curMonthCalendar.setTop(title);
@@ -130,8 +124,8 @@ public class TermCalendar {
 						numbering = true;
 					} else if (!numbering) {
 						Button emptyDay = new Button();
-						emptyDay.setBackground(
-								new Background(new BackgroundFill(Planner.appGrey, CornerRadii.EMPTY, Insets.EMPTY)));
+						emptyDay.setStyle(emptyDay.getStyle() + "-fx-background-color: #"
+								+ Planner.colorToHex(Planner.appGrey) + ";");
 						if (j != firstWeekDay - 1) {
 							emptyDay.setBorder(new Border(Planner.noRightBorderStroke));
 						} else {
@@ -148,21 +142,16 @@ public class TermCalendar {
 						PriorityQueue<CalendarEvent> ce = Planner.active.dateEvents.get(LocalDate.of(
 								term.start.plusMonths(i).getYear(), term.start.plusMonths(i).getMonthValue(), date));
 						if (ce != null && !ce.isEmpty()) {
-							if (ce.peek() instanceof Deliverable) {
-								add.setBackground(new Background(new BackgroundFill(
-										Color.web(((Deliverable) ce.peek()).colour), CornerRadii.EMPTY, Insets.EMPTY)));
-								if ((Color.web(((Deliverable) ce.peek()).colour).getBrightness() < 0.7)) {
-									add.setTextFill(Color.WHITE);
-								} else {
-									add.setTextFill(Color.BLACK);
-								}
-							} else if (ce.peek() instanceof Personal) {
-								add.setBackground(new Background(
-										new BackgroundFill(Color.YELLOW, CornerRadii.EMPTY, Insets.EMPTY)));
+							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().colour + ";");
+							if ((Color.web((ce.peek()).colour).getBrightness() < 0.7)) {
+								add.setStyle(add.getStyle() + "-fx-text-fill: #fff;");
 							} else {
-								add.setBackground(new Background(
-										new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+								add.setStyle(add.getStyle() + "-fx-text-fill: #000");
 							}
+						} else {
+							add.setStyle(add.getStyle() + "-fx-text-fill: #444;" + "-fx-font-size: 12.4pt;");
+							add.setStyle(add.getStyle()
+									+ "-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #fff, #ccc);");
 						}
 						final int cDate = date;
 						final int offset = i;

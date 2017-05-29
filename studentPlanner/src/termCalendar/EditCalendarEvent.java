@@ -5,8 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import core.CalendarEvent;
-import core.Deliverable;
-import core.Personal;
 import core.Planner;
 import core.Time;
 import javafx.beans.value.ChangeListener;
@@ -73,13 +71,11 @@ public class EditCalendarEvent {
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
-				if (!(currentlySelected instanceof Deliverable)) {
-					selectTimes.getChildren().remove(endTime);
-					ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
-					newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
-					endTime = new ComboBox<>(newEndTimes);
-					selectTimes.getChildren().add(endTime);
-				}
+				selectTimes.getChildren().remove(endTime);
+				ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
+				newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
+				endTime = new ComboBox<>(newEndTimes);
+				selectTimes.getChildren().add(endTime);
 			}
 		});
 		startTime.setValue(times.get(17));
@@ -90,8 +86,8 @@ public class EditCalendarEvent {
 		Button delete = new Button("Delete Event");
 		delete.setOnAction(e -> {
 			Planner.active.dateEvents.del(d, currentlySelected);
-			if (currentlySelected instanceof Deliverable) {
-				Planner.active.courseColors.get(Color.web(((Deliverable) currentlySelected).colour)).deliverables
+			if (!currentlySelected.personal) {
+				Planner.active.courseColors.get(Color.web((currentlySelected).colour)).deliverables
 						.remove(currentlySelected);
 			}
 			TermCalendar.redrawCalendars();
@@ -114,13 +110,13 @@ public class EditCalendarEvent {
 		try {
 			currentlySelected.name = name.getText();
 			currentlySelected.weight = Double.parseDouble(weight.getText());
-			if (currentlySelected instanceof Deliverable) {
-				((Deliverable) currentlySelected).due = LocalDateTime.of(d,
+			if (!currentlySelected.personal) {
+				currentlySelected.start = LocalDateTime.of(d,
 						LocalTime.of(startTime.getValue().hour, startTime.getValue().minute));
-			} else if (currentlySelected instanceof Personal) {
-				((Personal) currentlySelected).start = LocalDateTime.of(d,
+			} else {
+				currentlySelected.start = LocalDateTime.of(d,
 						LocalTime.of(startTime.getValue().hour, startTime.getValue().minute));
-				((Personal) currentlySelected).end = LocalDateTime.of(d,
+				currentlySelected.end = LocalDateTime.of(d,
 						LocalTime.of(endTime.getValue().hour, endTime.getValue().minute));
 			}
 		} catch (NumberFormatException e) {
@@ -130,20 +126,19 @@ public class EditCalendarEvent {
 
 	private static void updateCurrentlySelected(CalendarEvent e) {
 		currentlySelected = e;
-		if (currentlySelected instanceof Deliverable) {
-			current.setText(((Deliverable) currentlySelected).name);
+		if (!currentlySelected.personal) {
+			current.setText(currentlySelected.name);
 			time.setText("Due Time: ");
-			startTime.setValue(new Time(((Deliverable) currentlySelected).due.getHour(),
-					((Deliverable) currentlySelected).due.getMinute()));
+			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
 			dash.setVisible(false);
 			endTime.setVisible(false);
-		} else if (currentlySelected instanceof Personal) {
+			weight.setVisible(true);
+		} else {
 			current.setText("Personal Event");
-			startTime.setValue(new Time(((Personal) currentlySelected).start.getHour(),
-					((Personal) currentlySelected).start.getMinute()));
+			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
 			endTime.setVisible(true);
-			endTime.setValue(new Time(((Personal) currentlySelected).end.getHour(),
-					((Personal) currentlySelected).end.getMinute()));
+			endTime.setValue(new Time(currentlySelected.end.getHour(), currentlySelected.end.getMinute()));
+			weight.setVisible(false);
 		}
 		name.setText(currentlySelected.name);
 		weight.setText("" + currentlySelected.weight);

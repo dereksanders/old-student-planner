@@ -1,8 +1,9 @@
 package grades;
 
 import java.util.ArrayList;
+
+import core.CalendarEvent;
 import core.Course;
-import core.Deliverable;
 import core.Planner;
 import core.Term;
 import gradesPlot.GradesPlot;
@@ -107,8 +108,8 @@ public class Grades {
 			double cumulative = 0;
 			double gradeSoFar = 0;
 
-			for (Deliverable d : c.deliverables) {
-				if (d.due.isBefore(core.Planner.t.current)) {
+			for (CalendarEvent d : c.deliverables) {
+				if (d.start.isBefore(core.Planner.t.current)) {
 					if (d.grade != 0) {
 						cumulative += d.grade * (d.weight / 100);
 					}
@@ -155,9 +156,9 @@ public class Grades {
 		weight.setPromptText("Enter Weight %");
 		Button confirmChanges = new Button("Confirm");
 
-		ObservableList<Deliverable> deliverables = FXCollections.observableArrayList();
+		ObservableList<CalendarEvent> deliverables = FXCollections.observableArrayList();
 		deliverables.addAll(selected.deliverables);
-		ChoiceBox<Deliverable> chooseEvent = new ChoiceBox<>(deliverables);
+		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(deliverables);
 
 		if (chooseEvent.getValue() == null) {
 			grade.setDisable(true);
@@ -169,7 +170,7 @@ public class Grades {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				grade.setDisable(false);
 				weight.setDisable(false);
-				grade.setText("" + ((Deliverable) deliverables.get(newIndex.intValue())).grade);
+				grade.setText("" + deliverables.get(newIndex.intValue()).grade);
 				weight.setText("" + deliverables.get(newIndex.intValue()).weight);
 			}
 		});
@@ -205,13 +206,13 @@ public class Grades {
 		double cumulative = 0;
 		double gradeSoFar = 0;
 
-		for (Deliverable d : selected.deliverables) {
+		for (CalendarEvent d : selected.deliverables) {
 
 			courseSummary.setText(
 					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
 
-			if (d.due.isBefore(core.Planner.t.current)
-					|| d.due.toLocalDate().isEqual(core.Planner.t.current.toLocalDate())) {
+			if (d.start.isBefore(core.Planner.t.current)
+					|| d.start.toLocalDate().isEqual(core.Planner.t.current.toLocalDate())) {
 				if (d.grade != 0) {
 					cumulative += d.grade * (d.weight / 100);
 				}

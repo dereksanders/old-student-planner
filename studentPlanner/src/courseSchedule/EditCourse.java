@@ -2,8 +2,8 @@ package courseSchedule;
 
 import java.util.ArrayList;
 
+import core.CalendarEvent;
 import core.Course;
-import core.Deliverable;
 import core.Meeting;
 import core.Planner;
 import core.Term;
@@ -98,7 +98,9 @@ public class EditCourse {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
 				System.out.println("Changed course selection.");
-				updateCurrentlySelected(termsCourses.get(current.intValue()));
+				if (current.intValue() > -1) {
+					updateCurrentlySelected(termsCourses.get(current.intValue()));
+				}
 			}
 		});
 
@@ -177,8 +179,8 @@ public class EditCourse {
 				}
 				CourseSchedule.setTodaysMeetings();
 
-				for (Deliverable d : currentlySelected.deliverables) {
-					Planner.active.dateEvents.del(d.due.toLocalDate(), d);
+				for (CalendarEvent d : currentlySelected.deliverables) {
+					Planner.active.dateEvents.del(d.start.toLocalDate(), d);
 				}
 
 				/*

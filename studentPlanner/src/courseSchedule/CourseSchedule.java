@@ -3,7 +3,6 @@ package courseSchedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.PriorityQueue;
 
 import core.Course;
@@ -80,11 +79,10 @@ public class CourseSchedule {
 		/*
 		 * TODO: This label needs to be updated every time the time thread is.
 		 */
-		Label time = new Label(Planner.t.current.format(DateTimeFormatter.ISO_LOCAL_TIME));
+		Label time = new Label(Pretty.prettyShortDate(Planner.t.current.toLocalDate()));
 
 		Label title = new Label("Course Schedule");
-		title.setTextFill(Planner.appBlue);
-		title.setFont(Planner.h1);
+		Planner.setTitleStyle(title);
 
 		todaysMeetings = new Label("Today's Meetings:");
 		setTodaysMeetings();
@@ -142,6 +140,7 @@ public class CourseSchedule {
 
 		/* Edit course */
 		Button editCourse = new Button("Edit Course");
+		Planner.setButtonStyle(editCourse);
 
 		if (!Planner.active.coursesExist()) {
 
@@ -183,6 +182,7 @@ public class CourseSchedule {
 
 		/* Add course */
 		Button addCourse = new Button("Add Course");
+		Planner.setButtonStyle(addCourse);
 
 		if (Planner.active.terms.size() == 0) {
 
@@ -223,6 +223,7 @@ public class CourseSchedule {
 
 		/* Edit Term */
 		Button editTerm = new Button("Edit Term");
+		Planner.setButtonStyle(editTerm);
 
 		if (Planner.active.terms.size() == 0) {
 
@@ -240,6 +241,7 @@ public class CourseSchedule {
 
 		/* Add Term */
 		Button addTerm = new Button("Add Term");
+		Planner.setButtonStyle(addTerm);
 
 		addTerm.setOnAction(e -> {
 
@@ -256,15 +258,27 @@ public class CourseSchedule {
 				 * 
 				 * 1) Enable the Edit Term and Add Course buttons.
 				 * 
-				 * 2) Select the new Term & its start date as it's the Profile's
-				 * only Term.
+				 * 2) Select the new Term & its start date
 				 * 
 				 * 3) Initialize the Term Calendar.
 				 */
 				if (Planner.active.terms.size() == 1) {
 					editTerm.setDisable(false);
 					addCourse.setDisable(false);
-					updateWeekSelected(Planner.active.terms.get(0).start);
+
+					LocalDate selected = Planner.active.currentlySelectedDate;
+
+					/* If the currently selected date is within the new Term. */
+					if (((selected.isEqual(add.start) || selected.isAfter(add.start))
+							&& (selected.isEqual(add.end) || selected.isBefore(add.end)))) {
+
+						updateWeekSelected(selected);
+					} else {
+
+						updateWeekSelected(Planner.active.terms.get(0).start);
+						showCurrentWeek.selectedProperty().set(false);
+					}
+
 					Planner.initTermCalendar();
 				}
 			}
@@ -407,8 +421,8 @@ public class CourseSchedule {
 			 */
 			if (firstOfWeek.plusDays(i).isEqual(Planner.t.current.toLocalDate())) {
 
-				dayLabel.setFont(Font.font("Verdana", FontPosture.ITALIC, 14));
-				dayLabel.setTextFill(Planner.appBlue);
+				dayLabel.setStyle(dayLabel.getStyle() + "-fx-font-family: Verdana;" + "-fx-font-style: italic;"
+						+ "-fx-font-fill: " + Planner.colorToHex(Planner.appBlue) + ";");
 			}
 
 			scheduleLayout.add(dayLabel, i + 1, 0);
@@ -445,11 +459,10 @@ public class CourseSchedule {
 				 * Times past the current time will be grey, future times white.
 				 */
 				if (Planner.t.current.isAfter(cell)) {
-					meetingButtons[i][j].setBackground(
-							new Background(new BackgroundFill(Planner.appGrey, CornerRadii.EMPTY, Insets.EMPTY)));
+					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #"
+							+ Planner.colorToHex(Planner.appGrey) + ";");
 				} else {
-					meetingButtons[i][j].setBackground(
-							new Background(new BackgroundFill(Color.WHITE, CornerRadii.EMPTY, Insets.EMPTY)));
+					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #fff;");
 				}
 
 				if (i == 0 && j == 0) {
@@ -522,16 +535,16 @@ public class CourseSchedule {
 			if (i == 0) {
 
 				mButton.setText(course.toString() + "\n" + meeting.meetingType);
-				mButton.setFont(Planner.scheduleFont);
+				mButton.setStyle(mButton.getStyle() + "-fx-font-size: 10.5pt;");
 
 				/*
 				 * Decide if text is white or black based on brightness of
 				 * background colour.
 				 */
 				if (Color.web(course.colour).getBrightness() < 0.7) {
-					mButton.setTextFill(Color.WHITE);
+					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #fff;");
 				} else {
-					mButton.setTextFill(Color.BLACK);
+					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #000;");
 				}
 			}
 
@@ -563,9 +576,7 @@ public class CourseSchedule {
 			}
 
 			/* Background styling for meeting cells */
-			Background backg = new Background(
-					new BackgroundFill(Color.web(course.colour), CornerRadii.EMPTY, Insets.EMPTY));
-			mButton.setBackground(backg);
+			mButton.setStyle(mButton.getStyle() + "-fx-background-color: #" + course.colour + ";");
 
 			/* Define tooltip when meeting is hovered over. */
 			Tooltip tp = new Tooltip(course.name + "\n" + meeting.location);

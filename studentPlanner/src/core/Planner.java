@@ -11,6 +11,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.BorderStroke;
@@ -318,5 +319,17 @@ public class Planner extends Application {
 			hex2 = hex1.substring(0, 6);
 		}
 		return hex2;
+	}
+
+	public static void setButtonStyle(Button button) {
+		button.setStyle("-fx-font-size: 11.0pt;" + "-fx-text-fill: #" + Planner.colorToHex(Planner.appBlue) + ";"
+				+ "-fx-font-weight: bold;"
+				+ "-fx-background-color: linear-gradient(from 25.0% 25.0% to 100.0% 100.0%, #fff, #ddd);"
+				+ "-fx-border-color: #ccc");
+	}
+
+	public static void setTitleStyle(Label title) {
+		title.setStyle("-fx-font-size: 18.0pt;" + "-fx-text-fill: #" + Planner.colorToHex(Planner.appBlue) + ";"
+				+ "-fx-font-weight: bold;");
 	}
 }

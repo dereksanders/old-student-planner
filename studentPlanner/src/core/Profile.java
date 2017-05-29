@@ -47,7 +47,7 @@ public class Profile {
 		 */
 		this.courseTerms = new GenericLinkedHashTable<>(366, false);
 		this.dayMeetings = new GenericLinkedHashTable<>(7, false);
-		this.dateEvents = new GenericLinkedHashTable<>(366, true);
+		this.dateEvents = new GenericLinkedHashTable<>(366, false);
 	}
 
 	/**
@@ -59,7 +59,6 @@ public class Profile {
 	 *            the end
 	 */
 	public void resetTermParams(LocalDate start, LocalDate end) {
-
 		for (int i = 0; i < this.terms.size(); i++) {
 			if (this.terms.get(i).start.isEqual(start) || this.terms.get(i).start.isAfter(start)) {
 				if (this.terms.get(i).end.isEqual(end) || this.terms.get(i).end.isBefore(end)) {
@@ -104,7 +103,6 @@ public class Profile {
 	 *            the added course
 	 */
 	public void addCourse(Course addedCourse) {
-
 		updateCourseTerms(addedCourse);
 		for (Meeting m : addedCourse.meetings) {
 			dayMeetings.put(m.dayOfWeek, m);
@@ -115,12 +113,9 @@ public class Profile {
 	}
 
 	private void updateCourseTerms(Course course) {
-
 		for (Term t : this.terms) {
 			if (t.start.isEqual(course.start) || t.start.isAfter(course.start)) {
-
 				if (t.end.isEqual(course.end) || t.end.isBefore(course.end)) {
-
 					t.courses.add(course);
 					this.courseTerms.put(course, t);
 				}
@@ -129,12 +124,9 @@ public class Profile {
 	}
 
 	public void deleteCourse(Course deletedCourse) {
-
 		for (Term t : this.terms) {
 			if (t.start.isEqual(deletedCourse.start) || t.start.isAfter(deletedCourse.start)) {
-
 				if (t.end.isEqual(deletedCourse.end) || t.end.isBefore(deletedCourse.end)) {
-
 					t.courses.remove(deletedCourse);
 					this.courseTerms.del(deletedCourse, t);
 				}

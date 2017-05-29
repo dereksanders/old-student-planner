@@ -20,50 +20,53 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+/**
+ * The Class Grades.
+ */
 public class Grades {
 
 	public static Label thisCoursesAssignments;
 	public static Label thisCoursesTests;
 	public static HBox selectedDisplay;
 	public static VBox displayGrades;
-	public static ComboBox<Course> gChooseCourse;
-	public static ComboBox<Term> gChooseTerm;
+	public static ComboBox<Course> chooseCourse;
+	public static ComboBox<Term> chooseTerm;
 	private static ArrayList<Course> selectedTermsCourses;
 	private static ObservableList<Course> coursesToDisplay;
 
+	/**
+	 * Initializes the Grades layout.
+	 *
+	 * @return the border pane
+	 */
 	public static BorderPane init() {
 
 		BorderPane gbp = new BorderPane();
 
-		Label gTitle = new Label("Enter Grades");
-		gTitle.setFont(core.Planner.h1);
-		gTitle.setTextFill(core.Planner.appBlue);
-		HBox gHeader = new HBox(50);
-		VBox gBody = new VBox(20);
+		Label title = new Label("Enter Grades");
+		Planner.setTitleStyle(title);
+		HBox header = new HBox(50);
+		VBox body = new VBox(20);
 
 		ObservableList<Term> termChoices = FXCollections.observableArrayList(Planner.active.terms);
-		gChooseTerm = new ComboBox<>(termChoices);
-
-		if (Planner.active.currentlySelectedTerm != null) {
-			selectedTermsCourses = Planner.active.currentlySelectedTerm.courses;
-			coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
-		}
-
-		gChooseCourse = new ComboBox<>(coursesToDisplay);
+		chooseTerm = new ComboBox<>(termChoices);
+		chooseCourse = new ComboBox<>(coursesToDisplay);
 
 		Label gSelectedLabel = new Label("Currently selected: ");
 		HBox classGrades = new HBox(50);
-		classGrades.getChildren().addAll(gSelectedLabel, gChooseCourse);
+		classGrades.getChildren().addAll(gSelectedLabel, chooseCourse);
 
 		selectedDisplay = new HBox(50);
 		displayGrades = new VBox(10);
-		gBody.getChildren().addAll(gChooseTerm, classGrades, selectedDisplay, displayGrades);
+		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
 
-		gHeader.getChildren().addAll(gTitle);
-		gbp.setTop(gHeader);
-		gbp.setCenter(gBody);
+		header.getChildren().addAll(title);
+		gbp.setTop(header);
+		gbp.setCenter(body);
 
-		gChooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		updateTermChosen(Planner.active.currentlySelectedTerm);
+
+		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				selectedTermsCourses = Planner.active.terms.get(newIndex.intValue()).courses;
@@ -72,7 +75,7 @@ public class Grades {
 			}
 		});
 
-		gChooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+		chooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				if (newIndex.intValue() < 1) {
@@ -87,17 +90,36 @@ public class Grades {
 
 	}
 
+	private static void updateTermChosen(Term term) {
+		chooseTerm.setValue(term);
+		coursesToDisplay = FXCollections.observableArrayList(term.courses);
+
+		if (term.courses.size() > 0) {
+			updateCourseChosen(term.courses.get(0));
+		}
+	}
+
+	private static void updateCourseChosen(Course course) {
+		chooseCourse.setValue(course);
+		listGrades(course);
+	}
+
+	/**
+	 * List grades.
+	 *
+	 * @param selected
+	 *            the selected
+	 */
 	private static void listGrades(Term selected) {
 
 		Label termSummaryTitle = new Label("Term Summary");
-		termSummaryTitle.setFont(Planner.h1);
-		termSummaryTitle.setTextFill(Planner.appBlue);
+		Planner.setTitleStyle(termSummaryTitle);
 
 		Label termSummary = new Label("");
 
 		/* Term summary */
 
-		termSummary.setText("Grades for " + gChooseTerm.getValue() + ":\n");
+		termSummary.setText("Grades for " + chooseTerm.getValue() + ":\n");
 
 		double avgSoFar = 0;
 		double avg = 0;
@@ -146,6 +168,12 @@ public class Grades {
 		displayGrades.getChildren().addAll(termSummaryTitle, termSummary);
 	}
 
+	/**
+	 * List grades.
+	 *
+	 * @param selected
+	 *            the selected
+	 */
 	private static void listGrades(Course selected) {
 
 		Planner.t.update();
@@ -195,8 +223,7 @@ public class Grades {
 		displayGrades.getChildren().clear();
 
 		Label courseSummaryTitle = new Label("Course Summary");
-		courseSummaryTitle.setFont(Planner.h1);
-		courseSummaryTitle.setTextFill(Planner.appBlue);
+		Planner.setTitleStyle(courseSummaryTitle);
 
 		Label courseSummary = new Label("");
 

@@ -155,6 +155,7 @@ public class Planner extends Application {
 		cstc = new BorderPane();
 		HBox cstcOptions = new HBox(20);
 		Button goToGrades = new Button("Grades");
+		Planner.setButtonStyle(goToGrades);
 		cstcOptions.getChildren().add(goToGrades);
 
 		/* Initialize Course Schedule */

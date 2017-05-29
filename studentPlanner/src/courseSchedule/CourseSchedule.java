@@ -28,8 +28,6 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
 import termCalendar.TermCalendar;
 import utility.JSONParser;
 import utility.Pretty;
@@ -549,8 +547,7 @@ public class CourseSchedule {
 			}
 
 			/*
-			 * Border styling for all cells except for last. TODO: What about
-			 * border styling for last cell? TODO: These are wrong.
+			 * Border styling for all cells except for last.
 			 */
 			if (i + 30 < length) {
 

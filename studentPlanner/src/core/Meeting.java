@@ -80,7 +80,7 @@ public class Meeting implements Comparable<Meeting> {
 	public static void deleteMeetings(ArrayList<Meeting> conflicts) {
 		for (Meeting m : conflicts) {
 			Planner.active.courseColors.get(Color.web(m.colour)).meetings.remove(m);
-			Planner.active.dayMeetings.del(m.dayOfWeek, m);
+			Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
 			CourseSchedule.setTodaysMeetings();
 			for (Term t : Planner.active.courseTerms.get(Planner.active.courseColors.get(Color.web(m.colour)))) {
 				CourseSchedule.removeFromSchedule(m, t);

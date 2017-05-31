@@ -29,6 +29,7 @@ public class Grades {
 	public static Label thisCoursesTests;
 	public static HBox selectedDisplay;
 	public static VBox displayGrades;
+	public static HBox classGrades;
 	public static ComboBox<Course> chooseCourse;
 	public static ComboBox<Term> chooseTerm;
 	private static ArrayList<Course> selectedTermsCourses;
@@ -53,7 +54,7 @@ public class Grades {
 		chooseCourse = new ComboBox<>(coursesToDisplay);
 
 		Label gSelectedLabel = new Label("Currently selected: ");
-		HBox classGrades = new HBox(50);
+		classGrades = new HBox(50);
 		classGrades.getChildren().addAll(gSelectedLabel, chooseCourse);
 
 		selectedDisplay = new HBox(50);
@@ -71,7 +72,6 @@ public class Grades {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				selectedTermsCourses = Planner.active.terms.get(newIndex.intValue()).courses;
 				coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
-				System.out.println(coursesToDisplay);
 			}
 		});
 
@@ -93,6 +93,7 @@ public class Grades {
 	private static void updateTermChosen(Term term) {
 		chooseTerm.setValue(term);
 		coursesToDisplay = FXCollections.observableArrayList(term.courses);
+		chooseCourse = new ComboBox<>(coursesToDisplay);
 
 		if (term.courses.size() > 0) {
 			updateCourseChosen(term.courses.get(0));

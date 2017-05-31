@@ -2,6 +2,8 @@ package core;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
+
 import javafx.scene.paint.Color;
 import utility.GenericEntry;
 import utility.GenericHashTable;
@@ -19,8 +21,8 @@ public class Profile {
 	public ArrayList<Term> terms;
 	public GenericHashTable<Color, Course> courseColors;
 	public int showWithinThreshold = 14;
+	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
 	public GenericLinkedHashTable<Course, Term> courseTerms;
-	public GenericLinkedHashTable<String, Meeting> dayMeetings;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
 
 	/**
@@ -40,13 +42,8 @@ public class Profile {
 		/* Initialize GenericHashTable of Colors mapped to Courses */
 		this.courseColors = new GenericHashTable<>(366);
 
-		/*
-		 * Initialize GenericLinkedHashTable of day Strings (e.g. Monday,
-		 * Tuesday, etc.) to PriorityQueues of Meetings that occur weekly on
-		 * that day.
-		 */
+		this.dayMeetings = new ArrayList<>(7);
 		this.courseTerms = new GenericLinkedHashTable<>(366, false);
-		this.dayMeetings = new GenericLinkedHashTable<>(7, false);
 		this.dateEvents = new GenericLinkedHashTable<>(366, false);
 	}
 
@@ -105,7 +102,7 @@ public class Profile {
 	public void addCourse(Course addedCourse) {
 		updateCourseTerms(addedCourse);
 		for (Meeting m : addedCourse.meetings) {
-			dayMeetings.put(m.dayOfWeek, m);
+			dayMeetings.get(m.dayOfWeekInt - 1).add(m);
 			currentlySelectedTerm.updateParams(m);
 		}
 		this.courseColors.put(new GenericEntry<Color, Course>(Color.web(addedCourse.colour), addedCourse));

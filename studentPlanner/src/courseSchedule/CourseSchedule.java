@@ -342,13 +342,15 @@ public class CourseSchedule {
 	 */
 	public static void setTodaysMeetings() {
 		String desc = "";
-		PriorityQueue<Meeting> td = Planner.active.dayMeetings.get(Planner.t.current.getDayOfWeek().toString());
-		if (td != null && td.size() > 0) {
-			for (Meeting m : td) {
-				desc += m.toString() + "\n";
-			}
-			desc = desc.substring(0, desc.lastIndexOf("\n"));
-		}
+		// PriorityQueue<Meeting> td =
+		// Planner.active.dayMeetings.get(Planner.t.current.getDayOfWeek().getValue()
+		// - 1);
+		// if (td != null && td.size() > 0) {
+		// for (Meeting m : td) {
+		// desc += m.toString() + "\n";
+		// }
+		// desc = desc.substring(0, desc.lastIndexOf("\n"));
+		// }
 		todaysMeetings.setText("Today's Meetings:\n" + desc);
 	}
 
@@ -411,8 +413,11 @@ public class CourseSchedule {
 
 		for (int i = 0; i < daysInSchedule; i++) {
 
-			Label dayLabel = new Label(daysOfTheWeek[i].getText() + "\n" + firstOfWeek.plusDays(i).getDayOfMonth()
-					+ Pretty.getDateEnding(Integer.toString(firstOfWeek.plusDays(i).getDayOfMonth())));
+			Label dayLabel = new Label(
+					daysOfTheWeek[i].getText() + "\n" + firstOfWeek.plusDays(i).getMonth().toString().substring(0, 1)
+							+ firstOfWeek.plusDays(i).getMonth().toString().substring(1).toLowerCase() + " "
+							+ firstOfWeek.plusDays(i).getDayOfMonth()
+							+ Pretty.getDateEnding(Integer.toString(firstOfWeek.plusDays(i).getDayOfMonth())));
 
 			/*
 			 * The current day is italicized in blue
@@ -420,7 +425,7 @@ public class CourseSchedule {
 			if (firstOfWeek.plusDays(i).isEqual(Planner.t.current.toLocalDate())) {
 
 				dayLabel.setStyle(dayLabel.getStyle() + "-fx-font-family: Verdana;" + "-fx-font-style: italic;"
-						+ "-fx-font-fill: " + Planner.colorToHex(Planner.appBlue) + ";");
+						+ "-fx-text-fill: #" + Planner.colorToHex(Planner.appBlue) + ";");
 			}
 
 			scheduleLayout.add(dayLabel, i + 1, 0);

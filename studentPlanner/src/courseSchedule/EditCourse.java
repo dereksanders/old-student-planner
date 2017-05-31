@@ -125,7 +125,7 @@ public class EditCourse {
 					allConflicts.addAll(outerConflict);
 					Meeting.deleteMeetings(allConflicts);
 					currentlySelected.meetings.add(m);
-					Planner.active.dayMeetings.put(m.dayOfWeek, m);
+					Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
 					CourseSchedule.setTodaysMeetings();
 					updateChooseMeeting();
 					meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
@@ -152,7 +152,7 @@ public class EditCourse {
 					CourseSchedule.removeFromSchedule(m, t);
 				}
 
-				Planner.active.dayMeetings.del(m.dayOfWeek, m);
+				Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
 				CourseSchedule.setTodaysMeetings();
 				updateChooseMeeting();
 				meetings.setText("Weekly Meeting: " + currentlySelected.meetings.size());
@@ -175,7 +175,7 @@ public class EditCourse {
 					for (Term t : Planner.active.courseTerms.get(currentlySelected)) {
 						CourseSchedule.removeFromSchedule(m, t);
 					}
-					Planner.active.dayMeetings.del(m.dayOfWeek, m);
+					Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
 				}
 				CourseSchedule.setTodaysMeetings();
 
@@ -186,7 +186,7 @@ public class EditCourse {
 				/*
 				 * If the deleted course belongs to the currently selected term,
 				 * redraw schedule (if it had more one meeting) and calendar (if
-				 * it had more than one deliverable).
+				 * it had more than one deliverable). TODO: This doesn't work.
 				 */
 				if (Planner.active.currentlySelectedTerm.courses.contains(currentlySelected)) {
 

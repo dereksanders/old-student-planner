@@ -163,6 +163,7 @@ public class Planner extends Application {
 		CourseSchedule.drawSchedule(active.currentlySelectedTerm, active.currentlySelectedDate);
 		CourseSchedule.setTodaysMeetings();
 
+		/* TODO: Addons such as Pomodoro Timer and To-Do List */
 		cstc.setTop(cstcOptions);
 		cstc.setCenter(cs);
 
@@ -181,16 +182,19 @@ public class Planner extends Application {
 
 		/* Grades & Grades Plot Layout */
 		BorderPane ggpLayout = new BorderPane();
-		BorderPane gradeEntry = Grades.init();
-		BorderPane gradePlot = GradesPlot.init();
+		if (Planner.active.terms.size() > 0) {
+			BorderPane gradeEntry = Grades.init();
+			BorderPane gradePlot = GradesPlot.init();
+		}
 
 		HBox gradeOptions = new HBox(20);
 		Button goToSchedule = new Button("Schedule");
+		Planner.setButtonStyle(goToSchedule);
 		gradeOptions.getChildren().add(goToSchedule);
 
-		ggpLayout.setTop(gradeOptions);
-		ggpLayout.setLeft(gradeEntry);
-		ggpLayout.setRight(gradePlot);
+		// ggpLayout.setTop(gradeOptions);
+		// ggpLayout.setLeft(gradeEntry);
+		// ggpLayout.setRight(gradePlot);
 
 		/* Initialize Grades & Grades Plot Scene */
 		Scene gradesAndPlot = new Scene(ggpLayout, gradeEntryAndPlotWidth, gradeEntryAndPlotHeight);

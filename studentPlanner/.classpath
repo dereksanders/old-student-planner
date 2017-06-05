@@ -5,6 +5,5 @@
 	<classpathentry kind="con" path="org.eclipse.fx.ide.jdt.core.JAVAFX_CONTAINER"/>
 	<classpathentry kind="lib" path="C:/Users/Derek/Desktop/CourseScheduler/gson-2.8.0.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="C:/Users/Derek/Desktop/CourseScheduler/jackson-databind-2.8.8.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

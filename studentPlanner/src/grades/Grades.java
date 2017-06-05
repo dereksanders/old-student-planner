@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import core.CalendarEvent;
 import core.Course;
-import core.Planner;
+import core.Driver;
 import core.Term;
 import gradesPlot.GradesPlot;
 import javafx.beans.value.ChangeListener;
@@ -45,11 +45,11 @@ public class Grades {
 		BorderPane gbp = new BorderPane();
 
 		Label title = new Label("Enter Grades");
-		Planner.setTitleStyle(title);
+		Driver.setTitleStyle(title);
 		HBox header = new HBox(50);
 		VBox body = new VBox(20);
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(Planner.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(Driver.active.terms);
 		chooseTerm = new ComboBox<>(termChoices);
 		chooseCourse = new ComboBox<>(coursesToDisplay);
 
@@ -65,12 +65,12 @@ public class Grades {
 		gbp.setTop(header);
 		gbp.setCenter(body);
 
-		updateTermChosen(Planner.active.currentlySelectedTerm);
+		updateTermChosen(Driver.active.currentlySelectedTerm);
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				selectedTermsCourses = Planner.active.terms.get(newIndex.intValue()).courses;
+				selectedTermsCourses = Driver.active.terms.get(newIndex.intValue()).courses;
 				coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
 			}
 		});
@@ -114,7 +114,7 @@ public class Grades {
 	private static void listGrades(Term selected) {
 
 		Label termSummaryTitle = new Label("Term Summary");
-		Planner.setTitleStyle(termSummaryTitle);
+		Driver.setTitleStyle(termSummaryTitle);
 
 		Label termSummary = new Label("");
 
@@ -131,8 +131,8 @@ public class Grades {
 			double cumulative = 0;
 			double gradeSoFar = 0;
 
-			for (CalendarEvent d : c.deliverables) {
-				if (d.start.isBefore(core.Planner.t.current)) {
+			for (CalendarEvent d : c.events) {
+				if (d.start.isBefore(core.Driver.t.current)) {
 					if (d.grade != 0) {
 						cumulative += d.grade * (d.weight / 100);
 					}
@@ -177,7 +177,7 @@ public class Grades {
 	 */
 	private static void listGrades(Course selected) {
 
-		Planner.t.update();
+		Driver.t.update();
 
 		TextField grade = new TextField();
 		grade.setPromptText("Enter Grade %");
@@ -186,7 +186,7 @@ public class Grades {
 		Button confirmChanges = new Button("Confirm");
 
 		ObservableList<CalendarEvent> deliverables = FXCollections.observableArrayList();
-		deliverables.addAll(selected.deliverables);
+		deliverables.addAll(selected.events);
 		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(deliverables);
 
 		if (chooseEvent.getValue() == null) {
@@ -224,7 +224,7 @@ public class Grades {
 		displayGrades.getChildren().clear();
 
 		Label courseSummaryTitle = new Label("Course Summary");
-		Planner.setTitleStyle(courseSummaryTitle);
+		Driver.setTitleStyle(courseSummaryTitle);
 
 		Label courseSummary = new Label("");
 
@@ -234,13 +234,13 @@ public class Grades {
 		double cumulative = 0;
 		double gradeSoFar = 0;
 
-		for (CalendarEvent d : selected.deliverables) {
+		for (CalendarEvent d : selected.events) {
 
 			courseSummary.setText(
 					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
 
-			if (d.start.isBefore(core.Planner.t.current)
-					|| d.start.toLocalDate().isEqual(core.Planner.t.current.toLocalDate())) {
+			if (d.start.isBefore(core.Driver.t.current)
+					|| d.start.toLocalDate().isEqual(core.Driver.t.current.toLocalDate())) {
 				if (d.grade != 0) {
 					cumulative += d.grade * (d.weight / 100);
 				}
@@ -259,7 +259,7 @@ public class Grades {
 
 		displayGrades.getChildren().addAll(courseSummaryTitle, courseSummary);
 
-		for (Term t : Planner.active.courseTerms.get(selected)) {
+		for (Term t : Driver.active.courseTerms.get(selected)) {
 			listGrades(t);
 		}
 	}

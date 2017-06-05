@@ -1,11 +1,10 @@
 package courseSchedule;
 
-import java.util.ArrayList;
-
-import core.CalendarEvent;
 import core.Course;
 import core.Meeting;
-import core.Planner;
+import core.ProfileController;
+import core.Style;
+import core.Driver;
 import core.Term;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import termCalendar.TermCalendar;
 
 public class EditCourse {
 
@@ -40,7 +38,7 @@ public class EditCourse {
 	public static Label error;
 	public static HBox ch;
 
-	public static Course display() {
+	public static Course display(ProfileController pc) {
 
 		currentlySelected = null;
 
@@ -48,9 +46,9 @@ public class EditCourse {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Course");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(Planner.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.active.terms);
 		chooseTerm = new ChoiceBox<>(termChoices);
 
 		title = new TextField();
@@ -92,7 +90,7 @@ public class EditCourse {
 				}
 			}
 		});
-		chooseTerm.setValue(Planner.active.currentlySelectedTerm);
+		chooseTerm.setValue(pc.active.currentlySelectedTerm);
 
 		chooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -107,34 +105,14 @@ public class EditCourse {
 		/* Add meetings */
 		Button addMeeting = new Button("Add Meeting");
 		addMeeting.setOnAction(e -> {
-
 			Meeting m = AddMeeting.display();
-
-			if (m != null) {
-
-				boolean confirmAddMeetings = true;
-				m.colour = currentlySelected.colour;
-				ArrayList<Meeting> outerConflict = m.conflictsWithCourses(chooseTerm.getValue().courses);
-
-				if (outerConflict.size() > 0) {
-					confirmAddMeetings = HandleConflict.display(m, outerConflict);
-				}
-
-				if (confirmAddMeetings) {
-					ArrayList<Meeting> allConflicts = new ArrayList<>();
-					allConflicts.addAll(outerConflict);
-					Meeting.deleteMeetings(allConflicts);
-					currentlySelected.meetings.add(m);
-					Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-					CourseSchedule.setTodaysMeetings();
-					updateChooseMeeting();
-					meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
-					for (int i = 0; i < currentlySelected.meetings.size(); i++) {
-						meetings.setText(meetings.getText() + "\n Meeting " + (i + 1) + ": "
-								+ currentlySelected.meetings.get(i));
-						window.setHeight(window.getHeight() + 10);
-					}
-				}
+			pc.addMeeting(currentlySelected, m);
+			updateChooseMeeting();
+			meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
+			for (int i = 0; i < currentlySelected.meetings.size(); i++) {
+				meetings.setText(
+						meetings.getText() + "\n Meeting " + (i + 1) + ": " + currentlySelected.meetings.get(i));
+				window.setHeight(window.getHeight() + 10);
 			}
 		});
 
@@ -142,25 +120,13 @@ public class EditCourse {
 		Button deleteMeeting = new Button("Delete Meeting");
 
 		deleteMeeting.setOnAction(e -> {
-
-			Meeting m = chooseMeeting.getValue();
-
-			if (m != null) {
-
-				currentlySelected.meetings.remove(m);
-				for (Term t : Planner.active.courseTerms.get(currentlySelected)) {
-					CourseSchedule.removeFromSchedule(m, t);
-				}
-
-				Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-				CourseSchedule.setTodaysMeetings();
-				updateChooseMeeting();
-				meetings.setText("Weekly Meeting: " + currentlySelected.meetings.size());
-				for (int i = 0; i < currentlySelected.meetings.size(); i++) {
-					meetings.setText(
-							meetings.getText() + "\n Meeting " + (i + 1) + ": " + currentlySelected.meetings.get(i));
-					window.setHeight(window.getHeight() + 10);
-				}
+			pc.deleteMeeting(currentlySelected, chooseMeeting.getValue());
+			updateChooseMeeting();
+			meetings.setText("Weekly Meeting: " + currentlySelected.meetings.size());
+			for (int i = 0; i < currentlySelected.meetings.size(); i++) {
+				meetings.setText(
+						meetings.getText() + "\n Meeting " + (i + 1) + ": " + currentlySelected.meetings.get(i));
+				window.setHeight(window.getHeight() + 10);
 			}
 		});
 
@@ -170,43 +136,12 @@ public class EditCourse {
 		delete.setOnAction(e -> {
 			/* If deleting the currently selected course is confirmed */
 			if (DeleteCourse.display(currentlySelected)) {
-
-				for (Meeting m : currentlySelected.meetings) {
-					for (Term t : Planner.active.courseTerms.get(currentlySelected)) {
-						CourseSchedule.removeFromSchedule(m, t);
-					}
-					Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-				}
-				CourseSchedule.setTodaysMeetings();
-
-				for (CalendarEvent d : currentlySelected.deliverables) {
-					Planner.active.dateEvents.del(d.start.toLocalDate(), d);
-				}
-
-				/*
-				 * If the deleted course belongs to the currently selected term,
-				 * redraw schedule (if it had more one meeting) and calendar (if
-				 * it had more than one deliverable). TODO: This doesn't work.
-				 */
-				if (Planner.active.currentlySelectedTerm.courses.contains(currentlySelected)) {
-
-					if (currentlySelected.meetings.size() > 0) {
-						CourseSchedule.drawSchedule(Planner.active.currentlySelectedTerm,
-								Planner.active.currentlySelectedDate);
-					}
-
-					if (currentlySelected.deliverables.size() > 0) {
-						TermCalendar.redrawCalendars();
-					}
-				}
-
-				Planner.active.deleteCourse(currentlySelected);
-
+				pc.deleteCourse(currentlySelected);
 				/* If no more courses exist, close the "Edit Course" window */
-				if (!Planner.active.coursesExist()) {
+				if (!pc.active.coursesExist()) {
 
+					/* TODO: Why set this to null? */
 					currentlySelected = null;
-					CourseSchedule.editCourse.setDisable(true);
 					window.close();
 
 				} else {
@@ -271,7 +206,7 @@ public class EditCourse {
 			currentlySelected.departmentID = department.getText();
 			currentlySelected.code = Integer.parseInt(code.getText());
 			currentlySelected.name = title.getText();
-			currentlySelected.colour = Planner.colorToHex(cPicker.getValue());
+			currentlySelected.colour = Style.colorToHex(cPicker.getValue());
 			return true;
 		} catch (NumberFormatException e) {
 			error.setText("Invalid course code. Cannot save changes.");

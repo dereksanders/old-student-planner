@@ -6,7 +6,9 @@ import java.time.LocalTime;
 
 import core.CalendarEvent;
 import core.Course;
-import core.Planner;
+import core.CourseEvent;
+import core.Driver;
+import core.ProfileController;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -28,25 +30,30 @@ public class AddCalendarEvent {
 
 	private static ComboBox<Time> endTimes;
 
-	public static void display(LocalDate d) {
+	public static void display(LocalDate d, ProfileController controller) {
+
+		/* Window set-up */
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Calendar Event");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+
 		Label date = new Label(d.toString());
 		ObservableList<String> types = FXCollections.observableArrayList();
 		types.addAll("Deliverable", "Personal");
+
+		/* Times drop-down */
 		ObservableList<Time> times = FXCollections.observableArrayList();
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 31; j += 30) {
 				times.add(new Time(i, j));
 			}
 		}
+
 		ObservableList<Course> courses = FXCollections.observableArrayList();
-		for (Course c : Planner.active.currentlySelectedTerm.courses) {
+		for (Course c : controller.active.currentlySelectedTerm.courses) {
 			courses.add(c);
 		}
-
 		ChoiceBox<Course> cChoice = new ChoiceBox<>(courses);
 		if (courses.size() == 0) {
 			cChoice.setVisible(false);
@@ -54,6 +61,7 @@ public class AddCalendarEvent {
 		} else {
 			cChoice.setValue(courses.get(0));
 		}
+
 		ChoiceBox<String> typeChoice = new ChoiceBox<>(types);
 		TextField name = new TextField();
 		name.setPromptText(typeChoice.getValue() + " title");
@@ -65,6 +73,8 @@ public class AddCalendarEvent {
 		ComboBox<Time> startTimes = new ComboBox<>(times);
 		endTimes = new ComboBox<>();
 		selectTime.getChildren().addAll(startTimes, dash, endTimes);
+
+		/* Update selectable end-times whenever start-times are altered. */
 		startTimes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
@@ -104,24 +114,25 @@ public class AddCalendarEvent {
 			boolean success = false;
 			if (typeChoice.getValue().equals("Deliverable")) {
 				try {
-					CalendarEvent add = new CalendarEvent(name.getText(),
+					/* Add course event */
+					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().colour,
 							LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-							Double.parseDouble(weight.getText()), cChoice.getValue().colour);
-					cChoice.getValue().deliverables.add(add);
-					Planner.active.dateEvents.put(d, add);
+							LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+							Double.parseDouble(weight.getText()));
+					controller.addEvent(cChoice.getValue(), add, d);
 					success = true;
 				} catch (NumberFormatException er) {
 					error.setText("Weight must be a valid decimal number.");
 				}
 			} else if (typeChoice.getValue().equals("Personal")) {
+				/* Add calendar event */
 				CalendarEvent add = new CalendarEvent(name.getText(),
 						LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 						LocalDateTime.of(d, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
-				Planner.active.dateEvents.put(d, add);
+				controller.addEvent(null, add, d);
 				success = true;
 			}
 			if (success) {
-				TermCalendar.redrawCalendars();
 				window.close();
 			}
 		});

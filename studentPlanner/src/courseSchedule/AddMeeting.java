@@ -3,7 +3,8 @@ package courseSchedule;
 import java.time.LocalTime;
 
 import core.Meeting;
-import core.Planner;
+import core.Style;
+import core.Driver;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -60,7 +61,7 @@ public class AddMeeting {
 		});
 		startTime.setValue(times.get(17));
 		Label header = new Label("Enter Meeting Info");
-		header.setFont(Planner.h1);
+		Style.setTitleStyle(header);
 		Label day = new Label("Day:");
 		Label hour = new Label("Time:");
 		Label loc = new Label("Location:");
@@ -69,7 +70,7 @@ public class AddMeeting {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Meeting");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		Button confirm = new Button("Confirm changes");
 		Button cancel = new Button("Cancel");
 		confirm.setOnAction(e -> {

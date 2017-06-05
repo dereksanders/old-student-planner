@@ -1,8 +1,4 @@
-/core/
-/courseSchedule/
-/grades/
-/json/
-/termCalendar/
-/tests/
 /utility/
-/gradesPlot/
+/core/
+/views/
+/termCalendar/

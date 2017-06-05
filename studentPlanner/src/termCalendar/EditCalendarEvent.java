@@ -5,7 +5,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import core.CalendarEvent;
-import core.Planner;
+import core.Course;
+import core.CourseEvent;
+import core.Driver;
+import core.ProfileController;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,17 +29,26 @@ import javafx.stage.Stage;
 
 public class EditCalendarEvent {
 
-	private static CalendarEvent currentlySelected;
-	private static TextField name;
-	private static Label time;
-	private static ComboBox<Time> startTime;
-	private static Label dash;
-	private static ComboBox<Time> endTime;
-	private static TextField weight;
-	private static Label error;
-	private static Label current;
+	private CalendarEvent currentlySelected;
+	private TextField name;
+	private Label time;
+	private ComboBox<Time> startTime;
+	private Label dash;
+	private ComboBox<Time> endTime;
+	private TextField weight;
+	private Label error;
+	private Label current;
 
-	public static void display(LocalDate d) {
+	private LocalDate d;
+	private ProfileController controller;
+
+	public EditCalendarEvent(LocalDate d, ProfileController controller) {
+		this.d = d;
+		this.controller = controller;
+		display();
+	}
+
+	public void display() {
 		ObservableList<Time> times = FXCollections.observableArrayList();
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 31; j += 30) {
@@ -47,9 +59,9 @@ public class EditCalendarEvent {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Event");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
-		for (CalendarEvent e : Planner.active.dateEvents.get(d)) {
+		for (CalendarEvent e : controller.active.dateEvents.get(d)) {
 			events.add(e);
 		}
 		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(events);
@@ -85,18 +97,13 @@ public class EditCalendarEvent {
 		chooseEvent.setValue(events.get(0));
 		Button delete = new Button("Delete Event");
 		delete.setOnAction(e -> {
-			Planner.active.dateEvents.del(d, currentlySelected);
-			if (!currentlySelected.personal) {
-				Planner.active.courseColors.get(Color.web((currentlySelected).colour)).deliverables
-						.remove(currentlySelected);
-			}
-			TermCalendar.redrawCalendars();
+			controller.deleteEvent(controller.active.courseColors.get(Color.web(currentlySelected.colour)).peek(),
+					currentlySelected, d);
 			window.close();
 		});
 		Button confirm = new Button("Confirm Changes");
 		confirm.setOnAction(e -> {
 			confirmChanges(d);
-			TermCalendar.redrawCalendars();
 			window.close();
 		});
 		VBox options = new VBox(20);
@@ -106,27 +113,31 @@ public class EditCalendarEvent {
 		window.showAndWait();
 	}
 
-	private static void confirmChanges(LocalDate d) {
+	private void confirmChanges(LocalDate date) {
 		try {
-			currentlySelected.name = name.getText();
-			currentlySelected.weight = Double.parseDouble(weight.getText());
-			if (!currentlySelected.personal) {
-				currentlySelected.start = LocalDateTime.of(d,
-						LocalTime.of(startTime.getValue().hour, startTime.getValue().minute));
+			if (currentlySelected instanceof CourseEvent) {
+				CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.colour,
+						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+						Double.parseDouble(weight.getText()));
+				Course eventCourse = controller.active.courseColors.get(Color.web(currentlySelected.colour)).peek();
+				controller.deleteEvent(eventCourse, currentlySelected, date);
+				controller.addEvent(eventCourse, edited, date);
 			} else {
-				currentlySelected.start = LocalDateTime.of(d,
-						LocalTime.of(startTime.getValue().hour, startTime.getValue().minute));
-				currentlySelected.end = LocalDateTime.of(d,
-						LocalTime.of(endTime.getValue().hour, endTime.getValue().minute));
+				CalendarEvent edited = new CalendarEvent(name.getText(),
+						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+						LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)));
+				controller.deleteEvent(null, currentlySelected, date);
+				controller.addEvent(null, edited, date);
 			}
 		} catch (NumberFormatException e) {
 			error.setText("Weight must be a valid decimal number.");
 		}
 	}
 
-	private static void updateCurrentlySelected(CalendarEvent e) {
+	private void updateCurrentlySelected(CalendarEvent e) {
 		currentlySelected = e;
-		if (!currentlySelected.personal) {
+		if (currentlySelected instanceof CourseEvent) {
 			current.setText(currentlySelected.name);
 			time.setText("Due Time: ");
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));

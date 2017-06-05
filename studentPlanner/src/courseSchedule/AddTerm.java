@@ -2,7 +2,7 @@ package courseSchedule;
 
 import java.time.LocalDate;
 
-import core.Planner;
+import core.Driver;
 import core.Term;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -27,7 +27,7 @@ public class AddTerm {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Term");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		TextField name = new TextField();
 		name.setPromptText("Term Name (e.g. Fall)");
 		Label startTitle = new Label("Start: ");

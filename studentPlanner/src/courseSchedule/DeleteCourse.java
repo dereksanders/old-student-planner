@@ -1,7 +1,7 @@
 package courseSchedule;
 
 import core.Course;
-import core.Planner;
+import core.Driver;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,7 +18,7 @@ public class DeleteCourse {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Delete Course");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		Label l = new Label("Are you sure you want to delete " + selected + "?");
 		Button c = new Button("Yes");
 		c.setOnAction(e -> {

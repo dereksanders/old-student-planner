@@ -1,6 +1,7 @@
 package courseSchedule;
 
-import core.Planner;
+import core.Driver;
+import core.ProfileController;
 import core.Term;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -18,7 +19,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import termCalendar.TermCalendar;
 
 public class EditTerm {
 
@@ -27,7 +27,7 @@ public class EditTerm {
 	private static DatePicker start;
 	private static DatePicker end;
 
-	public static void display() {
+	public static void display(ProfileController pc) {
 
 		currentlySelected = null;
 
@@ -35,15 +35,15 @@ public class EditTerm {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Term");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(Planner.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.active.terms);
 		ChoiceBox<Term> chooseTerm = new ChoiceBox<>(termChoices);
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				updateTermSelected(Planner.active.terms.get(newIndex.intValue()));
+				updateTermSelected(pc.active.terms.get(newIndex.intValue()));
 			}
 		});
 
@@ -65,14 +65,15 @@ public class EditTerm {
 		confirmChanges.setOnAction(e -> {
 			if (start.getValue().isBefore(end.getValue())) {
 
+				/*
+				 * TODO: This should behave more consistently with the other
+				 * actions.
+				 */
 				currentlySelected.name = name.getText();
 				currentlySelected.start = start.getValue();
 				currentlySelected.end = end.getValue();
+				pc.active.update();
 
-				/* Only redraw Term Calendar if it has been initialized. */
-				if (Planner.tc != null) {
-					TermCalendar.redrawCalendars();
-				}
 				window.close();
 			} else {
 				error.setText("Error: Start date must come before end date.");
@@ -81,7 +82,7 @@ public class EditTerm {
 		});
 		dates.getChildren().addAll(startBox, endBox);
 		options.getChildren().addAll(chooseTerm, dates, confirmChanges, error);
-		chooseTerm.setValue(Planner.active.currentlySelectedTerm);
+		chooseTerm.setValue(pc.active.currentlySelectedTerm);
 		Scene scene = new Scene(options, 500, 200);
 		window.setScene(scene);
 		window.showAndWait();

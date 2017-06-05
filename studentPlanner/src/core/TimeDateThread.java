@@ -5,8 +5,10 @@ import java.time.LocalDateTime;
 public class TimeDateThread extends Thread {
 
 	public LocalDateTime current;
-	LocalDateTime cutoffDate;
-	boolean running;
+
+	public TimeDateThread() {
+		this.update();
+	}
 
 	public void update() {
 		current = LocalDateTime.now();

@@ -2,9 +2,12 @@ package courseSchedule;
 
 import java.util.ArrayList;
 
+import core.CalendarEvent;
 import core.Course;
 import core.Meeting;
-import core.Planner;
+import core.ProfileController;
+import core.Style;
+import core.Driver;
 import core.Term;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -38,16 +41,16 @@ public class AddCourse {
 	 *
 	 * @return the course to be added
 	 */
-	public static Course display() {
+	public static Course display(ProfileController pc) {
 
 		/* Basic window set-up */
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Course");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
 		Label header = new Label("Enter Course Info");
-		header.setFont(Planner.h1);
+		Style.setTitleStyle(header);
 
 		/* Buttons for adding and removing terms. */
 		Button plus = new Button("+");
@@ -62,7 +65,7 @@ public class AddCourse {
 
 		/* List of terms to choose from. */
 		ArrayList<ChoiceBox<Term>> termChoices = new ArrayList<>();
-		ObservableList<Term> profileTerms = FXCollections.observableArrayList(Planner.active.terms);
+		ObservableList<Term> profileTerms = FXCollections.observableArrayList(pc.active.terms);
 		termChoices.add(new ChoiceBox<>(profileTerms));
 
 		/* Term options */
@@ -71,8 +74,8 @@ public class AddCourse {
 		terms.getChildren().add(startTerm);
 		terms.getChildren().addAll(termChoices);
 		terms.getChildren().addAll(termsControls);
-		if (Planner.active.terms.size() > 0) {
-			termChoices.get(0).setValue(Planner.active.terms.get(0));
+		if (pc.active.terms.size() > 0) {
+			termChoices.get(0).setValue(pc.active.terms.get(0));
 		}
 
 		/* When the "+" or "-" Term buttons are pressed. */
@@ -121,7 +124,7 @@ public class AddCourse {
 		});
 
 		/* Select by default the next unused application color. */
-		Color selected = Planner.getNextColor();
+		Color selected = pc.planner.getNextColor();
 		ColorPicker cPicker = new ColorPicker(selected);
 
 		addCourse = null;
@@ -160,7 +163,7 @@ public class AddCourse {
 			if (m != null) {
 				boolean confirm = true;
 				ArrayList<Meeting> innerConflict = m.conflictsWith(addMeetings);
-				ArrayList<Meeting> outerConflict = m.conflictsWithCourses(Planner.active.currentlySelectedTerm.courses);
+				ArrayList<Meeting> outerConflict = m.conflictsWithCourses(pc.active.currentlySelectedTerm.courses);
 				if (innerConflict.size() > 0) {
 					confirm = HandleConflict.display(m, innerConflict);
 				}
@@ -168,10 +171,11 @@ public class AddCourse {
 					confirm = HandleConflict.display(m, outerConflict);
 				}
 				if (confirm) {
-					ArrayList<Meeting> allConflicts = new ArrayList<>();
-					allConflicts.addAll(innerConflict);
-					allConflicts.addAll(outerConflict);
-					Meeting.deleteMeetings(allConflicts);
+					/* TODO: Handle meeting conflicts */
+					// ArrayList<Meeting> allConflicts = new ArrayList<>();
+					// allConflicts.addAll(innerConflict);
+					// allConflicts.addAll(outerConflict);
+					// Meeting.deleteMeetings(allConflicts);
 					addMeetings.add(m);
 					meetings.setText("Weekly Meetings: " + addMeetings.size());
 					for (int i = 0; i < addMeetings.size(); i++) {
@@ -215,7 +219,7 @@ public class AddCourse {
 	private static void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name,
 			ArrayList<Meeting> meetings, Color selected) {
 		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end, meetings,
-				Planner.colorToHex(selected));
+				new ArrayList<CalendarEvent>(), Style.colorToHex(selected));
 		addCourse = c;
 	}
 }

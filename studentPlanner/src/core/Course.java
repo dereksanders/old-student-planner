@@ -5,46 +5,31 @@ import java.util.ArrayList;
 
 public class Course implements Comparable<Course> {
 
-	// "required": ["name", "departmentID", "code", "terms", "meetings",
-	// "deliverables", "color"],
-
 	public String name;
 	public String departmentID;
 	public int code;
 	public LocalDate start;
 	public LocalDate end;
 	public ArrayList<Meeting> meetings;
-	public ArrayList<CalendarEvent> deliverables;
+	public ArrayList<CalendarEvent> events;
 	public double grade;
 	public String colour;
 
 	public Course(String name, String departmentID, int code, LocalDate start, LocalDate end,
-			ArrayList<Meeting> meetings, ArrayList<CalendarEvent> deliverables, String colour) {
+			ArrayList<Meeting> meetings, ArrayList<CalendarEvent> events, String colour) {
 		this.name = name;
 		this.departmentID = departmentID;
 		this.code = code;
 		this.start = start;
 		this.end = end;
 		this.meetings = meetings;
-		this.deliverables = deliverables;
-		this.colour = colour;
-	}
-
-	public Course(String name, String departmentID, int code, LocalDate start, LocalDate end,
-			ArrayList<Meeting> meetings, String colour) {
-		this.name = name;
-		this.departmentID = departmentID;
-		this.code = code;
-		this.start = start;
-		this.end = end;
-		this.meetings = meetings;
-		this.deliverables = new ArrayList<>();
+		this.events = events;
 		this.colour = colour;
 	}
 
 	public Course clone() {
-		return new Course(this.name, this.departmentID, this.code, this.start, this.end, this.meetings,
-				this.deliverables, this.colour);
+		return new Course(this.name, this.departmentID, this.code, this.start, this.end, this.meetings, this.events,
+				this.colour);
 	}
 
 	@Override

@@ -1,6 +1,6 @@
 package gradesPlot;
 
-import core.Planner;
+import core.Driver;
 import core.Term;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
@@ -29,7 +29,7 @@ public class GradesPlot {
 		series.setName("My grades");
 		lineChart.setLegendVisible(false);
 
-		for (Term t : Planner.active.terms) {
+		for (Term t : Driver.active.terms) {
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
 		}
 
@@ -42,7 +42,7 @@ public class GradesPlot {
 
 		XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-		for (Term t : Planner.active.terms) {
+		for (Term t : Driver.active.terms) {
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
 		}
 

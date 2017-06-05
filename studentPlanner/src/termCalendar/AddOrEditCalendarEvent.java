@@ -2,7 +2,8 @@ package termCalendar;
 
 import java.time.LocalDate;
 
-import core.Planner;
+import core.Driver;
+import core.ProfileController;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -14,21 +15,21 @@ import javafx.stage.Stage;
 
 public class AddOrEditCalendarEvent {
 
-	public static void display(LocalDate d) {
+	public static void display(LocalDate d, ProfileController controller) {
 
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Term Calendar");
-		window.getIcons().add(new Image(Planner.class.getResourceAsStream("icon.png")));
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		Label text = new Label("Would you like to add a new event or edit an existing one?");
 		Button add = new Button("Add Event");
 		Button edit = new Button("Edit Event");
 		add.setOnAction(e -> {
-			AddCalendarEvent.display(d);
+			AddCalendarEvent.display(d, controller);
 			window.close();
 		});
 		edit.setOnAction(e -> {
-			EditCalendarEvent.display(d);
+			new EditCalendarEvent(d, controller);
 			window.close();
 		});
 		HBox options = new HBox(20);

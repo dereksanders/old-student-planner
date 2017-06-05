@@ -3,9 +3,6 @@ package core;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
-import courseSchedule.CourseSchedule;
-import javafx.scene.paint.Color;
-
 public class Meeting implements Comparable<Meeting> {
 
 	public String meetingType;
@@ -77,16 +74,18 @@ public class Meeting implements Comparable<Meeting> {
 		return this.conflictsWith(allMeetings);
 	}
 
-	public static void deleteMeetings(ArrayList<Meeting> conflicts) {
-		for (Meeting m : conflicts) {
-			Planner.active.courseColors.get(Color.web(m.colour)).meetings.remove(m);
-			Planner.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-			CourseSchedule.setTodaysMeetings();
-			for (Term t : Planner.active.courseTerms.get(Planner.active.courseColors.get(Color.web(m.colour)))) {
-				CourseSchedule.removeFromSchedule(m, t);
-			}
-		}
-	}
+	// public static void deleteMeetings(ArrayList<Meeting> conflicts) {
+	// for (Meeting m : conflicts) {
+	// Driver.active.courseColors.get(Color.web(m.colour)).meetings.remove(m);
+	// Driver.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+	// CourseSchedule.setTodaysMeetings();
+	// for (Term t :
+	// Driver.active.courseTerms.get(Driver.active.courseColors.get(Color.web(m.colour))))
+	// {
+	// CourseSchedule.removeFromSchedule(m, t);
+	// }
+	// }
+	// }
 
 	@Override
 	public int compareTo(Meeting o) {

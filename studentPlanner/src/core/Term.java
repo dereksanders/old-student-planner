@@ -9,7 +9,6 @@ import utility.Pretty;
 public class Term implements Comparable<Term> {
 
 	public String name;
-	public String ID;
 	public LocalDate start;
 	public LocalDate end;
 	public double grade;
@@ -22,7 +21,6 @@ public class Term implements Comparable<Term> {
 
 	public Term(String name, LocalDate start, LocalDate end) {
 		this.name = name;
-		this.ID = name + "_" + start.getYear();
 		this.start = start;
 		this.end = end;
 		this.courses = new ArrayList<>();

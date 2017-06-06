@@ -1,12 +1,12 @@
 package grades;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
-import core.CalendarEvent;
-import core.Course;
 import core.Driver;
-import core.Term;
-import gradesPlot.GradesPlot;
+import core.Style;
+import core.View;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,37 +19,64 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.CalendarEvent;
+import model.Course;
+import model.CourseEvent;
+import model.Profile;
+import model.Term;
 
 /**
  * The Class Grades.
  */
-public class Grades {
+public class Grades extends View implements Observer {
 
-	public static Label thisCoursesAssignments;
-	public static Label thisCoursesTests;
-	public static HBox selectedDisplay;
-	public static VBox displayGrades;
-	public static HBox classGrades;
-	public static ComboBox<Course> chooseCourse;
-	public static ComboBox<Term> chooseTerm;
-	private static ArrayList<Course> selectedTermsCourses;
-	private static ObservableList<Course> coursesToDisplay;
+	public Observable observable;
+	public GradesController controller;
+
+	public Label thisCoursesAssignments;
+	public Label thisCoursesTests;
+	public HBox selectedDisplay;
+	public VBox displayGrades;
+	public HBox classGrades;
+	public ComboBox<Course> chooseCourse;
+	public ComboBox<Term> chooseTerm;
+	private ArrayList<Course> selectedTermsCourses;
+	private ObservableList<Course> coursesToDisplay;
+
+	/**
+	 * Instantiates a new grades.
+	 *
+	 * @param observable
+	 *            the observable
+	 * @param controller
+	 *            the controller
+	 */
+	public Grades(Observable observable, GradesController controller) {
+
+		this.observable = observable;
+		observable.addObserver(this);
+
+		this.controller = controller;
+		controller.grades = this;
+
+		this.mainLayout = initLayout();
+	}
 
 	/**
 	 * Initializes the Grades layout.
 	 *
 	 * @return the border pane
 	 */
-	public static BorderPane init() {
+	public BorderPane initLayout() {
 
 		BorderPane gbp = new BorderPane();
 
 		Label title = new Label("Enter Grades");
-		Driver.setTitleStyle(title);
+		Style.setTitleStyle(title);
 		HBox header = new HBox(50);
 		VBox body = new VBox(20);
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(Driver.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(controller.active.terms);
 		chooseTerm = new ComboBox<>(termChoices);
 		chooseCourse = new ComboBox<>(coursesToDisplay);
 
@@ -65,12 +92,12 @@ public class Grades {
 		gbp.setTop(header);
 		gbp.setCenter(body);
 
-		updateTermChosen(Driver.active.currentlySelectedTerm);
+		updateTermChosen(controller.active.currentlySelectedTerm);
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				selectedTermsCourses = Driver.active.terms.get(newIndex.intValue()).courses;
+				selectedTermsCourses = controller.active.terms.get(newIndex.intValue()).courses;
 				coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
 			}
 		});
@@ -90,7 +117,13 @@ public class Grades {
 
 	}
 
-	private static void updateTermChosen(Term term) {
+	/**
+	 * Update term chosen.
+	 *
+	 * @param term
+	 *            the term
+	 */
+	private void updateTermChosen(Term term) {
 		chooseTerm.setValue(term);
 		coursesToDisplay = FXCollections.observableArrayList(term.courses);
 		chooseCourse = new ComboBox<>(coursesToDisplay);
@@ -100,7 +133,13 @@ public class Grades {
 		}
 	}
 
-	private static void updateCourseChosen(Course course) {
+	/**
+	 * Update course chosen.
+	 *
+	 * @param course
+	 *            the course
+	 */
+	private void updateCourseChosen(Course course) {
 		chooseCourse.setValue(course);
 		listGrades(course);
 	}
@@ -111,10 +150,10 @@ public class Grades {
 	 * @param selected
 	 *            the selected
 	 */
-	private static void listGrades(Term selected) {
+	private void listGrades(Term selected) {
 
 		Label termSummaryTitle = new Label("Term Summary");
-		Driver.setTitleStyle(termSummaryTitle);
+		Style.setTitleStyle(termSummaryTitle);
 
 		Label termSummary = new Label("");
 
@@ -132,12 +171,14 @@ public class Grades {
 			double gradeSoFar = 0;
 
 			for (CalendarEvent d : c.events) {
-				if (d.start.isBefore(core.Driver.t.current)) {
-					if (d.grade != 0) {
-						cumulative += d.grade * (d.weight / 100);
+				if (d instanceof CourseEvent) {
+					if (d.start.isBefore(core.Driver.t.current)) {
+						if (((CourseEvent) d).grade != 0) {
+							cumulative += ((CourseEvent) d).grade * (d.weight / 100);
+						}
+						percentDone += (d.weight);
+						gradeSoFar += d.weight * (((CourseEvent) d).grade);
 					}
-					percentDone += (d.weight);
-					gradeSoFar += d.weight * (d.grade);
 				}
 			}
 
@@ -175,7 +216,7 @@ public class Grades {
 	 * @param selected
 	 *            the selected
 	 */
-	private static void listGrades(Course selected) {
+	private void listGrades(Course selected) {
 
 		Driver.t.update();
 
@@ -185,9 +226,9 @@ public class Grades {
 		weight.setPromptText("Enter Weight %");
 		Button confirmChanges = new Button("Confirm");
 
-		ObservableList<CalendarEvent> deliverables = FXCollections.observableArrayList();
-		deliverables.addAll(selected.events);
-		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(deliverables);
+		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
+		events.addAll(selected.events);
+		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(events);
 
 		if (chooseEvent.getValue() == null) {
 			grade.setDisable(true);
@@ -199,8 +240,8 @@ public class Grades {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				grade.setDisable(false);
 				weight.setDisable(false);
-				grade.setText("" + deliverables.get(newIndex.intValue()).grade);
-				weight.setText("" + deliverables.get(newIndex.intValue()).weight);
+				grade.setText("" + ((CourseEvent) events.get(newIndex.intValue())).grade);
+				weight.setText("" + events.get(newIndex.intValue()).weight);
 			}
 		});
 
@@ -210,12 +251,11 @@ public class Grades {
 			} catch (NumberFormatException e1) {
 			}
 			try {
-				chooseEvent.getValue().grade = Double.parseDouble(grade.getText());
+				((CourseEvent) chooseEvent.getValue()).grade = Double.parseDouble(grade.getText());
 			} catch (NumberFormatException e1) {
 			}
 
 			listGrades(selected);
-			GradesPlot.update();
 		});
 
 		selectedDisplay.getChildren().clear();
@@ -224,7 +264,7 @@ public class Grades {
 		displayGrades.getChildren().clear();
 
 		Label courseSummaryTitle = new Label("Course Summary");
-		Driver.setTitleStyle(courseSummaryTitle);
+		Style.setTitleStyle(courseSummaryTitle);
 
 		Label courseSummary = new Label("");
 
@@ -236,16 +276,19 @@ public class Grades {
 
 		for (CalendarEvent d : selected.events) {
 
-			courseSummary.setText(
-					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
+			if (d instanceof CourseEvent) {
+				courseSummary.setText(courseSummary.getText() + d.toString() + ", Grade: " + ((CourseEvent) d).grade
+						+ "%, Worth: " + d.weight + "%\n");
 
-			if (d.start.isBefore(core.Driver.t.current)
-					|| d.start.toLocalDate().isEqual(core.Driver.t.current.toLocalDate())) {
-				if (d.grade != 0) {
-					cumulative += d.grade * (d.weight / 100);
+				if (d.start.isBefore(core.Driver.t.current)
+						|| d.start.toLocalDate().isEqual(core.Driver.t.current.toLocalDate())) {
+					if (((CourseEvent) d).grade != 0) {
+						cumulative += ((CourseEvent) d).grade * (d.weight / 100);
+					}
+					percentDone += d.weight;
+					gradeSoFar += d.weight * ((CourseEvent) d).grade;
+
 				}
-				percentDone += d.weight;
-				gradeSoFar += d.weight * d.grade;
 			}
 		}
 
@@ -259,8 +302,30 @@ public class Grades {
 
 		displayGrades.getChildren().addAll(courseSummaryTitle, courseSummary);
 
-		for (Term t : Driver.active.courseTerms.get(selected)) {
+		for (Term t : controller.findTermsBetween(selected.start, selected.end)) {
 			listGrades(t);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 */
+	@Override
+	public void update(Observable o, Object arg) {
+		if (o instanceof Profile) {
+
+		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see core.View#refresh()
+	 */
+	@Override
+	public void refresh() {
+		update(this.observable, null);
 	}
 }

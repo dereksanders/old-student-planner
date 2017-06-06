@@ -5,6 +5,11 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 import javafx.scene.paint.Color;
+import model.CalendarEvent;
+import model.Course;
+import model.Meeting;
+import model.Profile;
+import model.Term;
 import utility.GenericLinkedHashTable;
 
 public class ProfileSave {

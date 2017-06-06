@@ -15,6 +15,7 @@ import javafx.scene.control.Button;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import model.Profile;
 
 /**
  * The Class Planner.
@@ -51,16 +52,17 @@ public class Planner extends View implements Observer {
 	 *            the o
 	 */
 	private Planner(Observable o) {
-
 		this.o = o;
 		o.addObserver(this);
 
 		this.views = new ArrayList<>();
 		this.viewPane = new BorderPane();
-		this.options = initOptions();
 
-		viewPane.setBottom(options);
-		this.scene = new Scene(viewPane, initialWidth, initialHeight);
+		this.options = initOptions();
+		this.mainLayout = new BorderPane();
+		this.mainLayout.setCenter(viewPane);
+		this.mainLayout.setBottom(options);
+		this.scene = new Scene(this.mainLayout, initialWidth, initialHeight);
 	}
 
 	/**
@@ -151,10 +153,16 @@ public class Planner extends View implements Observer {
 	 */
 	public void addView(View view) {
 		this.views.add(view);
+
+		/* TODO: Remove this & add view selection */
 		if (this.viewPane.getLeft() == null) {
 			this.viewPane.setLeft(view.mainLayout);
 		} else if (this.viewPane.getRight() == null) {
 			this.viewPane.setRight(view.mainLayout);
+		} else if (this.viewPane.getBottom() == null) {
+			this.viewPane.setBottom(view.mainLayout);
+		} else if (this.viewPane.getTop() == null) {
+			this.viewPane.setTop(view.mainLayout);
 		}
 	}
 

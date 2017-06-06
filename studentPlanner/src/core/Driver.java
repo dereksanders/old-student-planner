@@ -2,6 +2,7 @@ package core;
 
 import java.io.File;
 
+import model.Profile;
 import utility.IOManager;
 import utility.JSONParser;
 

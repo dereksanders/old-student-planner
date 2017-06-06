@@ -1,6 +1,5 @@
 package courseSchedule;
 
-import core.Course;
 import core.Driver;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -9,6 +8,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Course;
 
 public class DeleteCourse {
 

@@ -1,12 +1,17 @@
 package core;
 
-import controllers.CourseScheduleController;
-import controllers.TermCalendarController;
+import courseSchedule.CourseSchedule;
+import courseSchedule.CourseScheduleController;
+import grades.Grades;
+import grades.GradesController;
+import gradesPlot.GradesPlot;
+import gradesPlot.GradesPlotController;
 import javafx.application.Application;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
-import views.CourseSchedule;
-import views.TermCalendar;
+import termCalendar.TermCalendar;
+import termCalendar.TermCalendarController;
+import utility.JSONParser;
 
 public class Main extends Application {
 
@@ -24,15 +29,23 @@ public class Main extends Application {
 
 		/* Instantiate Schedule View & Controller */
 		CourseScheduleController scheduleController = new CourseScheduleController(driver.active, driver.planner);
-		CourseSchedule schedule = new CourseSchedule(driver.planner, driver.active, scheduleController);
+		CourseSchedule schedule = new CourseSchedule(driver.active, scheduleController);
 		driver.planner.addView(schedule);
 
-		/* TODO: Instantiate Calendar View & Controller */
+		/* Instantiate Calendar View & Controller */
 		TermCalendarController calendarController = new TermCalendarController(driver.active, driver.planner);
-		TermCalendar calendar = new TermCalendar(driver.planner, driver.active, calendarController);
+		TermCalendar calendar = new TermCalendar(driver.active, calendarController);
 		driver.planner.addView(calendar);
 
-		/* TODO: Instantiate Grades View & Controller */
+		/* Instantiate Grades View & Controller */
+		GradesController gradesController = new GradesController(driver.active, driver.planner);
+		Grades grades = new Grades(driver.active, gradesController);
+		// driver.planner.addView(grades);
+
+		/* Instantiate GradesPlot View & Controller */
+		GradesPlotController gradesPlotController = new GradesPlotController(driver.active, driver.planner);
+		GradesPlot gradesPlot = new GradesPlot(driver.active, gradesPlotController);
+		// driver.planner.addView(gradesPlot);
 
 		driver.planner.refresh();
 
@@ -63,7 +76,7 @@ public class Main extends Application {
 	@Override
 	public void stop() throws Exception {
 		System.out.println("Saving and exiting..");
-		// JSONParser.saveProfile(driver.active);
+		JSONParser.saveProfile(driver.active);
 	}
 
 }

@@ -1,17 +1,13 @@
-package views;
+package termCalendar;
 
 import java.time.LocalDate;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import controllers.TermCalendarController;
-import core.CalendarEvent;
 import core.Driver;
 import core.Planner;
-import core.Profile;
 import core.Style;
-import core.Term;
 import core.View;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -31,8 +27,9 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import termCalendar.AddCalendarEvent;
-import termCalendar.AddOrEditCalendarEvent;
+import model.CalendarEvent;
+import model.Profile;
+import model.Term;
 import utility.Pretty;
 
 /**
@@ -69,9 +66,7 @@ public class TermCalendar extends View implements Observer {
 	 * @param controller
 	 *            the controller
 	 */
-	public TermCalendar(Planner planner, Observable observable, TermCalendarController controller) {
-
-		this.planner = planner;
+	public TermCalendar(Observable observable, TermCalendarController controller) {
 
 		this.observable = observable;
 		observable.addObserver(this);

@@ -1,10 +1,11 @@
-package core;
+package model;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.PriorityQueue;
 
+import core.ProfileSave;
 import javafx.scene.paint.Color;
 import utility.GenericLinkedHashTable;
 import utility.JSONParser;

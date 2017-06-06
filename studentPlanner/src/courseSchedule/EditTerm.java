@@ -2,7 +2,6 @@ package courseSchedule;
 
 import core.Driver;
 import core.ProfileController;
-import core.Term;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -19,6 +18,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Term;
 
 public class EditTerm {
 

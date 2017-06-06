@@ -1,9 +1,8 @@
-package controllers;
+package termCalendar;
 
 import core.Planner;
-import core.Profile;
 import core.ProfileController;
-import views.TermCalendar;
+import model.Profile;
 
 public class TermCalendarController extends ProfileController {
 

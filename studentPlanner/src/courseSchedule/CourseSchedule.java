@@ -1,4 +1,4 @@
-package views;
+package courseSchedule;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -6,14 +6,9 @@ import java.time.LocalTime;
 import java.util.Observable;
 import java.util.Observer;
 
-import controllers.CourseScheduleController;
 import core.Style;
-import core.Course;
-import core.Meeting;
-import core.Planner;
 import core.Driver;
-import core.Profile;
-import core.Term;
+import core.Planner;
 import core.Time;
 import core.View;
 import javafx.beans.value.ChangeListener;
@@ -30,6 +25,10 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
+import model.Course;
+import model.Meeting;
+import model.Profile;
+import model.Term;
 import utility.Pretty;
 
 /**
@@ -69,9 +68,7 @@ public class CourseSchedule extends View implements Observer {
 	 * @param controller
 	 *            the controller
 	 */
-	public CourseSchedule(Planner planner, Observable observable, CourseScheduleController controller) {
-
-		this.planner = planner;
+	public CourseSchedule(Observable observable, CourseScheduleController controller) {
 
 		this.observable = observable;
 		observable.addObserver(this);
@@ -412,7 +409,6 @@ public class CourseSchedule extends View implements Observer {
 	 */
 	@Override
 	public void update(Observable arg0, Object arg1) {
-		System.out.println("CourseSchedule receiving notification..");
 		if (arg0 instanceof Profile) {
 			drawSchedule(((Profile) arg0).currentlySelectedTerm, ((Profile) arg0).currentlySelectedDate);
 

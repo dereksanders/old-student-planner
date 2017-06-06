@@ -1,12 +1,11 @@
-package controllers;
+package courseSchedule;
 
 import java.time.LocalDate;
 
 import core.Driver;
 import core.Planner;
-import core.Profile;
 import core.ProfileController;
-import views.CourseSchedule;
+import model.Profile;
 
 public class CourseScheduleController extends ProfileController {
 

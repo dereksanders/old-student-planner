@@ -3,7 +3,6 @@ package courseSchedule;
 import java.time.LocalDate;
 
 import core.Driver;
-import core.Term;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -16,6 +15,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Term;
 
 public class AddTerm {
 

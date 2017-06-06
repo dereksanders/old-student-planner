@@ -9,8 +9,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import com.google.gson.Gson;
 import core.Driver;
-import core.Profile;
 import core.ProfileSave;
+import model.Profile;
 
 /**
  * The Class JSONParser. This class loads and saves Profiles as .json objects.

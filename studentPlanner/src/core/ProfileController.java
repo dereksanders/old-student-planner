@@ -4,6 +4,11 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
+import model.CalendarEvent;
+import model.Course;
+import model.Meeting;
+import model.Profile;
+import model.Term;
 
 public class ProfileController {
 

@@ -2,7 +2,6 @@ package courseSchedule;
 
 import java.time.LocalTime;
 
-import core.Meeting;
 import core.Style;
 import core.Driver;
 import core.Time;
@@ -22,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.Meeting;
 
 public class AddMeeting {
 

@@ -4,9 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
-import core.CalendarEvent;
-import core.Course;
-import core.CourseEvent;
 import core.Driver;
 import core.ProfileController;
 import core.Time;
@@ -26,6 +23,9 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.CalendarEvent;
+import model.Course;
+import model.CourseEvent;
 
 public class EditCalendarEvent {
 

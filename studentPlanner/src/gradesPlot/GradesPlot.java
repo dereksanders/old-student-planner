@@ -74,4 +74,9 @@ public class GradesPlot extends View implements Observer {
 	public void refresh() {
 		update(this.observable, null);
 	}
+
+	@Override
+	public String toString() {
+		return "Grades Plot";
+	}
 }

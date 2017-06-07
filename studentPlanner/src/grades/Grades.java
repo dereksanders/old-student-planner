@@ -114,7 +114,6 @@ public class Grades extends View implements Observer {
 		});
 
 		return gbp;
-
 	}
 
 	/**
@@ -126,10 +125,11 @@ public class Grades extends View implements Observer {
 	private void updateTermChosen(Term term) {
 		chooseTerm.setValue(term);
 		coursesToDisplay = FXCollections.observableArrayList(term.courses);
-		chooseCourse = new ComboBox<>(coursesToDisplay);
+		chooseCourse.setItems(coursesToDisplay);
 
 		if (term.courses.size() > 0) {
 			updateCourseChosen(term.courses.get(0));
+			listGrades(term.courses.get(0));
 		}
 	}
 
@@ -240,7 +240,10 @@ public class Grades extends View implements Observer {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				grade.setDisable(false);
 				weight.setDisable(false);
-				grade.setText("" + ((CourseEvent) events.get(newIndex.intValue())).grade);
+				/* CourseEvents not being recognized */
+				if (events.get(newIndex.intValue()) instanceof CourseEvent) {
+					grade.setText("" + ((CourseEvent) events.get(newIndex.intValue())).grade);
+				}
 				weight.setText("" + events.get(newIndex.intValue()).weight);
 			}
 		});
@@ -315,7 +318,7 @@ public class Grades extends View implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
-
+			updateTermChosen(((Profile) o).currentlySelectedTerm);
 		}
 	}
 
@@ -327,5 +330,10 @@ public class Grades extends View implements Observer {
 	@Override
 	public void refresh() {
 		update(this.observable, null);
+	}
+
+	@Override
+	public String toString() {
+		return "Grades";
 	}
 }

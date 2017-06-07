@@ -40,12 +40,12 @@ public class Main extends Application {
 		/* Instantiate Grades View & Controller */
 		GradesController gradesController = new GradesController(driver.active, driver.planner);
 		Grades grades = new Grades(driver.active, gradesController);
-		// driver.planner.addView(grades);
+		driver.planner.addView(grades);
 
 		/* Instantiate GradesPlot View & Controller */
 		GradesPlotController gradesPlotController = new GradesPlotController(driver.active, driver.planner);
 		GradesPlot gradesPlot = new GradesPlot(driver.active, gradesPlotController);
-		// driver.planner.addView(gradesPlot);
+		driver.planner.addView(gradesPlot);
 
 		driver.planner.refresh();
 

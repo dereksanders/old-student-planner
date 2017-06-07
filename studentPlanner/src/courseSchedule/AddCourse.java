@@ -24,6 +24,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.CalendarEvent;
 import model.Course;
+import model.CourseEvent;
 import model.Meeting;
 import model.Term;
 
@@ -219,7 +220,7 @@ public class AddCourse {
 	private static void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name,
 			ArrayList<Meeting> meetings, Color selected) {
 		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end, meetings,
-				new ArrayList<CalendarEvent>(), Style.colorToHex(selected));
+				new ArrayList<CourseEvent>(), Style.colorToHex(selected));
 		addCourse = c;
 	}
 }

@@ -198,8 +198,6 @@ public class Grades extends View implements Observer {
 	 */
 	private void listGrades(Course selected) {
 
-		Driver.t.update();
-
 		TextField grade = new TextField();
 		grade.setPromptText("Enter Grade %");
 		TextField weight = new TextField();
@@ -220,10 +218,7 @@ public class Grades extends View implements Observer {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				grade.setDisable(false);
 				weight.setDisable(false);
-				/* CourseEvents not being recognized */
-				if (events.get(newIndex.intValue()) instanceof CourseEvent) {
-					grade.setText("" + ((CourseEvent) events.get(newIndex.intValue())).grade);
-				}
+				grade.setText("" + ((CourseEvent) events.get(newIndex.intValue())).grade);
 				weight.setText("" + events.get(newIndex.intValue()).weight);
 			}
 		});

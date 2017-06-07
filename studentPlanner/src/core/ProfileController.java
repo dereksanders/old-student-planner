@@ -6,26 +6,50 @@ import java.util.ArrayList;
 import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Course;
+import model.CourseEvent;
 import model.Meeting;
 import model.Profile;
 import model.Term;
 
+/**
+ * The Class ProfileController.
+ */
 public class ProfileController {
 
 	public Profile active;
 	public Planner planner;
 
+	/**
+	 * Instantiates a new profile controller.
+	 *
+	 * @param active
+	 *            the active
+	 * @param p
+	 *            the p
+	 */
 	public ProfileController(Profile active, Planner p) {
 		this.active = active;
 		this.planner = p;
 	}
 
+	/**
+	 * Sets the currently selected date.
+	 *
+	 * @param localDate
+	 *            the new currently selected date
+	 */
 	public void setCurrentlySelectedDate(LocalDate localDate) {
 		this.active.currentlySelectedDate = localDate;
 		this.active.currentlySelectedTerm = findTerm(localDate);
 		active.update();
 	}
 
+	/**
+	 * Sets the currently selected term.
+	 *
+	 * @param term
+	 *            the new currently selected term
+	 */
 	public void setCurrentlySelectedTerm(Term term) {
 		this.active.currentlySelectedTerm = term;
 		active.update();
@@ -36,8 +60,8 @@ public class ProfileController {
 	/**
 	 * Adds the term.
 	 *
-	 * @param addedTerm
-	 *            the added term
+	 * @param add
+	 *            the add
 	 */
 	public void addTerm(Term add) {
 
@@ -79,6 +103,9 @@ public class ProfileController {
 		active.update();
 	}
 
+	/**
+	 * Delete term.
+	 */
 	public void deleteTerm() {
 
 	}
@@ -103,6 +130,12 @@ public class ProfileController {
 
 	/* Course operations */
 
+	/**
+	 * Adds the course.
+	 *
+	 * @param addedCourse
+	 *            the added course
+	 */
 	public void addCourse(Course addedCourse) {
 		if (addedCourse != null) {
 			for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
@@ -117,6 +150,12 @@ public class ProfileController {
 		}
 	}
 
+	/**
+	 * Edits the course.
+	 *
+	 * @param edited
+	 *            the edited
+	 */
 	public void editCourse(Course edited) {
 
 		/* If the user has confirmed changes to an existing course */
@@ -139,6 +178,12 @@ public class ProfileController {
 		}
 	}
 
+	/**
+	 * Delete course.
+	 *
+	 * @param deletedCourse
+	 *            the deleted course
+	 */
 	public void deleteCourse(Course deletedCourse) {
 		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
 			t.courses.remove(deletedCourse);
@@ -149,6 +194,15 @@ public class ProfileController {
 		active.update();
 	}
 
+	/**
+	 * Find terms between.
+	 *
+	 * @param start
+	 *            the start
+	 * @param end
+	 *            the end
+	 * @return the array list
+	 */
 	public ArrayList<Term> findTermsBetween(LocalDate start, LocalDate end) {
 
 		ArrayList<Term> termsBetween = new ArrayList<>();
@@ -162,6 +216,14 @@ public class ProfileController {
 		return termsBetween;
 	}
 
+	/**
+	 * Delete meeting.
+	 *
+	 * @param c
+	 *            the c
+	 * @param m
+	 *            the m
+	 */
 	public void deleteMeeting(Course c, Meeting m) {
 		if (m != null) {
 			c.meetings.remove(m);
@@ -169,6 +231,14 @@ public class ProfileController {
 		}
 	}
 
+	/**
+	 * Adds the meeting.
+	 *
+	 * @param currentlySelected
+	 *            the currently selected
+	 * @param m
+	 *            the m
+	 */
 	public void addMeeting(Course currentlySelected, Meeting m) {
 		if (m != null) {
 
@@ -189,14 +259,34 @@ public class ProfileController {
 		}
 	}
 
+	/**
+	 * Adds the event.
+	 *
+	 * @param course
+	 *            the course
+	 * @param event
+	 *            the event
+	 * @param date
+	 *            the date
+	 */
 	public void addEvent(Course course, CalendarEvent event, LocalDate date) {
 		active.dateEvents.put(date, event);
 		if (course != null) {
-			active.courseColors.get(Color.web((event).colour)).peek().events.add(event);
+			active.courseColors.get(Color.web((event).colour)).peek().events.add((CourseEvent) event);
 		}
 		active.update();
 	}
 
+	/**
+	 * Delete event.
+	 *
+	 * @param course
+	 *            the course
+	 * @param event
+	 *            the event
+	 * @param date
+	 *            the date
+	 */
 	public void deleteEvent(Course course, CalendarEvent event, LocalDate date) {
 		active.dateEvents.del(date, event);
 		if (course != null) {

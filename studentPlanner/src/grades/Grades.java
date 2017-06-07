@@ -92,13 +92,12 @@ public class Grades extends View implements Observer {
 		gbp.setTop(header);
 		gbp.setCenter(body);
 
-		updateTermChosen(controller.active.currentlySelectedTerm);
-
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				selectedTermsCourses = controller.active.terms.get(newIndex.intValue()).courses;
-				coursesToDisplay = FXCollections.observableArrayList(selectedTermsCourses);
+				if (newIndex.intValue() != -1) {
+					controller.setCurrentlySelectedTerm(controller.active.terms.get(newIndex.intValue()));
+				}
 			}
 		});
 
@@ -114,23 +113,6 @@ public class Grades extends View implements Observer {
 		});
 
 		return gbp;
-	}
-
-	/**
-	 * Update term chosen.
-	 *
-	 * @param term
-	 *            the term
-	 */
-	private void updateTermChosen(Term term) {
-		chooseTerm.setValue(term);
-		coursesToDisplay = FXCollections.observableArrayList(term.courses);
-		chooseCourse.setItems(coursesToDisplay);
-
-		if (term.courses.size() > 0) {
-			updateCourseChosen(term.courses.get(0));
-			listGrades(term.courses.get(0));
-		}
 	}
 
 	/**
@@ -318,7 +300,15 @@ public class Grades extends View implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
-			updateTermChosen(((Profile) o).currentlySelectedTerm);
+			Term currentlySelected = ((Profile) o).currentlySelectedTerm;
+			if (currentlySelected != null) {
+				chooseTerm.setValue(currentlySelected);
+				coursesToDisplay = FXCollections.observableArrayList(currentlySelected.courses);
+				chooseCourse.setItems(FXCollections.observableArrayList(coursesToDisplay));
+				if (currentlySelected.courses.size() > 0) {
+					updateCourseChosen(currentlySelected.courses.get(0));
+				}
+			}
 		}
 	}
 

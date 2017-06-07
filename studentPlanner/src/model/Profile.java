@@ -78,4 +78,9 @@ public class Profile extends Observable {
 		notifyObservers();
 		System.out.println("Profile " + this.toString() + " Notifying " + this.countObservers() + " Observers..");
 	}
+
+	@Override
+	public String toString() {
+		return this.name;
+	}
 }

@@ -174,8 +174,6 @@ public class Grades extends View implements Observer {
 					+ "% of the course completed. Total grade: " + cumulative + "%.\n");
 		}
 
-		System.out.println(avgSoFar);
-
 		int numCourses = selected.courses.size();
 
 		avg = avg / numCourses;

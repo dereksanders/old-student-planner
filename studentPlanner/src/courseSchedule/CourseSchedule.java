@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.PriorityQueue;
 
 import core.Style;
 import core.Driver;
@@ -153,15 +154,14 @@ public class CourseSchedule extends View implements Observer {
 	 */
 	public void setTodaysMeetings() {
 		String desc = "";
-		// PriorityQueue<Meeting> td =
-		// Planner.active.dayMeetings.get(Planner.t.current.getDayOfWeek().getValue()
-		// - 1);
-		// if (td != null && td.size() > 0) {
-		// for (Meeting m : td) {
-		// desc += m.toString() + "\n";
-		// }
-		// desc = desc.substring(0, desc.lastIndexOf("\n"));
-		// }
+		PriorityQueue<Meeting> td = controller.active.dayMeetings.get(Driver.t.current.getDayOfWeek().getValue() - 1);
+		if (td != null && td.size() > 0) {
+			for (Meeting m : td) {
+				desc += controller.active.courseColors.get(Color.web(m.colour)).peek() + " " + m.meetingType + ": "
+						+ m.start + " - " + m.end + "\n";
+			}
+			desc = desc.substring(0, desc.lastIndexOf("\n"));
+		}
 		todaysMeetings.setText("Today's Meetings:\n" + desc);
 	}
 
@@ -186,7 +186,7 @@ public class CourseSchedule extends View implements Observer {
 	 */
 	public void drawSchedule(Term term, LocalDate d) {
 
-		Driver.t.update();
+		setTodaysMeetings();
 		scheduleGrid.getChildren().clear();
 
 		if (term != null) {

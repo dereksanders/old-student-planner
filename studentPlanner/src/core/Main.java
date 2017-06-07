@@ -48,7 +48,6 @@ public class Main extends Application {
 		driver.planner.addView(gradesPlot);
 
 		driver.planner.refresh();
-
 		launch(args);
 	}
 

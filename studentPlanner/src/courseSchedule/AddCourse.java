@@ -220,6 +220,9 @@ public class AddCourse {
 			ArrayList<Meeting> meetings, Color selected) {
 		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end, meetings,
 				new ArrayList<CourseEvent>(), Style.colorToHex(selected));
+		for (Meeting m : meetings) {
+			m.colour = c.colour;
+		}
 		addCourse = c;
 	}
 }

@@ -1,6 +1,5 @@
 package grades;
 
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -40,7 +39,6 @@ public class Grades extends View implements Observer {
 	public HBox classGrades;
 	public ComboBox<Course> chooseCourse;
 	public ComboBox<Term> chooseTerm;
-	private ArrayList<Course> selectedTermsCourses;
 	private ObservableList<Course> coursesToDisplay;
 
 	/**

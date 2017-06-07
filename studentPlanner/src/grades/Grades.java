@@ -3,7 +3,6 @@ package grades;
 import java.util.Observable;
 import java.util.Observer;
 
-import core.Driver;
 import core.Style;
 import core.View;
 import javafx.beans.value.ChangeListener;

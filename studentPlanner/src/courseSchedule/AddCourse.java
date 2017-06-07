@@ -22,7 +22,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
 import model.Meeting;

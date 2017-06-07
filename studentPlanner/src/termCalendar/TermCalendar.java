@@ -351,4 +351,9 @@ public class TermCalendar extends View implements Observer {
 	public void refresh() {
 		update(this.observable, null);
 	}
+
+	@Override
+	public String toString() {
+		return "Term Calendar";
+	}
 }

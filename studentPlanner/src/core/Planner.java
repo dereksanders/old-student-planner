@@ -10,8 +10,12 @@ import courseSchedule.EditCourse;
 import courseSchedule.EditTerm;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.paint.Color;
@@ -23,11 +27,11 @@ import model.Profile;
 public class Planner extends View implements Observer {
 
 	private volatile static Planner uniqueInstance;
-	private static int initialWidth = 800;
+	private static int initialWidth = 1530;
 	private static int initialHeight = 800;
 
 	public ProfileController pc;
-	public Observable o;
+	public Observable observable;
 	/* Application Views */
 	private ArrayList<View> views;
 
@@ -37,6 +41,7 @@ public class Planner extends View implements Observer {
 	private BorderPane viewPane;
 
 	/* controlPane elements */
+	public ChoiceBox<View> chooseView;
 	public Button addTerm;
 	public Button editTerm;
 	public Button addCourse;
@@ -48,35 +53,33 @@ public class Planner extends View implements Observer {
 	/**
 	 * Instantiates a new planner.
 	 *
-	 * @param o
-	 *            the o
+	 * @param observable
+	 *            the observable
 	 */
-	private Planner(Observable o) {
-		this.o = o;
-		o.addObserver(this);
+	private Planner(Observable observable) {
+		this.observable = observable;
+		observable.addObserver(this);
 
 		this.views = new ArrayList<>();
 		this.viewPane = new BorderPane();
 
 		this.options = initOptions();
-		this.mainLayout = new BorderPane();
-		this.mainLayout.setCenter(viewPane);
-		this.mainLayout.setBottom(options);
+		this.mainLayout = initLayout();
 		this.scene = new Scene(this.mainLayout, initialWidth, initialHeight);
 	}
 
 	/**
 	 * Gets the single instance of Planner.
 	 *
-	 * @param o
-	 *            the o
+	 * @param observable
+	 *            the observable
 	 * @return single instance of Planner
 	 */
-	public static Planner getInstance(Observable o) {
+	public static Planner getInstance(Observable observable) {
 		if (uniqueInstance == null) {
 			synchronized (Planner.class) {
 				if (uniqueInstance == null) {
-					uniqueInstance = new Planner(o);
+					uniqueInstance = new Planner(observable);
 				}
 			}
 		}
@@ -84,9 +87,30 @@ public class Planner extends View implements Observer {
 	}
 
 	/**
+	 * Inits the layout.
+	 *
+	 * @return the border pane
+	 */
+	private BorderPane initLayout() {
+		BorderPane bp = new BorderPane();
+		chooseView = new ChoiceBox<>(FXCollections.observableArrayList(this.views));
+		chooseView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
+				if (newIndex.intValue() == -1) {
+					newIndex = new Integer(0);
+				}
+				viewPane.setCenter(views.get(newIndex.intValue()).mainLayout);
+			}
+		});
+		bp.setTop(chooseView);
+		bp.setCenter(viewPane);
+		bp.setBottom(this.options);
+		return bp;
+	}
+
+	/**
 	 * Inits the control pane.
-	 * 
-	 * @return
 	 *
 	 * @return the border pane
 	 */
@@ -136,7 +160,6 @@ public class Planner extends View implements Observer {
 	 * @return the next color
 	 */
 	public Color getNextColor() {
-
 		for (Color c : Style.selectableColors) {
 			if (this.pc.active.courseColors.get(c) == null) {
 				return c;
@@ -153,16 +176,9 @@ public class Planner extends View implements Observer {
 	 */
 	public void addView(View view) {
 		this.views.add(view);
-
-		/* TODO: Remove this & add view selection */
-		if (this.viewPane.getLeft() == null) {
-			this.viewPane.setLeft(view.mainLayout);
-		} else if (this.viewPane.getRight() == null) {
-			this.viewPane.setRight(view.mainLayout);
-		} else if (this.viewPane.getBottom() == null) {
-			this.viewPane.setBottom(view.mainLayout);
-		} else if (this.viewPane.getTop() == null) {
-			this.viewPane.setTop(view.mainLayout);
+		chooseView.setItems(FXCollections.observableArrayList(this.views));
+		if (chooseView.getValue() == null) {
+			chooseView.setValue(this.views.get(0));
 		}
 	}
 
@@ -178,27 +194,26 @@ public class Planner extends View implements Observer {
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see core.View#refresh()
+	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
 	 */
 	@Override
-	public void refresh() {
-		update(this.o, null);
-		for (View v : this.views) {
-			v.refresh();
+	public void update(Observable observable, Object data) {
+		if (observable instanceof Profile) {
+			this.termsExist.set(((Profile) observable).terms.size() > 0);
+			this.coursesExist.set(((Profile) observable).coursesExist());
 		}
 	}
 
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see java.util.Observer#update(java.util.Observable, java.lang.Object)
+	 * @see core.View#refresh()
 	 */
 	@Override
-	public void update(Observable arg0, Object arg1) {
-
-		if (arg0 instanceof Profile) {
-			this.termsExist.set(((Profile) arg0).terms.size() > 0);
-			this.coursesExist.set(((Profile) arg0).coursesExist());
+	public void refresh() {
+		update(this.observable, null);
+		for (View v : this.views) {
+			v.refresh();
 		}
 	}
 }

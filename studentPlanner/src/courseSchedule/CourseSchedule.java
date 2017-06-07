@@ -61,8 +61,6 @@ public class CourseSchedule extends View implements Observer {
 	/**
 	 * Instantiates a new Course Schedule.
 	 *
-	 * @param planner
-	 *            the planner
 	 * @param observable
 	 *            the observable
 	 * @param controller
@@ -430,5 +428,15 @@ public class CourseSchedule extends View implements Observer {
 	@Override
 	public void refresh() {
 		update(this.observable, null);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return "Course Schedule";
 	}
 }

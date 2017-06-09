@@ -113,17 +113,6 @@ public class Grades extends View implements Observer {
 	}
 
 	/**
-	 * Update course chosen.
-	 *
-	 * @param course
-	 *            the course
-	 */
-	private void updateCourseChosen(Course course) {
-		chooseCourse.setValue(course);
-		listGrades(course);
-	}
-
-	/**
 	 * List grades.
 	 *
 	 * @param selected
@@ -201,9 +190,9 @@ public class Grades extends View implements Observer {
 		weight.setPromptText("Enter Weight %");
 		Button confirmChanges = new Button("Confirm");
 
-		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
+		ObservableList<CourseEvent> events = FXCollections.observableArrayList();
 		events.addAll(selected.events);
-		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(events);
+		ChoiceBox<CourseEvent> chooseEvent = new ChoiceBox<>(events);
 
 		if (chooseEvent.getValue() == null) {
 			grade.setDisable(true);
@@ -215,7 +204,7 @@ public class Grades extends View implements Observer {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				grade.setDisable(false);
 				weight.setDisable(false);
-				grade.setText("" + ((CourseEvent) events.get(newIndex.intValue())).grade);
+				grade.setText("" + events.get(newIndex.intValue()).grade);
 				weight.setText("" + events.get(newIndex.intValue()).weight);
 			}
 		});
@@ -249,21 +238,19 @@ public class Grades extends View implements Observer {
 		double cumulative = 0;
 		double gradeSoFar = 0;
 
-		for (CalendarEvent d : selected.events) {
+		for (CourseEvent d : selected.events) {
 
-			if (d instanceof CourseEvent) {
-				courseSummary.setText(courseSummary.getText() + d.toString() + ", Grade: " + ((CourseEvent) d).grade
-						+ "%, Worth: " + d.weight + "%\n");
+			courseSummary.setText(
+					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
 
-				if (d.start.isBefore(core.Driver.t.current)
-						|| d.start.toLocalDate().isEqual(core.Driver.t.current.toLocalDate())) {
-					if (((CourseEvent) d).grade != 0) {
-						cumulative += ((CourseEvent) d).grade * (d.weight / 100);
-					}
-					percentDone += d.weight;
-					gradeSoFar += d.weight * ((CourseEvent) d).grade;
-
+			if (d.start.isBefore(core.Driver.t.current)
+					|| d.start.toLocalDate().isEqual(core.Driver.t.current.toLocalDate())) {
+				if (d.grade != 0) {
+					cumulative += d.grade * (d.weight / 100);
 				}
+				percentDone += d.weight;
+				gradeSoFar += d.weight * d.grade;
+
 			}
 		}
 
@@ -291,12 +278,16 @@ public class Grades extends View implements Observer {
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
 			Term currentlySelected = ((Profile) o).currentlySelectedTerm;
+
 			if (currentlySelected != null) {
 				chooseTerm.setValue(currentlySelected);
 				coursesToDisplay = FXCollections.observableArrayList(currentlySelected.courses);
 				chooseCourse.setItems(FXCollections.observableArrayList(coursesToDisplay));
+
 				if (currentlySelected.courses.size() > 0) {
-					updateCourseChosen(currentlySelected.courses.get(0));
+
+					chooseCourse.setValue(currentlySelected.courses.get(0));
+					listGrades(chooseCourse.getValue());
 				}
 			}
 		}

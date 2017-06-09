@@ -1,10 +1,13 @@
 package courseSchedule;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 import core.Driver;
 import core.Planner;
 import core.ProfileController;
+import model.Course;
+import model.Meeting;
 import model.Profile;
 
 public class CourseScheduleController extends ProfileController {
@@ -48,5 +51,20 @@ public class CourseScheduleController extends ProfileController {
 	public void updateWeekSelected(LocalDate newDate) {
 
 		setCurrentlySelectedDate(newDate);
+	}
+
+	public boolean timeIsOccupied(LocalDateTime cell) {
+
+		for (Course c : this.active.currentlySelectedTerm.courses) {
+			for (Meeting m : c.meetings) {
+				if ((m.dayOfWeekInt == cell.getDayOfWeek().getValue())
+						&& (m.start.isBefore(cell.toLocalTime()) || m.start.equals(cell.toLocalTime()))
+						&& (m.end.isAfter(cell.toLocalTime()) || m.end.equals(cell.toLocalTime()))) {
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 }

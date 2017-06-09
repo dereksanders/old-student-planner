@@ -290,6 +290,18 @@ public class CourseSchedule extends View implements Observer {
 				}
 
 				scheduleGrid.add(meetingButtons[i][j], i + 1, j + 1);
+
+				/*
+				 * TODO: Make the schedule interactive. Associated with issue
+				 * #3.
+				 */
+				meetingButtons[i][j].setOnAction(e -> {
+					if (controller.timeIsOccupied(cell)) {
+						new EditOrDeleteMeeting(cell, controller);
+					} else {
+						new AddMeetingOnSchedule(cell, controller);
+					}
+				});
 			}
 		}
 

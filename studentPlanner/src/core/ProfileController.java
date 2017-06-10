@@ -1,6 +1,7 @@
 package core;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
@@ -228,6 +229,7 @@ public class ProfileController {
 		if (m != null) {
 			c.meetings.remove(m);
 			active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+			active.update();
 		}
 	}
 
@@ -241,8 +243,9 @@ public class ProfileController {
 	 */
 	public void addMeeting(Course currentlySelected, Meeting m) {
 		if (m != null) {
-
 			m.colour = currentlySelected.colour;
+
+			/* TODO: Deal with conflict. */
 			// ArrayList<Meeting> outerConflict =
 			// m.conflictsWithCourses(chooseTerm.getValue().courses);
 			//
@@ -255,6 +258,7 @@ public class ProfileController {
 			// Meeting.deleteMeetings(allConflicts);
 			currentlySelected.meetings.add(m);
 			active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
+			active.update();
 			// CourseSchedule.setTodaysMeetings();
 		}
 	}
@@ -293,5 +297,31 @@ public class ProfileController {
 			active.courseColors.get(Color.web((event).colour)).peek().events.remove(event);
 		}
 		active.update();
+	}
+
+	public Course getCourseFromColor(Color c) {
+
+		return this.active.courseColors.get(c).peek();
+	}
+
+	/**
+	 * Gets the meeting at time.
+	 *
+	 * @param cell
+	 *            the cell
+	 * @return the meeting at time
+	 */
+	public Meeting getMeetingAtTime(LocalDateTime cell) {
+
+		for (Course c : this.active.currentlySelectedTerm.courses) {
+			for (Meeting m : c.meetings) {
+				if ((m.dayOfWeekInt == cell.getDayOfWeek().getValue())
+						&& (m.start.isBefore(cell.toLocalTime()) || m.start.equals(cell.toLocalTime()))
+						&& (m.end.isAfter(cell.toLocalTime()) || m.end.equals(cell.toLocalTime()))) {
+					return m;
+				}
+			}
+		}
+		return null;
 	}
 }

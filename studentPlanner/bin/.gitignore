@@ -1,8 +1,6 @@
-/views/
-/controllers/
-/core/
-/courseSchedule/
 /termCalendar/
-/grades/
-/gradesPlot/
+/tests/
+/utility/
+/courseSchedule/
+/core/
 /model/

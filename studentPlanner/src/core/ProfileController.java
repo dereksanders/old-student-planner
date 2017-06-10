@@ -175,6 +175,20 @@ public class ProfileController {
 				setCurrentlySelectedDate(this.active.currentlySelectedDate);
 			}
 
+			/*
+			 * In case the course's colour was changed. TODO: Remove mapping of
+			 * previous colour to edited course.
+			 */
+			if (this.active.courseColors.get(Color.web(edited.colour)) == null) {
+				this.active.courseColors.put(Color.web(edited.colour), edited);
+				for (Meeting m : edited.meetings) {
+					m.colour = edited.colour;
+				}
+				for (CourseEvent e : edited.events) {
+					e.colour = edited.colour;
+				}
+			}
+
 			active.update();
 		}
 	}

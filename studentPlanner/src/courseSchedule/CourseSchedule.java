@@ -300,9 +300,7 @@ public class CourseSchedule extends View implements Observer {
 						if (controller.timeIsOccupied(cell)) {
 							new EditOrDeleteMeeting(cell, controller);
 						} else {
-
 							new AddMeetingOnSchedule(cell, controller);
-
 						}
 					}
 				});

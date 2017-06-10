@@ -46,7 +46,7 @@ public class AddMeetingOnSchedule {
 		/* Window set-up */
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
-		window.setTitle("Edit Meeting");
+		window.setTitle("Add Meeting");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
 		ObservableList<String> days = FXCollections.observableArrayList();
@@ -63,6 +63,10 @@ public class AddMeetingOnSchedule {
 		ChoiceBox<Course> chooseCourse = new ChoiceBox<>(
 				FXCollections.observableArrayList(pc.active.currentlySelectedTerm.courses));
 
+		if (pc.active.currentlySelectedTerm.courses.size() > 0) {
+			chooseCourse.setValue(pc.active.currentlySelectedTerm.courses.get(0));
+		}
+
 		ChoiceBox<String> meetingType = new ChoiceBox<>(types);
 		meetingType.setValue(types.get(0));
 
@@ -73,13 +77,7 @@ public class AddMeetingOnSchedule {
 		startTime = new ComboBox<>(times);
 		Label min = new Label(" - ");
 		endTime = new ComboBox<>();
-		endTime.setVisible(false);
 		selectTimes.getChildren().addAll(startTime, min, endTime);
-
-		startTime.setValue(
-				times.get(Time.getDistance(new Time(0, 0), new Time(selected.getHour(), selected.getMinute()), 30)));
-		endTime.setValue(times.get(
-				Time.getDistance(new Time(0, 0), new Time((selected.getHour() + 1) % 12, selected.getMinute()), 30)));
 
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -91,6 +89,9 @@ public class AddMeetingOnSchedule {
 				selectTimes.getChildren().add(endTime);
 			}
 		});
+
+		startTime.setValue(
+				times.get(Time.getDistance(new Time(0, 0), new Time(selected.getHour(), selected.getMinute()), 30)));
 
 		Label header = new Label("Enter Meeting Info");
 		Style.setTitleStyle(header);

@@ -48,6 +48,8 @@ public class EditOrDeleteMeeting {
 
 		this.pc = pc;
 		this.selected = pc.getMeetingAtTime(cell);
+		System.out.println(this.selected);
+		System.out.println(this.selected.colour);
 		this.meetingCourse = pc.getCourseFromColor(Color.web(selected.colour));
 		display();
 	}
@@ -84,13 +86,12 @@ public class EditOrDeleteMeeting {
 		startTime = new ComboBox<>(times);
 		Label min = new Label(" - ");
 		endTime = new ComboBox<>();
-		endTime.setVisible(false);
 		selectTimes.getChildren().addAll(startTime, min, endTime);
 
 		startTime.setValue(times.get(
 				Time.getDistance(new Time(0, 0), new Time(selected.start.getHour(), selected.start.getMinute()), 30)));
-		endTime.setValue(times.get(
-				Time.getDistance(new Time(0, 0), new Time(selected.start.getHour(), selected.start.getMinute()), 30)));
+		endTime.setValue(times
+				.get(Time.getDistance(new Time(0, 0), new Time(selected.end.getHour(), selected.end.getMinute()), 30)));
 
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override

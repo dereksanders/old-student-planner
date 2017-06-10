@@ -122,7 +122,7 @@ public class Planner extends View implements Observer {
 		this.addTerm = new Button("Add Term");
 		Style.setButtonStyle(addTerm);
 		addTerm.setOnAction(e -> {
-			this.pc.addTerm(AddTerm.display());
+			new AddTerm(this.pc);
 		});
 
 		/* Edit Term */
@@ -130,7 +130,7 @@ public class Planner extends View implements Observer {
 		editTerm.visibleProperty().bind(termsExist);
 		Style.setButtonStyle(editTerm);
 		editTerm.setOnAction(e -> {
-			EditTerm.display(this.pc);
+			new EditTerm(this.pc);
 		});
 
 		/* Add Course */
@@ -138,7 +138,7 @@ public class Planner extends View implements Observer {
 		addCourse.visibleProperty().bind(termsExist);
 		Style.setButtonStyle(addCourse);
 		addCourse.setOnAction(e -> {
-			this.pc.addCourse(AddCourse.display(this.pc));
+			new AddCourse(this.pc);
 		});
 
 		/* Edit Course */
@@ -146,7 +146,7 @@ public class Planner extends View implements Observer {
 		editCourse.visibleProperty().bind(coursesExist);
 		Style.setButtonStyle(editCourse);
 		editCourse.setOnAction(e -> {
-			this.pc.editCourse(EditCourse.display(this.pc));
+			new EditCourse(this.pc);
 		});
 
 		options.getChildren().addAll(addTerm, editTerm, addCourse, editCourse);
@@ -160,6 +160,12 @@ public class Planner extends View implements Observer {
 	 * @return the next color
 	 */
 	public Color getNextColor() {
+		/*
+		 * TODO: When course with first suggested colour is deleted, colour
+		 * suggested for second course is still the next colour.
+		 * 
+		 * Associated with issue #11.
+		 */
 		for (Color c : Style.selectableColors) {
 			if (this.pc.active.courseColors.get(c) == null) {
 				return c;

@@ -3,6 +3,7 @@ package courseSchedule;
 import java.time.LocalDate;
 
 import core.Driver;
+import core.ProfileController;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -17,17 +18,36 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Term;
 
+/**
+ * The Class AddTerm.
+ */
 public class AddTerm {
 
-	private static Term addTerm;
+	private ProfileController pc;
 
-	public static Term display() {
+	/**
+	 * Instantiates a new adds the term.
+	 *
+	 * @param pc
+	 *            the pc
+	 */
+	public AddTerm(ProfileController pc) {
+		this.pc = pc;
+		display();
+	}
 
-		addTerm = null;
+	/**
+	 * Display.
+	 */
+	private void display() {
+
+		/* Window set-up */
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Add Term");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+
+		/* GUI elements */
 		TextField name = new TextField();
 		name.setPromptText("Term Name (e.g. Fall)");
 		Label startTitle = new Label("Start: ");
@@ -38,6 +58,7 @@ public class AddTerm {
 		VBox end = new VBox(10);
 		Button add = new Button("Add Term");
 		Label error = new Label();
+
 		add.setOnAction(e -> {
 			if (startDate.getValue() == null || endDate.getValue() == null) {
 				error.setText("Error: Select start and end date of term.");
@@ -50,6 +71,7 @@ public class AddTerm {
 				error.setTextFill(Color.RED);
 			}
 		});
+
 		start.getChildren().addAll(startTitle, startDate);
 		end.getChildren().addAll(endTitle, endDate);
 		BorderPane bp = new BorderPane();
@@ -64,11 +86,20 @@ public class AddTerm {
 		add.requestFocus();
 		window.setScene(scene);
 		window.showAndWait();
-		return addTerm;
 	}
 
-	private static void confirm(String name, LocalDate start, LocalDate end) {
+	/**
+	 * Confirm.
+	 *
+	 * @param name
+	 *            the name
+	 * @param start
+	 *            the start
+	 * @param end
+	 *            the end
+	 */
+	private void confirm(String name, LocalDate start, LocalDate end) {
 		Term add = new Term(name, start, end);
-		addTerm = add;
+		this.pc.addTerm(add);
 	}
 }

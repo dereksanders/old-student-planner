@@ -104,11 +104,19 @@ public class ProfileController {
 		active.update();
 	}
 
+	public void editTerm(Term old, Term edited) {
+		old.name = edited.name;
+		old.start = edited.start;
+		old.end = edited.end;
+		this.active.update();
+	}
+
 	/**
 	 * Delete term.
 	 */
-	public void deleteTerm() {
-
+	public void deleteTerm(Term t) {
+		this.active.terms.remove(t);
+		this.active.update();
 	}
 
 	/**
@@ -143,6 +151,7 @@ public class ProfileController {
 				t.courses.add(addedCourse);
 			}
 			for (Meeting m : addedCourse.meetings) {
+				m.colour = addedCourse.colour;
 				active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
 				active.currentlySelectedTerm.updateParams(m);
 			}
@@ -157,40 +166,41 @@ public class ProfileController {
 	 * @param edited
 	 *            the edited
 	 */
-	public void editCourse(Course edited) {
+	public void editCourse(Course edited, Course changes) {
 
-		/* If the user has confirmed changes to an existing course */
-		if (edited != null) {
+		edited.name = changes.name;
+		edited.departmentID = changes.departmentID;
+		edited.code = changes.code;
+		edited.colour = changes.colour;
 
-			for (Term t : findTermsBetween(edited.start, edited.end)) {
-				t.resetParams();
-			}
-
-			/*
-			 * If the edited course belongs to the currently selected term,
-			 * redraw views.
-			 */
-			if (this.active.currentlySelectedTerm.courses.contains(edited)) {
-
-				setCurrentlySelectedDate(this.active.currentlySelectedDate);
-			}
-
-			/*
-			 * In case the course's colour was changed. TODO: Remove mapping of
-			 * previous colour to edited course.
-			 */
-			if (this.active.courseColors.get(Color.web(edited.colour)) == null) {
-				this.active.courseColors.put(Color.web(edited.colour), edited);
-				for (Meeting m : edited.meetings) {
-					m.colour = edited.colour;
-				}
-				for (CourseEvent e : edited.events) {
-					e.colour = edited.colour;
-				}
-			}
-
-			active.update();
+		for (Term t : findTermsBetween(edited.start, edited.end)) {
+			t.resetParams();
 		}
+
+		/*
+		 * If the edited course belongs to the currently selected term, redraw
+		 * views.
+		 */
+		if (this.active.currentlySelectedTerm.courses.contains(edited)) {
+
+			setCurrentlySelectedDate(this.active.currentlySelectedDate);
+		}
+
+		/*
+		 * In case the course's colour was changed. TODO: Remove mapping of
+		 * previous colour to edited course.
+		 */
+		if (this.active.courseColors.get(Color.web(edited.colour)) == null) {
+			this.active.courseColors.put(Color.web(edited.colour), edited);
+			for (Meeting m : edited.meetings) {
+				m.colour = edited.colour;
+			}
+			for (CourseEvent e : edited.events) {
+				e.colour = edited.colour;
+			}
+		}
+
+		active.update();
 	}
 
 	/**
@@ -200,8 +210,12 @@ public class ProfileController {
 	 *            the deleted course
 	 */
 	public void deleteCourse(Course deletedCourse) {
+		this.active.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
 		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
 			t.courses.remove(deletedCourse);
+		}
+		for (Meeting m : deletedCourse.meetings) {
+			this.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
 		}
 		for (CalendarEvent e : deletedCourse.events) {
 			this.active.dateEvents.del(e.start.toLocalDate(), e);

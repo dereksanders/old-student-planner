@@ -20,14 +20,32 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Term;
 
+/**
+ * The Class EditTerm.
+ */
 public class EditTerm {
 
-	private static Term currentlySelected;
-	private static TextField name;
-	private static DatePicker start;
-	private static DatePicker end;
+	private ProfileController pc;
+	private Term currentlySelected;
+	private TextField name;
+	private DatePicker start;
+	private DatePicker end;
 
-	public static void display(ProfileController pc) {
+	/**
+	 * Instantiates a new edits the term.
+	 *
+	 * @param pc
+	 *            the pc
+	 */
+	public EditTerm(ProfileController pc) {
+		this.pc = pc;
+		display();
+	}
+
+	/**
+	 * Display.
+	 */
+	private void display() {
 
 		currentlySelected = null;
 
@@ -64,22 +82,14 @@ public class EditTerm {
 
 		confirmChanges.setOnAction(e -> {
 			if (start.getValue().isBefore(end.getValue())) {
-
-				/*
-				 * TODO: This should behave more consistently with the other
-				 * actions.
-				 */
-				currentlySelected.name = name.getText();
-				currentlySelected.start = start.getValue();
-				currentlySelected.end = end.getValue();
-				pc.active.update();
-
+				this.pc.editTerm(currentlySelected, new Term(name.getText(), start.getValue(), end.getValue()));
 				window.close();
 			} else {
 				error.setText("Error: Start date must come before end date.");
 				error.setTextFill(Color.RED);
 			}
 		});
+
 		dates.getChildren().addAll(startBox, endBox);
 		options.getChildren().addAll(chooseTerm, dates, confirmChanges, error);
 		chooseTerm.setValue(pc.active.currentlySelectedTerm);
@@ -88,7 +98,13 @@ public class EditTerm {
 		window.showAndWait();
 	}
 
-	private static void updateTermSelected(Term term) {
+	/**
+	 * Update term selected.
+	 *
+	 * @param term
+	 *            the term
+	 */
+	private void updateTermSelected(Term term) {
 		currentlySelected = term;
 		name.setText(currentlySelected.name);
 		start.setValue(currentlySelected.start);

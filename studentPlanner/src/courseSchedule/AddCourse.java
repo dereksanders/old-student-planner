@@ -32,16 +32,20 @@ import model.Term;
  */
 public class AddCourse {
 
-	public static ArrayList<Term> selectedAddTerms;
-	public static boolean legalCode;
-	public static Course addCourse;
+	private ProfileController pc;
+	private boolean legalCode;
+
+	public AddCourse(ProfileController pc) {
+		this.pc = pc;
+		display();
+	}
 
 	/**
 	 * Display Add Course window.
 	 *
 	 * @return the course to be added
 	 */
-	public static Course display(ProfileController pc) {
+	private void display() {
 
 		/* Basic window set-up */
 		Stage window = new Stage();
@@ -127,7 +131,6 @@ public class AddCourse {
 		Color selected = pc.planner.getNextColor();
 		ColorPicker cPicker = new ColorPicker(selected);
 
-		addCourse = null;
 		ArrayList<Meeting> addMeetings = new ArrayList<>();
 
 		Button add = new Button("Add Course");
@@ -135,9 +138,9 @@ public class AddCourse {
 		add.setOnAction(e -> {
 			if (legalCode) {
 				boolean legalTerms = true;
-				for (ChoiceBox<Term> c : termChoices) {
-					if (c.getValue() != null && !termsArray.contains(c.getValue())) {
-						termsArray.add(c.getValue());
+				for (ChoiceBox<Term> t : termChoices) {
+					if (t.getValue() != null && !termsArray.contains(t.getValue())) {
+						termsArray.add(t.getValue());
 					} else {
 						legalTerms = false;
 						break;
@@ -197,7 +200,6 @@ public class AddCourse {
 		add.requestFocus();
 		window.setScene(scene);
 		window.showAndWait();
-		return addCourse;
 	}
 
 	/**
@@ -216,13 +218,10 @@ public class AddCourse {
 	 * @param selected
 	 *            the selected
 	 */
-	private static void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name,
+	private void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name,
 			ArrayList<Meeting> meetings, Color selected) {
 		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end, meetings,
 				new ArrayList<CourseEvent>(), Style.colorToHex(selected));
-		for (Meeting m : meetings) {
-			m.colour = c.colour;
-		}
-		addCourse = c;
+		this.pc.addCourse(c);
 	}
 }

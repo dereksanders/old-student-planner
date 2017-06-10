@@ -25,20 +25,26 @@ import model.Term;
 
 public class EditCourse {
 
-	public static Course currentlySelected;
-	public static ChoiceBox<Term> chooseTerm;
-	public static ObservableList<Course> termsCourses;
-	public static ChoiceBox<Course> chooseCourse;
-	public static TextField department;
-	public static TextField code;
-	public static TextField title;
-	public static ColorPicker cPicker;
-	public static Label meetings;
-	public static ChoiceBox<Meeting> chooseMeeting;
-	public static Label error;
-	public static HBox ch;
+	private ProfileController pc;
+	private Course currentlySelected;
+	private ChoiceBox<Term> chooseTerm;
+	private ObservableList<Course> termsCourses;
+	private ChoiceBox<Course> chooseCourse;
+	private TextField department;
+	private TextField code;
+	private TextField title;
+	private ColorPicker cPicker;
+	private Label meetings;
+	private ChoiceBox<Meeting> chooseMeeting;
+	private Label error;
+	private HBox ch;
 
-	public static Course display(ProfileController pc) {
+	public EditCourse(ProfileController pc) {
+		this.pc = pc;
+		display();
+	}
+
+	private void display() {
 
 		currentlySelected = null;
 
@@ -174,10 +180,9 @@ public class EditCourse {
 		Scene scene = new Scene(layout);
 		window.setScene(scene);
 		window.showAndWait();
-		return currentlySelected;
 	}
 
-	private static void updateCurrentlySelected(Course c) {
+	private void updateCurrentlySelected(Course c) {
 
 		chooseCourse.setValue(termsCourses.get(0));
 		currentlySelected = c;
@@ -189,7 +194,7 @@ public class EditCourse {
 		meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
 	}
 
-	private static void updateChooseMeeting() {
+	private void updateChooseMeeting() {
 
 		ch.getChildren().remove(chooseMeeting);
 		ObservableList<Meeting> chooseMeet = FXCollections.observableArrayList(currentlySelected.meetings);
@@ -200,13 +205,14 @@ public class EditCourse {
 		}
 	}
 
-	private static boolean confirmChanges() {
-
+	private boolean confirmChanges() {
 		try {
-			currentlySelected.departmentID = department.getText();
-			currentlySelected.code = Integer.parseInt(code.getText());
-			currentlySelected.name = title.getText();
-			currentlySelected.colour = Style.colorToHex(cPicker.getValue());
+			Course changes = currentlySelected.clone();
+			changes.name = title.getText();
+			changes.departmentID = department.getText();
+			changes.code = Integer.parseInt(code.getText());
+			changes.colour = Style.colorToHex(cPicker.getValue());
+			this.pc.editCourse(currentlySelected, changes);
 			return true;
 		} catch (NumberFormatException e) {
 			error.setText("Invalid course code. Cannot save changes.");

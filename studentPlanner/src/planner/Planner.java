@@ -1,13 +1,12 @@
-package core;
+package planner;
 
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import courseSchedule.AddCourse;
-import courseSchedule.AddTerm;
-import courseSchedule.EditCourse;
-import courseSchedule.EditTerm;
+import core.ProfileController;
+import core.Style;
+import core.View;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;

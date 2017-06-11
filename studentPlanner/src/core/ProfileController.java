@@ -11,6 +11,7 @@ import model.CourseEvent;
 import model.Meeting;
 import model.Profile;
 import model.Term;
+import planner.Planner;
 
 /**
  * The Class ProfileController.

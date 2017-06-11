@@ -9,7 +9,6 @@ import java.util.PriorityQueue;
 
 import core.Style;
 import core.Driver;
-import core.Planner;
 import core.Time;
 import core.View;
 import javafx.beans.value.ChangeListener;
@@ -30,6 +29,7 @@ import model.Course;
 import model.Meeting;
 import model.Profile;
 import model.Term;
+import planner.Planner;
 import utility.Pretty;
 
 /**

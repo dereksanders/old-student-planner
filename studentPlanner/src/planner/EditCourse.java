@@ -1,4 +1,4 @@
-package courseSchedule;
+package planner;
 
 import core.Style;
 import core.Driver;
@@ -23,6 +23,9 @@ import model.Course;
 import model.Meeting;
 import model.Term;
 
+/**
+ * The Class EditCourse.
+ */
 public class EditCourse {
 
 	private ProfileController pc;
@@ -39,11 +42,20 @@ public class EditCourse {
 	private Label error;
 	private HBox ch;
 
+	/**
+	 * Instantiates a new edits the course.
+	 *
+	 * @param pc
+	 *            the pc
+	 */
 	public EditCourse(ProfileController pc) {
 		this.pc = pc;
 		display();
 	}
 
+	/**
+	 * Display.
+	 */
 	private void display() {
 
 		currentlySelected = null;
@@ -111,7 +123,7 @@ public class EditCourse {
 		/* Add meetings */
 		Button addMeeting = new Button("Add Meeting");
 		addMeeting.setOnAction(e -> {
-			Meeting m = AddMeeting.display();
+			Meeting m = new AddMeeting().display();
 			pc.addMeeting(currentlySelected, m);
 			updateChooseMeeting();
 			meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
@@ -141,7 +153,7 @@ public class EditCourse {
 
 		delete.setOnAction(e -> {
 			/* If deleting the currently selected course is confirmed */
-			if (DeleteCourse.display(currentlySelected)) {
+			if (new DeleteCourse(currentlySelected).display()) {
 				pc.deleteCourse(currentlySelected);
 				/* If no more courses exist, close the "Edit Course" window */
 				if (!pc.active.coursesExist()) {
@@ -182,6 +194,12 @@ public class EditCourse {
 		window.showAndWait();
 	}
 
+	/**
+	 * Update currently selected.
+	 *
+	 * @param c
+	 *            the c
+	 */
 	private void updateCurrentlySelected(Course c) {
 
 		chooseCourse.setValue(termsCourses.get(0));
@@ -194,6 +212,9 @@ public class EditCourse {
 		meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
 	}
 
+	/**
+	 * Update choose meeting.
+	 */
 	private void updateChooseMeeting() {
 
 		ch.getChildren().remove(chooseMeeting);
@@ -205,6 +226,11 @@ public class EditCourse {
 		}
 	}
 
+	/**
+	 * Confirm changes.
+	 *
+	 * @return true, if successful
+	 */
 	private boolean confirmChanges() {
 		try {
 			Course changes = currentlySelected.clone();

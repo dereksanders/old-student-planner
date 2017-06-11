@@ -1,8 +1,8 @@
 package grades;
 
-import core.Planner;
 import core.ProfileController;
 import model.Profile;
+import planner.Planner;
 
 public class GradesController extends ProfileController {
 

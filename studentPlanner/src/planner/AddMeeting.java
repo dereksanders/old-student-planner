@@ -1,4 +1,4 @@
-package courseSchedule;
+package planner;
 
 import java.time.LocalTime;
 
@@ -23,13 +23,27 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Meeting;
 
+/**
+ * The Class AddMeeting.
+ */
 public class AddMeeting {
 
-	public static Meeting add;
-	public static ComboBox<Time> startTime;
-	public static ComboBox<Time> endTime;
+	private Meeting add;
+	private ComboBox<Time> startTime;
+	private ComboBox<Time> endTime;
 
-	public static Meeting display() {
+	/**
+	 * Instantiates a new adds the meeting.
+	 */
+	public AddMeeting() {
+	}
+
+	/**
+	 * Display.
+	 *
+	 * @return the meeting
+	 */
+	public Meeting display() {
 		ObservableList<String> days = FXCollections.observableArrayList();
 		days.addAll("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 		ObservableList<String> types = FXCollections.observableArrayList();
@@ -85,7 +99,6 @@ public class AddMeeting {
 			}
 		});
 		cancel.setOnAction(e -> {
-			add = null;
 			window.close();
 		});
 		VBox layout = new VBox(20);
@@ -97,7 +110,22 @@ public class AddMeeting {
 		return add;
 	}
 
-	private static void confirmChanges(String type, String day, Time start, Time end, String loc) {
-		add = new Meeting(type, LocalTime.of(start.hour, start.minute), LocalTime.of(end.hour, end.minute), day, loc);
+	/**
+	 * Confirm changes.
+	 *
+	 * @param type
+	 *            the type
+	 * @param day
+	 *            the day
+	 * @param start
+	 *            the start
+	 * @param end
+	 *            the end
+	 * @param loc
+	 *            the loc
+	 */
+	private void confirmChanges(String type, String day, Time start, Time end, String loc) {
+		this.add = new Meeting(type, LocalTime.of(start.hour, start.minute), LocalTime.of(end.hour, end.minute), day,
+				loc);
 	}
 }

@@ -4,11 +4,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import core.Driver;
-import core.Planner;
 import core.ProfileController;
 import model.Course;
 import model.Meeting;
 import model.Profile;
+import planner.Planner;
 
 public class CourseScheduleController extends ProfileController {
 

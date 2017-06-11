@@ -1,4 +1,4 @@
-package courseSchedule;
+package planner;
 
 import java.time.LocalDate;
 

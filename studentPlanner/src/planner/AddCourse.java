@@ -1,8 +1,9 @@
-package courseSchedule;
+package planner;
 
 import java.util.ArrayList;
 
 import core.Style;
+import courseSchedule.HandleConflict;
 import core.Driver;
 import core.ProfileController;
 import javafx.beans.value.ChangeListener;
@@ -35,6 +36,12 @@ public class AddCourse {
 	private ProfileController pc;
 	private boolean legalCode;
 
+	/**
+	 * Instantiates a new adds the course.
+	 *
+	 * @param pc
+	 *            the pc
+	 */
 	public AddCourse(ProfileController pc) {
 		this.pc = pc;
 		display();
@@ -162,7 +169,7 @@ public class AddCourse {
 		Label meetings = new Label("Weekly Meetings: " + addMeetings.size());
 		Button addMeeting = new Button("Add Meeting");
 		addMeeting.setOnAction(e -> {
-			Meeting m = AddMeeting.display();
+			Meeting m = new AddMeeting().display();
 			if (m != null) {
 				boolean confirm = true;
 				ArrayList<Meeting> innerConflict = m.conflictsWith(addMeetings);

@@ -6,7 +6,6 @@ import java.util.Observer;
 import java.util.PriorityQueue;
 
 import core.Driver;
-import core.Planner;
 import core.Style;
 import core.View;
 import javafx.beans.property.BooleanProperty;
@@ -30,6 +29,7 @@ import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Profile;
 import model.Term;
+import planner.Planner;
 import utility.Pretty;
 
 /**
@@ -100,10 +100,12 @@ public class TermCalendar extends View implements Observer {
 		Style.setTitleStyle(upcomingTitle);
 		HBox upcomingShow = new HBox();
 		Label showWithin = new Label("Show events within: ");
+
 		ObservableList<Integer> thresholds = FXCollections.observableArrayList();
 		for (int i = 1; i < 31; i++) {
 			thresholds.add(i);
 		}
+
 		ComboBox<Integer> upcomingThreshold = new ComboBox<>(thresholds);
 		upcomingThreshold.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -112,6 +114,7 @@ public class TermCalendar extends View implements Observer {
 				updateUpcomingEvents();
 			}
 		});
+
 		upcomingThreshold.setValue(14);
 		Label showWithinDays = new Label(" days.");
 		upcomingShow.getChildren().addAll(showWithin, upcomingThreshold, showWithinDays);
@@ -229,10 +232,10 @@ public class TermCalendar extends View implements Observer {
 						final int offset = i;
 						add.setOnAction(e -> {
 							if (ce == null || ce.isEmpty()) {
-								AddCalendarEvent.display(LocalDate.of(term.start.plusMonths(offset).getYear(),
+								new AddCalendarEvent(LocalDate.of(term.start.plusMonths(offset).getYear(),
 										term.start.plusMonths(offset).getMonthValue(), cDate), controller);
 							} else {
-								AddOrEditCalendarEvent.display(LocalDate.of(term.start.plusMonths(offset).getYear(),
+								new AddOrEditCalendarEvent(LocalDate.of(term.start.plusMonths(offset).getYear(),
 										term.start.plusMonths(offset).getMonthValue(), cDate), controller);
 							}
 						});

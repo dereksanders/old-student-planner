@@ -1,8 +1,8 @@
 package termCalendar;
 
-import core.Planner;
 import core.ProfileController;
 import model.Profile;
+import planner.Planner;
 
 public class TermCalendarController extends ProfileController {
 

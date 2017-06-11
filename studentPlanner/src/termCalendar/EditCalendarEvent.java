@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import core.Driver;
-import core.ProfileController;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -27,6 +26,9 @@ import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
 
+/**
+ * The Class EditCalendarEvent.
+ */
 public class EditCalendarEvent {
 
 	private CalendarEvent currentlySelected;
@@ -39,16 +41,25 @@ public class EditCalendarEvent {
 	private Label error;
 	private Label current;
 
-	private LocalDate d;
-	private ProfileController controller;
+	private LocalDate date;
+	private TermCalendarController controller;
 
-	public EditCalendarEvent(LocalDate d, ProfileController controller) {
-		this.d = d;
+	/**
+	 * Instantiates a new edits the calendar event.
+	 *
+	 * @param date the date
+	 * @param controller the controller
+	 */
+	public EditCalendarEvent(LocalDate date, TermCalendarController controller) {
+		this.date = date;
 		this.controller = controller;
 		display();
 	}
 
-	public void display() {
+	/**
+	 * Display.
+	 */
+	private void display() {
 		ObservableList<Time> times = FXCollections.observableArrayList();
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 31; j += 30) {
@@ -61,7 +72,7 @@ public class EditCalendarEvent {
 		window.setTitle("Edit Event");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
-		for (CalendarEvent e : controller.active.dateEvents.get(d)) {
+		for (CalendarEvent e : controller.active.dateEvents.get(date)) {
 			events.add(e);
 		}
 		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(events);
@@ -98,12 +109,12 @@ public class EditCalendarEvent {
 		Button delete = new Button("Delete Event");
 		delete.setOnAction(e -> {
 			controller.deleteEvent(controller.active.courseColors.get(Color.web(currentlySelected.colour)).peek(),
-					currentlySelected, d);
+					currentlySelected, date);
 			window.close();
 		});
 		Button confirm = new Button("Confirm Changes");
 		confirm.setOnAction(e -> {
-			confirmChanges(d);
+			confirmChanges(date);
 			window.close();
 		});
 		VBox options = new VBox(20);
@@ -113,6 +124,11 @@ public class EditCalendarEvent {
 		window.showAndWait();
 	}
 
+	/**
+	 * Confirm changes.
+	 *
+	 * @param date the date
+	 */
 	private void confirmChanges(LocalDate date) {
 		try {
 			if (currentlySelected instanceof CourseEvent) {
@@ -135,6 +151,11 @@ public class EditCalendarEvent {
 		}
 	}
 
+	/**
+	 * Update currently selected.
+	 *
+	 * @param e the e
+	 */
 	private void updateCurrentlySelected(CalendarEvent e) {
 		currentlySelected = e;
 		if (currentlySelected instanceof CourseEvent) {

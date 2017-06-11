@@ -1,4 +1,4 @@
-package courseSchedule;
+package planner;
 
 import core.Driver;
 import core.ProfileController;

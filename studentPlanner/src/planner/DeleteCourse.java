@@ -1,4 +1,4 @@
-package courseSchedule;
+package planner;
 
 import core.Driver;
 import javafx.scene.Scene;
@@ -12,14 +12,19 @@ import model.Course;
 
 public class DeleteCourse {
 
-	public static boolean confirm;
+	private Course selected;
+	private boolean confirm;
 
-	public static boolean display(Course selected) {
+	public DeleteCourse(Course selected) {
+		this.selected = selected;
+	}
+
+	public boolean display() {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Delete Course");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
-		Label l = new Label("Are you sure you want to delete " + selected + "?");
+		Label l = new Label("Are you sure you want to delete " + this.selected + "?");
 		Button c = new Button("Yes");
 		c.setOnAction(e -> {
 			confirm = true;

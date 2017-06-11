@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import core.Driver;
-import core.ProfileController;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -26,11 +25,33 @@ import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
 
+/**
+ * The Class AddCalendarEvent.
+ */
 public class AddCalendarEvent {
 
-	private static ComboBox<Time> endTimes;
+	private LocalDate date;
+	private TermCalendarController controller;
+	private ComboBox<Time> endTimes;
 
-	public static void display(LocalDate d, ProfileController controller) {
+	/**
+	 * Instantiates a new adds the calendar event.
+	 *
+	 * @param date
+	 *            the date
+	 * @param controller
+	 *            the controller
+	 */
+	public AddCalendarEvent(LocalDate date, TermCalendarController controller) {
+		this.date = date;
+		this.controller = controller;
+		display();
+	}
+
+	/**
+	 * Display.
+	 */
+	private void display() {
 
 		/* Window set-up */
 		Stage window = new Stage();
@@ -38,7 +59,7 @@ public class AddCalendarEvent {
 		window.setTitle("Add Calendar Event");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
-		Label date = new Label(d.toString());
+		Label dateLabel = new Label(date.toString());
 		ObservableList<String> types = FXCollections.observableArrayList();
 		types.addAll("Deliverable", "Personal");
 
@@ -116,10 +137,12 @@ public class AddCalendarEvent {
 				try {
 					/* Add course event */
 					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().colour,
-							LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-							LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+							LocalDateTime.of(date,
+									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+							LocalDateTime.of(date,
+									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 							Double.parseDouble(weight.getText()));
-					controller.addEvent(cChoice.getValue(), add, d);
+					controller.addEvent(cChoice.getValue(), add, date);
 					success = true;
 				} catch (NumberFormatException er) {
 					error.setText("Weight must be a valid decimal number.");
@@ -127,9 +150,9 @@ public class AddCalendarEvent {
 			} else if (typeChoice.getValue().equals("Personal")) {
 				/* Add calendar event */
 				CalendarEvent add = new CalendarEvent(name.getText(),
-						LocalDateTime.of(d, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-						LocalDateTime.of(d, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
-				controller.addEvent(null, add, d);
+						LocalDateTime.of(date, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+						LocalDateTime.of(date, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
+				controller.addEvent(null, add, date);
 				success = true;
 			}
 			if (success) {
@@ -137,7 +160,8 @@ public class AddCalendarEvent {
 			}
 		});
 		VBox options = new VBox(20);
-		options.getChildren().addAll(date, cChoice, typeChoice, name, startTime, selectTime, weight, addEvent, error);
+		options.getChildren().addAll(dateLabel, cChoice, typeChoice, name, startTime, selectTime, weight, addEvent,
+				error);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();

@@ -25,6 +25,9 @@ import javafx.stage.Stage;
 import model.Course;
 import model.Meeting;
 
+/**
+ * The Class AddMeetingOnSchedule.
+ */
 public class AddMeetingOnSchedule {
 
 	private CourseScheduleController pc;
@@ -32,6 +35,14 @@ public class AddMeetingOnSchedule {
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
 
+	/**
+	 * Instantiates a new adds the meeting on schedule.
+	 *
+	 * @param cell
+	 *            the cell
+	 * @param pc
+	 *            the pc
+	 */
 	public AddMeetingOnSchedule(LocalDateTime cell, CourseScheduleController pc) {
 		this.selected = cell;
 		this.pc = pc;
@@ -130,6 +141,8 @@ public class AddMeetingOnSchedule {
 	/**
 	 * Confirm changes.
 	 *
+	 * @param course
+	 *            the course
 	 * @param type
 	 *            the type
 	 * @param day

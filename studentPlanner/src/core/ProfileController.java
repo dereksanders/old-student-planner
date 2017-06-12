@@ -305,7 +305,7 @@ public class ProfileController {
 	public void addEvent(Course course, CalendarEvent event, LocalDate date) {
 		active.dateEvents.put(date, event);
 		if (course != null) {
-			active.courseColors.get(Color.web((event).colour)).peek().events.add((CourseEvent) event);
+			active.courseColors.get(Color.web((event).colour)).events.add((CourseEvent) event);
 		}
 		active.update();
 	}
@@ -323,14 +323,14 @@ public class ProfileController {
 	public void deleteEvent(Course course, CalendarEvent event, LocalDate date) {
 		active.dateEvents.del(date, event);
 		if (course != null) {
-			active.courseColors.get(Color.web((event).colour)).peek().events.remove(event);
+			active.courseColors.get(Color.web((event).colour)).events.remove(event);
 		}
 		active.update();
 	}
 
 	public Course getCourseFromColor(Color c) {
 
-		return this.active.courseColors.get(c).peek();
+		return this.active.courseColors.get(c);
 	}
 
 	/**

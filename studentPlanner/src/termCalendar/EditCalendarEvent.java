@@ -47,8 +47,10 @@ public class EditCalendarEvent {
 	/**
 	 * Instantiates a new edits the calendar event.
 	 *
-	 * @param date the date
-	 * @param controller the controller
+	 * @param date
+	 *            the date
+	 * @param controller
+	 *            the controller
 	 */
 	public EditCalendarEvent(LocalDate date, TermCalendarController controller) {
 		this.date = date;
@@ -108,7 +110,7 @@ public class EditCalendarEvent {
 		chooseEvent.setValue(events.get(0));
 		Button delete = new Button("Delete Event");
 		delete.setOnAction(e -> {
-			controller.deleteEvent(controller.active.courseColors.get(Color.web(currentlySelected.colour)).peek(),
+			controller.deleteEvent(controller.active.courseColors.get(Color.web(currentlySelected.colour)),
 					currentlySelected, date);
 			window.close();
 		});
@@ -127,7 +129,8 @@ public class EditCalendarEvent {
 	/**
 	 * Confirm changes.
 	 *
-	 * @param date the date
+	 * @param date
+	 *            the date
 	 */
 	private void confirmChanges(LocalDate date) {
 		try {
@@ -136,7 +139,7 @@ public class EditCalendarEvent {
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						Double.parseDouble(weight.getText()));
-				Course eventCourse = controller.active.courseColors.get(Color.web(currentlySelected.colour)).peek();
+				Course eventCourse = controller.active.courseColors.get(Color.web(currentlySelected.colour));
 				controller.deleteEvent(eventCourse, currentlySelected, date);
 				controller.addEvent(eventCourse, edited, date);
 			} else {
@@ -154,7 +157,8 @@ public class EditCalendarEvent {
 	/**
 	 * Update currently selected.
 	 *
-	 * @param e the e
+	 * @param e
+	 *            the e
 	 */
 	private void updateCurrentlySelected(CalendarEvent e) {
 		currentlySelected = e;

@@ -7,6 +7,7 @@ import java.util.PriorityQueue;
 
 import core.ProfileSave;
 import javafx.scene.paint.Color;
+import utility.GenericHashTable;
 import utility.GenericLinkedHashTable;
 import utility.JSONParser;
 
@@ -22,7 +23,7 @@ public class Profile extends Observable {
 	public LocalDate currentlySelectedDate;
 
 	public ArrayList<Term> terms;
-	public GenericLinkedHashTable<Color, Course> courseColors;
+	public GenericHashTable<Color, Course> courseColors;
 	public int showWithinThreshold = 14;
 	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
@@ -36,19 +37,15 @@ public class Profile extends Observable {
 	public Profile(String name) {
 
 		this.name = name;
-
-		/* Initialize ObservableArrayList of all terms in the current profile */
 		this.terms = new ArrayList<>();
-
-		/* Initialize GenericHashTable of Colors mapped to Courses */
-		this.courseColors = new GenericLinkedHashTable<>(366, false);
+		this.courseColors = new GenericHashTable<>(100);
 
 		this.dayMeetings = new ArrayList<>(7);
 		for (int i = 0; i < 7; i++) {
 			this.dayMeetings.add(new PriorityQueue<Meeting>());
 		}
 
-		this.dateEvents = new GenericLinkedHashTable<>(366, false);
+		this.dateEvents = new GenericLinkedHashTable<>(300, false);
 	}
 
 	public Profile(ProfileSave p) {

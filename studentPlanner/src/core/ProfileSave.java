@@ -10,6 +10,7 @@ import model.Course;
 import model.Meeting;
 import model.Profile;
 import model.Term;
+import utility.GenericHashTable;
 import utility.GenericLinkedHashTable;
 
 public class ProfileSave {
@@ -21,7 +22,7 @@ public class ProfileSave {
 	public LocalDate currentlySelectedDate;
 
 	public ArrayList<Term> terms;
-	public GenericLinkedHashTable<Color, Course> courseColors;
+	public GenericHashTable<Color, Course> courseColors;
 	public int showWithinThreshold = 14;
 	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;

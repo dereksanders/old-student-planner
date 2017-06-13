@@ -110,7 +110,8 @@ public class EditCalendarEvent {
 		chooseEvent.setValue(events.get(0));
 		Button delete = new Button("Delete Event");
 		delete.setOnAction(e -> {
-			controller.deleteEvent(controller.active.courseColors.get(Color.web(currentlySelected.colour)),
+			controller.deleteEvent(
+					controller.active.currentlySelectedTerm.courseColors.get(Color.web(currentlySelected.colour)),
 					currentlySelected, date);
 			window.close();
 		});
@@ -139,7 +140,8 @@ public class EditCalendarEvent {
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						Double.parseDouble(weight.getText()));
-				Course eventCourse = controller.active.courseColors.get(Color.web(currentlySelected.colour));
+				Course eventCourse = controller.active.currentlySelectedTerm.courseColors
+						.get(Color.web(currentlySelected.colour));
 				controller.deleteEvent(eventCourse, currentlySelected, date);
 				controller.addEvent(eventCourse, edited, date);
 			} else {

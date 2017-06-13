@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
+import javafx.scene.paint.Color;
+import utility.GenericHashTable;
 import utility.Pretty;
 
 public class Term implements Comparable<Term> {
@@ -13,6 +15,7 @@ public class Term implements Comparable<Term> {
 	public LocalDate end;
 	public double grade;
 	public ArrayList<Course> courses;
+	public GenericHashTable<Color, Course> courseColors;
 
 	/* Course Schedule params */
 	public int maxDay;
@@ -24,6 +27,7 @@ public class Term implements Comparable<Term> {
 		this.start = start;
 		this.end = end;
 		this.courses = new ArrayList<>();
+		this.courseColors = new GenericHashTable<>(100);
 
 		/* Default course schedule params */
 		this.maxDay = 5;

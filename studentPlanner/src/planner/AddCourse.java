@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import core.Style;
 import courseSchedule.HandleConflict;
 import core.Driver;
+import core.IllegalCourseException;
 import core.ProfileController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -85,8 +86,8 @@ public class AddCourse {
 		terms.getChildren().add(startTerm);
 		terms.getChildren().addAll(termChoices);
 		terms.getChildren().addAll(termsControls);
-		if (pc.active.terms.size() > 0) {
-			termChoices.get(0).setValue(pc.active.terms.get(0));
+		if (pc.active.currentlySelectedTerm != null) {
+			termChoices.get(0).setValue(pc.active.currentlySelectedTerm);
 		}
 
 		/* When the "+" or "-" Term buttons are pressed. */
@@ -227,8 +228,17 @@ public class AddCourse {
 	 */
 	private void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name,
 			ArrayList<Meeting> meetings, Color selected) {
+
 		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end, meetings,
 				new ArrayList<CourseEvent>(), Style.colorToHex(selected));
-		this.pc.addCourse(c);
+
+		try {
+
+			this.pc.addCourse(c);
+
+		} catch (IllegalCourseException e) {
+
+			e.printStackTrace();
+		}
 	}
 }

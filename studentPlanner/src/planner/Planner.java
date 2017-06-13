@@ -159,14 +159,8 @@ public class Planner extends View implements Observer {
 	 * @return the next color
 	 */
 	public Color getNextColor() {
-		/*
-		 * TODO: When course with first suggested colour is deleted, colour
-		 * suggested for second course is still the next colour.
-		 * 
-		 * Associated with issue #11.
-		 */
 		for (Color c : Style.selectableColors) {
-			if (this.pc.active.courseColors.get(c) == null) {
+			if (this.pc.active.currentlySelectedTerm.courseColors.get(c) == null) {
 				return c;
 			}
 		}

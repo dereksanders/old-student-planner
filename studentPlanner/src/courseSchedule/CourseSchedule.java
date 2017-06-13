@@ -157,8 +157,8 @@ public class CourseSchedule extends View implements Observer {
 		PriorityQueue<Meeting> td = controller.active.dayMeetings.get(Driver.t.current.getDayOfWeek().getValue() - 1);
 		if (td != null && td.size() > 0) {
 			for (Meeting m : td) {
-				desc += controller.active.courseColors.get(Color.web(m.colour)) + " " + m.meetingType + ": " + m.start
-						+ " - " + m.end + "\n";
+				desc += controller.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)) + " "
+						+ m.meetingType + ": " + m.start + " - " + m.end + "\n";
 			}
 			desc = desc.substring(0, desc.lastIndexOf("\n"));
 		}

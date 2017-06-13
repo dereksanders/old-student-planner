@@ -145,18 +145,28 @@ public class ProfileController {
 	 *
 	 * @param addedCourse
 	 *            the added course
+	 * @throws IllegalCourseException
 	 */
-	public void addCourse(Course addedCourse) {
+	public void addCourse(Course addedCourse) throws IllegalCourseException {
 		if (addedCourse != null) {
 			for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
-				t.courses.add(addedCourse);
+				/*
+				 * Error Condition: One of the terms this course is being added
+				 * to has a course with the same colour.
+				 */
+				if (t.courseColors.get(Color.web(addedCourse.colour)) != null) {
+					throw new IllegalCourseException(
+							"One of the terms this course is being added to has a course with the same colour.");
+				} else {
+					t.courseColors.put(Color.web(addedCourse.colour), addedCourse);
+					t.courses.add(addedCourse);
+				}
 			}
 			for (Meeting m : addedCourse.meetings) {
 				m.colour = addedCourse.colour;
 				active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
 				active.currentlySelectedTerm.updateParams(m);
 			}
-			active.courseColors.put(Color.web(addedCourse.colour), addedCourse);
 			active.update();
 		}
 	}
@@ -191,13 +201,25 @@ public class ProfileController {
 		 * In case the course's colour was changed. TODO: Remove mapping of
 		 * previous colour to edited course.
 		 */
-		if (this.active.courseColors.get(Color.web(edited.colour)) == null) {
-			this.active.courseColors.put(Color.web(edited.colour), edited);
-			for (Meeting m : edited.meetings) {
-				m.colour = edited.colour;
-			}
-			for (CourseEvent e : edited.events) {
-				e.colour = edited.colour;
+
+		for (Term t : findTermsBetween(edited.start, edited.end)) {
+
+			if (t.courseColors.get(Color.web(edited.colour)) == null) {
+
+				t.courseColors.put(Color.web(edited.colour), edited);
+
+				for (Meeting m : edited.meetings) {
+					m.colour = edited.colour;
+				}
+				for (CourseEvent e : edited.events) {
+					e.colour = edited.colour;
+				}
+			} else {
+				/*
+				 * If the colour hasn't been changed, there's no need to go
+				 * through each term.
+				 */
+				break;
 			}
 		}
 
@@ -211,8 +233,8 @@ public class ProfileController {
 	 *            the deleted course
 	 */
 	public void deleteCourse(Course deletedCourse) {
-		this.active.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
 		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
+			t.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
 			t.courses.remove(deletedCourse);
 		}
 		for (Meeting m : deletedCourse.meetings) {
@@ -305,7 +327,9 @@ public class ProfileController {
 	public void addEvent(Course course, CalendarEvent event, LocalDate date) {
 		active.dateEvents.put(date, event);
 		if (course != null) {
-			active.courseColors.get(Color.web((event).colour)).events.add((CourseEvent) event);
+			for (Term t : findTermsBetween(course.start, course.end)) {
+				t.courseColors.get(Color.web((event).colour)).events.add((CourseEvent) event);
+			}
 		}
 		active.update();
 	}
@@ -323,14 +347,16 @@ public class ProfileController {
 	public void deleteEvent(Course course, CalendarEvent event, LocalDate date) {
 		active.dateEvents.del(date, event);
 		if (course != null) {
-			active.courseColors.get(Color.web((event).colour)).events.remove(event);
+			for (Term t : findTermsBetween(course.start, course.end)) {
+				t.courseColors.get(Color.web((event).colour)).events.remove(event);
+			}
 		}
 		active.update();
 	}
 
 	public Course getCourseFromColor(Color c) {
 
-		return this.active.courseColors.get(c);
+		return this.active.currentlySelectedTerm.courseColors.get(c);
 	}
 
 	/**

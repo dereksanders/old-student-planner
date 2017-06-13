@@ -40,14 +40,14 @@ public class Planner extends View implements Observer {
 	private BorderPane viewPane;
 
 	/* controlPane elements */
-	public ChoiceBox<View> chooseView;
-	public Button addTerm;
-	public Button editTerm;
-	public Button addCourse;
-	public Button editCourse;
+	private ChoiceBox<View> chooseView;
+	private Button addTerm;
+	private Button editTerm;
+	private Button addCourse;
+	private Button editCourse;
 
-	public BooleanProperty termsExist = new SimpleBooleanProperty(false);
-	public BooleanProperty coursesExist = new SimpleBooleanProperty(false);
+	private BooleanProperty termsExist = new SimpleBooleanProperty(false);
+	private BooleanProperty coursesExist = new SimpleBooleanProperty(false);
 
 	/**
 	 * Instantiates a new planner.

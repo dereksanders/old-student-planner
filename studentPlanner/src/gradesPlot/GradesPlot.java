@@ -14,8 +14,8 @@ import model.Term;
 
 public class GradesPlot extends View implements Observer {
 
-	public Observable observable;
-	public GradesPlotController controller;
+	private Observable observable;
+	private GradesPlotController controller;
 
 	private static LineChart<String, Number> lineChart;
 
@@ -30,7 +30,7 @@ public class GradesPlot extends View implements Observer {
 		this.mainLayout = initLayout();
 	}
 
-	public BorderPane initLayout() {
+	private BorderPane initLayout() {
 
 		BorderPane gpbp = new BorderPane();
 

@@ -28,16 +28,14 @@ import model.Term;
  */
 public class Grades extends View implements Observer {
 
-	public Observable observable;
-	public GradesController controller;
+	private Observable observable;
+	private GradesController controller;
 
-	public Label thisCoursesAssignments;
-	public Label thisCoursesTests;
-	public HBox selectedDisplay;
-	public VBox displayGrades;
-	public HBox classGrades;
-	public ComboBox<Course> chooseCourse;
-	public ComboBox<Term> chooseTerm;
+	private HBox selectedDisplay;
+	private VBox displayGrades;
+	private HBox classGrades;
+	private ComboBox<Course> chooseCourse;
+	private ComboBox<Term> chooseTerm;
 	private ObservableList<Course> coursesToDisplay;
 
 	/**
@@ -64,7 +62,7 @@ public class Grades extends View implements Observer {
 	 *
 	 * @return the border pane
 	 */
-	public BorderPane initLayout() {
+	private BorderPane initLayout() {
 
 		BorderPane gbp = new BorderPane();
 

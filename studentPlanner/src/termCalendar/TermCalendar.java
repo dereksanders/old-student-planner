@@ -29,7 +29,6 @@ import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Profile;
 import model.Term;
-import planner.Planner;
 import utility.Pretty;
 
 /**
@@ -37,24 +36,15 @@ import utility.Pretty;
  */
 public class TermCalendar extends View implements Observer {
 
-	/* The Planner this view belongs to. */
-	public Planner planner;
-
 	/* Observable & Controller */
-	public Observable observable;
-	public TermCalendarController controller;
+	private Observable observable;
+	private TermCalendarController controller;
 
-	public BorderPane curMonthCalendar;
-	public BorderPane nxtMonthCalendar;
-	public BorderPane nxtMonthCalendar2;
-	public BorderPane nxtMonthCalendar3;
-	public HBox calendarsUpper;
-	public HBox calendarsLower;
-	public Label upcomingEventsLabel;
-	public HBox termViewBox = new HBox(50);
-	public VBox upcoming = new VBox();
+	private Label upcomingEventsLabel;
+	private HBox termViewBox = new HBox(50);
+	private VBox upcoming = new VBox();
 
-	public BooleanProperty selectedTermNotNull = new SimpleBooleanProperty(false);
+	private BooleanProperty selectedTermNotNull = new SimpleBooleanProperty(false);
 
 	/**
 	 * Instantiates a new term calendar.
@@ -78,11 +68,11 @@ public class TermCalendar extends View implements Observer {
 	}
 
 	/**
-	 * Inits the.
+	 * Initializes the main layout of the TermCalendar.
 	 *
 	 * @return the border pane
 	 */
-	public BorderPane initLayout() {
+	private BorderPane initLayout() {
 
 		BorderPane tcbp = new BorderPane();
 
@@ -134,11 +124,11 @@ public class TermCalendar extends View implements Observer {
 	 *            the term
 	 * @return the scroll pane
 	 */
-	public ScrollPane drawCalendar(Term term) {
+	private ScrollPane drawCalendar(Term term) {
 
 		/*
-		 * TODO: ScrollPane cuts off some of the calendars when there are more
-		 * than 4 months.
+		 * TODO: Fix issue #13. The scroll-bar of the ScrollPane cuts off the
+		 * edges of the calendar when there are more than 4 months.
 		 */
 		ScrollPane termCalendar = new ScrollPane();
 

@@ -84,7 +84,7 @@ public class CourseSchedule extends View implements Observer {
 	 *
 	 * @return the border pane
 	 */
-	public BorderPane initLayout() {
+	private BorderPane initLayout() {
 
 		/* GridPane containing the entire Course Schedule view */
 		BorderPane csbp = new BorderPane();
@@ -152,7 +152,7 @@ public class CourseSchedule extends View implements Observer {
 	/**
 	 * Sets the todays meetings.
 	 */
-	public void setTodaysMeetings() {
+	private void setTodaysMeetings() {
 		String desc = "";
 		PriorityQueue<Meeting> td = controller.active.dayMeetings.get(Driver.t.current.getDayOfWeek().getValue() - 1);
 		if (td != null && td.size() > 0) {
@@ -168,23 +168,12 @@ public class CourseSchedule extends View implements Observer {
 	/**
 	 * Draw schedule.
 	 *
-	 * @param d
-	 *            the d
-	 */
-	public void drawSchedule(LocalDate d) {
-
-		drawSchedule(null, d);
-	}
-
-	/**
-	 * Draw schedule. TODO: Buttons on schedule should have functionality.
-	 *
 	 * @param term
 	 *            the term
 	 * @param d
 	 *            the d
 	 */
-	public void drawSchedule(Term term, LocalDate d) {
+	private void drawSchedule(Term term, LocalDate d) {
 
 		setTodaysMeetings();
 		scheduleGrid.getChildren().clear();
@@ -292,8 +281,8 @@ public class CourseSchedule extends View implements Observer {
 				scheduleGrid.add(meetingButtons[i][j], i + 1, j + 1);
 
 				/*
-				 * TODO: Make the schedule interactive. Associated with issue
-				 * #3.
+				 * TODO: Fix issue #10: Edit/Delete Meetings Doesn't Work on
+				 * Loaded Profiles (Only New Ones)
 				 */
 				meetingButtons[i][j].setOnAction(e -> {
 					if (this.controller.active.currentlySelectedTerm != null) {
@@ -425,8 +414,8 @@ public class CourseSchedule extends View implements Observer {
 			drawSchedule(((Profile) arg0).currentlySelectedTerm, ((Profile) arg0).currentlySelectedDate);
 
 			/*
-			 * TODO: Needs to actually test if the selected date is within the
-			 * current week.
+			 * TODO: Fix issue #12. This needs to actually test if the selected
+			 * date is within the current week.
 			 */
 			if (!((Profile) arg0).currentlySelectedDate.isEqual(Driver.t.current.toLocalDate())) {
 				showCurrentWeek.selectedProperty().set(false);

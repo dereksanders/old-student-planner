@@ -4,6 +4,8 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Course;
@@ -174,17 +176,18 @@ public class ProfileController {
 	/**
 	 * Edits the course.
 	 *
-	 * @param edited
+	 * @param original
 	 *            the edited
 	 */
-	public void editCourse(Course edited, Course changes) {
+	public void editCourse(Course original, Course edit) {
 
-		edited.name = changes.name;
-		edited.departmentID = changes.departmentID;
-		edited.code = changes.code;
-		edited.colour = changes.colour;
+		original.name = edit.name;
+		original.departmentID = edit.departmentID;
+		original.code = edit.code;
+		Color originalColor = Color.web(original.colour);
+		original.colour = edit.colour;
 
-		for (Term t : findTermsBetween(edited.start, edited.end)) {
+		for (Term t : findTermsBetween(original.start, original.end)) {
 			t.resetParams();
 		}
 
@@ -192,34 +195,50 @@ public class ProfileController {
 		 * If the edited course belongs to the currently selected term, redraw
 		 * views.
 		 */
-		if (this.active.currentlySelectedTerm.courses.contains(edited)) {
+		if (this.active.currentlySelectedTerm.courses.contains(original)) {
 
 			setCurrentlySelectedDate(this.active.currentlySelectedDate);
 		}
 
-		/*
-		 * In case the course's colour was changed. TODO: Remove mapping of
-		 * previous colour to edited course.
-		 */
+		/* In case the course's colour was changed. */
 
-		for (Term t : findTermsBetween(edited.start, edited.end)) {
+		ArrayList<Term> courseTerms = findTermsBetween(original.start, original.end);
 
-			if (t.courseColors.get(Color.web(edited.colour)) == null) {
+		for (int i = 0; i < courseTerms.size(); i++) {
 
-				t.courseColors.put(Color.web(edited.colour), edited);
+			if (courseTerms.get(i).courseColors.get(Color.web(original.colour)) == null) {
 
-				for (Meeting m : edited.meetings) {
-					m.colour = edited.colour;
-				}
-				for (CourseEvent e : edited.events) {
-					e.colour = edited.colour;
-				}
+				courseTerms.get(i).courseColors.del(originalColor, original);
+				courseTerms.get(i).courseColors.put(Color.web(original.colour), original);
+
 			} else {
 				/*
-				 * If the colour hasn't been changed, there's no need to go
-				 * through each term.
+				 * Error Condition: Edited colour is already in use by a course
+				 * in courseTerms.get(i). Need to revert changes to courseColors
+				 * if any have been made and reject changes. TODO: Better
+				 * solution could be adding a listener to the colour picker to
+				 * inform the user when this is the case.
 				 */
+				for (int j = 0; j < i; j++) {
+					courseTerms.get(j).courseColors.del(Color.web(original.colour), original);
+					courseTerms.get(j).courseColors.put(originalColor, original);
+				}
+				original.colour = Style.colorToHex(originalColor);
+				Alert illegalColour = new Alert(AlertType.ERROR,
+						"Edited colour is already in use. Colour change has been reverted.");
+				illegalColour.show();
 				break;
+			}
+
+			if (i == courseTerms.size() - 1) {
+
+				for (Meeting m : original.meetings) {
+					m.colour = original.colour;
+				}
+
+				for (CourseEvent e : original.events) {
+					e.colour = original.colour;
+				}
 			}
 		}
 

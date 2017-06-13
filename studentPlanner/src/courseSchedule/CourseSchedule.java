@@ -100,7 +100,7 @@ public class CourseSchedule extends View implements Observer {
 			hour++;
 		}
 
-		Label title = new Label("Course Schedule");
+		Label title = new Label("Weekly Schedule");
 		Style.setTitleStyle(title);
 
 		todaysMeetings = new Label("Today's Meetings:");

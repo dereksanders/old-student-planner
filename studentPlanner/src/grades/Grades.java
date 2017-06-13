@@ -213,7 +213,7 @@ public class Grades extends View implements Observer {
 			} catch (NumberFormatException e1) {
 			}
 			try {
-				((CourseEvent) chooseEvent.getValue()).grade = Double.parseDouble(grade.getText());
+				chooseEvent.getValue().grade = Double.parseDouble(grade.getText());
 			} catch (NumberFormatException e1) {
 			}
 

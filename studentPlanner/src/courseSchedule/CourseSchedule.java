@@ -183,7 +183,7 @@ public class CourseSchedule extends View implements Observer {
 			/*
 			 * The # of days in the schedule should be equal to the int value of
 			 * dayOfTheWeek of the meeting latest in the week (Mon - Sun, 1 to
-			 * 7)
+			 * 7).
 			 */
 			daysInSchedule = term.maxDay;
 
@@ -203,13 +203,10 @@ public class CourseSchedule extends View implements Observer {
 			timesOffset = Time.getDistance(new Time(0, 0), new Time(8, 30), 30);
 		}
 
-		int dayOfWeek = d.getDayOfWeek().getValue();
-
 		/*
 		 * Finds the first day of the week to be displayed.
 		 */
-		LocalDate firstOfWeek = LocalDate.of(d.getYear(), d.getMonthValue(), d.getDayOfMonth())
-				.minusDays(dayOfWeek - 1);
+		LocalDate firstOfWeek = d.minusDays(d.getDayOfWeek().getValue() - 1);
 
 		for (int i = 0; i < daysInSchedule; i++) {
 
@@ -220,7 +217,7 @@ public class CourseSchedule extends View implements Observer {
 							+ Pretty.getDateEnding(Integer.toString(firstOfWeek.plusDays(i).getDayOfMonth())));
 
 			/*
-			 * The current day is italicized in blue
+			 * The current day is italicized in blue.
 			 */
 			if (firstOfWeek.plusDays(i).isEqual(Driver.t.current.toLocalDate())) {
 
@@ -282,7 +279,7 @@ public class CourseSchedule extends View implements Observer {
 
 				/*
 				 * TODO: Fix issue #10: Edit/Delete Meetings Doesn't Work on
-				 * Loaded Profiles (Only New Ones)
+				 * Loaded Profiles (Only New Ones).
 				 */
 				meetingButtons[i][j].setOnAction(e -> {
 					if (this.controller.active.currentlySelectedTerm != null) {
@@ -365,9 +362,7 @@ public class CourseSchedule extends View implements Observer {
 				}
 			}
 
-			/*
-			 * Border styling for all cells except for last.
-			 */
+			/* Border styling for all cells except for last. */
 			if (i + 30 < length) {
 
 				/* Border styling for cell in top left corner. */
@@ -391,7 +386,7 @@ public class CourseSchedule extends View implements Observer {
 				}
 			}
 
-			/* Background styling for meeting cells */
+			/* Background styling for meeting cells. */
 			mButton.setStyle(
 					mButton.getStyle() + "-fx-background-color: #" + course.colour + "; -fx-background-radius: 0.0;");
 
@@ -411,13 +406,25 @@ public class CourseSchedule extends View implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Profile) {
+
 			drawSchedule(((Profile) arg0).currentlySelectedTerm, ((Profile) arg0).currentlySelectedDate);
 
 			/*
-			 * TODO: Fix issue #12. This needs to actually test if the selected
-			 * date is within the current week.
+			 * Test if the first date of the week for the currently selected and
+			 * current dates are the same - if so, showCurrentWeek should be
+			 * true.
 			 */
-			if (!((Profile) arg0).currentlySelectedDate.isEqual(Driver.t.current.toLocalDate())) {
+
+			LocalDate currentlySelected = ((Profile) arg0).currentlySelectedDate;
+			LocalDate current = Driver.t.current.toLocalDate();
+
+			LocalDate currentlySelectedFirstOfWeek = currentlySelected
+					.minusDays(currentlySelected.getDayOfWeek().getValue() - 1);
+			LocalDate currentFirstOfWeek = current.minusDays(current.getDayOfWeek().getValue() - 1);
+
+			if (currentlySelectedFirstOfWeek.equals(currentFirstOfWeek)) {
+				showCurrentWeek.selectedProperty().set(true);
+			} else {
 				showCurrentWeek.selectedProperty().set(false);
 			}
 		}

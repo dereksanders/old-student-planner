@@ -154,13 +154,16 @@ public class CourseSchedule extends View implements Observer {
 	 */
 	private void setTodaysMeetings() {
 		String desc = "";
-		PriorityQueue<Meeting> td = controller.active.dayMeetings.get(Driver.t.current.getDayOfWeek().getValue() - 1);
-		if (td != null && td.size() > 0) {
-			for (Meeting m : td) {
-				desc += controller.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)) + " "
-						+ m.meetingType + ": " + m.start + " - " + m.end + "\n";
+		if (controller.active.currentlySelectedTerm != null) {
+			PriorityQueue<Meeting> td = controller.active.currentlySelectedTerm.dayMeetings
+					.get(Driver.t.current.getDayOfWeek().getValue() - 1);
+			if (td != null && td.size() > 0) {
+				for (Meeting m : td) {
+					desc += controller.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)) + " "
+							+ m.meetingType + ": " + m.start + " - " + m.end + "\n";
+				}
+				desc = desc.substring(0, desc.lastIndexOf("\n"));
 			}
-			desc = desc.substring(0, desc.lastIndexOf("\n"));
 		}
 		todaysMeetings.setText("Today's Meetings:\n" + desc);
 	}

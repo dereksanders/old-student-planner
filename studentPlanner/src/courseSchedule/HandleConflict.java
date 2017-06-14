@@ -14,9 +14,16 @@ import model.Meeting;
 
 public class HandleConflict {
 
-	public static boolean confirm;
+	private Meeting m;
+	private ArrayList<Meeting> conflicts;
+	private boolean confirm;
 
-	public static boolean display(Meeting m, ArrayList<Meeting> conflicts) {
+	public HandleConflict(Meeting m, ArrayList<Meeting> conflicts) {
+		this.m = m;
+		this.conflicts = conflicts;
+	}
+
+	public boolean display() {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Handle Conflict");

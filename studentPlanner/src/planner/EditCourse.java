@@ -138,7 +138,7 @@ public class EditCourse {
 		Button deleteMeeting = new Button("Delete Meeting");
 
 		deleteMeeting.setOnAction(e -> {
-			pc.deleteMeeting(currentlySelected, chooseMeeting.getValue());
+			pc.deleteMeeting(chooseTerm.getValue(), chooseMeeting.getValue());
 			updateChooseMeeting();
 			meetings.setText("Weekly Meeting: " + currentlySelected.meetings.size());
 			for (int i = 0; i < currentlySelected.meetings.size(); i++) {

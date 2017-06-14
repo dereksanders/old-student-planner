@@ -169,25 +169,27 @@ public class AddCourse {
 
 		Label meetings = new Label("Weekly Meetings: " + addMeetings.size());
 		Button addMeeting = new Button("Add Meeting");
+
 		addMeeting.setOnAction(e -> {
+
 			Meeting m = new AddMeeting().display();
+
 			if (m != null) {
+
 				boolean confirm = true;
-				ArrayList<Meeting> innerConflict = m.conflictsWith(addMeetings);
-				ArrayList<Meeting> outerConflict = m.conflictsWithCourses(pc.active.currentlySelectedTerm.courses);
-				if (innerConflict.size() > 0) {
-					confirm = HandleConflict.display(m, innerConflict);
+
+				ArrayList<Meeting> innerConflicts = m.conflictsWith(addMeetings);
+
+				if (innerConflicts.size() > 0) {
+					confirm = new HandleConflict(m, innerConflicts).display();
 				}
-				if (outerConflict.size() > 0) {
-					confirm = HandleConflict.display(m, outerConflict);
-				}
+
 				if (confirm) {
-					/* TODO: Handle meeting conflicts */
-					// ArrayList<Meeting> allConflicts = new ArrayList<>();
-					// allConflicts.addAll(innerConflict);
-					// allConflicts.addAll(outerConflict);
-					// Meeting.deleteMeetings(allConflicts);
+
+					/* Remove inner conflicts from addMeetings. */
+					addMeetings.removeAll(innerConflicts);
 					addMeetings.add(m);
+
 					meetings.setText("Weekly Meetings: " + addMeetings.size());
 					for (int i = 0; i < addMeetings.size(); i++) {
 						meetings.setText(meetings.getText() + "\n Meeting " + (i + 1) + ": " + addMeetings.get(i));

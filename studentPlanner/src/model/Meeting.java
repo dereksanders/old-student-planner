@@ -74,19 +74,6 @@ public class Meeting implements Comparable<Meeting> {
 		return this.conflictsWith(allMeetings);
 	}
 
-	// public static void deleteMeetings(ArrayList<Meeting> conflicts) {
-	// for (Meeting m : conflicts) {
-	// Driver.active.courseColors.get(Color.web(m.colour)).meetings.remove(m);
-	// Driver.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-	// CourseSchedule.setTodaysMeetings();
-	// for (Term t :
-	// Driver.active.courseTerms.get(Driver.active.courseColors.get(Color.web(m.colour))))
-	// {
-	// CourseSchedule.removeFromSchedule(m, t);
-	// }
-	// }
-	// }
-
 	@Override
 	public int compareTo(Meeting o) {
 		return this.start.compareTo(o.start);

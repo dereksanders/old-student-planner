@@ -3,8 +3,6 @@ package model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
-import java.util.PriorityQueue;
-
 import core.ProfileSave;
 import utility.GenericLinkedHashTable;
 import utility.JSONParser;
@@ -22,7 +20,6 @@ public class Profile extends Observable {
 
 	public ArrayList<Term> terms;
 	public int showWithinThreshold = 14;
-	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
 
 	/**
@@ -35,12 +32,6 @@ public class Profile extends Observable {
 
 		this.name = name;
 		this.terms = new ArrayList<>();
-
-		this.dayMeetings = new ArrayList<>(7);
-		for (int i = 0; i < 7; i++) {
-			this.dayMeetings.add(new PriorityQueue<Meeting>());
-		}
-
 		this.dateEvents = new GenericLinkedHashTable<>(300, false);
 	}
 
@@ -50,7 +41,6 @@ public class Profile extends Observable {
 		this.currentlySelectedDate = p.currentlySelectedDate;
 		this.terms = p.terms;
 		this.showWithinThreshold = p.showWithinThreshold;
-		this.dayMeetings = p.dayMeetings;
 		this.dateEvents = p.dateEvents;
 	}
 
@@ -68,7 +58,6 @@ public class Profile extends Observable {
 		JSONParser.saveProfile(this);
 		setChanged();
 		notifyObservers();
-		System.out.println("Profile " + this.toString() + " Notifying " + this.countObservers() + " Observers..");
 	}
 
 	@Override

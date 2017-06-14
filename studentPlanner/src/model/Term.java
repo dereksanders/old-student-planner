@@ -3,6 +3,7 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import javafx.scene.paint.Color;
 import utility.GenericHashTable;
@@ -16,6 +17,7 @@ public class Term implements Comparable<Term> {
 	public double grade;
 	public ArrayList<Course> courses;
 	public GenericHashTable<Color, Course> courseColors;
+	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
 
 	/* Course Schedule params */
 	public int maxDay;
@@ -28,6 +30,11 @@ public class Term implements Comparable<Term> {
 		this.end = end;
 		this.courses = new ArrayList<>();
 		this.courseColors = new GenericHashTable<>(100);
+
+		this.dayMeetings = new ArrayList<>(7);
+		for (int i = 0; i < 7; i++) {
+			this.dayMeetings.add(new PriorityQueue<Meeting>());
+		}
 
 		/* Default course schedule params */
 		this.maxDay = 5;

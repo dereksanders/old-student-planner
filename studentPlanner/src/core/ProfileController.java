@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
+import courseSchedule.HandleConflict;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.paint.Color;
@@ -150,7 +151,9 @@ public class ProfileController {
 	 * @throws IllegalCourseException
 	 */
 	public void addCourse(Course addedCourse) throws IllegalCourseException {
+
 		if (addedCourse != null) {
+
 			for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
 				/*
 				 * Error Condition: One of the terms this course is being added
@@ -164,11 +167,15 @@ public class ProfileController {
 					t.courses.add(addedCourse);
 				}
 			}
+
 			for (Meeting m : addedCourse.meetings) {
 				m.colour = addedCourse.colour;
-				active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-				active.currentlySelectedTerm.updateParams(m);
+				for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
+					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
+					t.updateParams(m);
+				}
 			}
+
 			active.update();
 		}
 	}
@@ -200,44 +207,47 @@ public class ProfileController {
 			setCurrentlySelectedDate(this.active.currentlySelectedDate);
 		}
 
-		/* In case the course's colour was changed. */
+		/* Check if the course's colour was changed. */
 
-		ArrayList<Term> courseTerms = findTermsBetween(original.start, original.end);
+		if (!originalColor.equals(Color.web(original.colour))) {
 
-		for (int i = 0; i < courseTerms.size(); i++) {
+			ArrayList<Term> courseTerms = findTermsBetween(original.start, original.end);
 
-			if (courseTerms.get(i).courseColors.get(Color.web(original.colour)) == null) {
+			for (int i = 0; i < courseTerms.size(); i++) {
 
-				courseTerms.get(i).courseColors.del(originalColor, original);
-				courseTerms.get(i).courseColors.put(Color.web(original.colour), original);
+				if (courseTerms.get(i).courseColors.get(Color.web(original.colour)) == null) {
 
-			} else {
-				/*
-				 * Error Condition: Edited colour is already in use by a course
-				 * in courseTerms.get(i). Need to revert changes to courseColors
-				 * if any have been made and reject changes. TODO: Better
-				 * solution could be adding a listener to the colour picker to
-				 * inform the user when this is the case.
-				 */
-				for (int j = 0; j < i; j++) {
-					courseTerms.get(j).courseColors.del(Color.web(original.colour), original);
-					courseTerms.get(j).courseColors.put(originalColor, original);
-				}
-				original.colour = Style.colorToHex(originalColor);
-				Alert illegalColour = new Alert(AlertType.ERROR,
-						"Edited colour is already in use. Colour change has been reverted.");
-				illegalColour.show();
-				break;
-			}
+					courseTerms.get(i).courseColors.del(originalColor, original);
+					courseTerms.get(i).courseColors.put(Color.web(original.colour), original);
 
-			if (i == courseTerms.size() - 1) {
-
-				for (Meeting m : original.meetings) {
-					m.colour = original.colour;
+				} else {
+					/*
+					 * Error Condition: Edited colour is already in use by a
+					 * course in courseTerms.get(i). Need to revert changes to
+					 * courseColors if any have been made and reject changes.
+					 * TODO: Better solution could be adding a listener to the
+					 * colour picker to inform the user when this is the case.
+					 */
+					for (int j = 0; j < i; j++) {
+						courseTerms.get(j).courseColors.del(Color.web(original.colour), original);
+						courseTerms.get(j).courseColors.put(originalColor, original);
+					}
+					original.colour = Style.colorToHex(originalColor);
+					Alert illegalColour = new Alert(AlertType.ERROR,
+							"Edited colour is already in use. Colour change has been reverted.");
+					illegalColour.show();
+					break;
 				}
 
-				for (CourseEvent e : original.events) {
-					e.colour = original.colour;
+				if (i == courseTerms.size() - 1) {
+
+					for (Meeting m : original.meetings) {
+						m.colour = original.colour;
+					}
+
+					for (CourseEvent e : original.events) {
+						e.colour = original.colour;
+					}
 				}
 			}
 		}
@@ -255,9 +265,10 @@ public class ProfileController {
 		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
 			t.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
 			t.courses.remove(deletedCourse);
-		}
-		for (Meeting m : deletedCourse.meetings) {
-			this.active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+
+			for (Meeting m : deletedCourse.meetings) {
+				t.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+			}
 		}
 		for (CalendarEvent e : deletedCourse.events) {
 			this.active.dateEvents.del(e.start.toLocalDate(), e);
@@ -288,7 +299,7 @@ public class ProfileController {
 	}
 
 	/**
-	 * Delete meeting.
+	 * Delete meeting in the selected term.
 	 *
 	 * @param c
 	 *            the c
@@ -296,40 +307,78 @@ public class ProfileController {
 	 *            the m
 	 */
 	public void deleteMeeting(Course c, Meeting m) {
+
 		if (m != null) {
+
 			c.meetings.remove(m);
-			active.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+
+			for (Term t : findTermsBetween(c.start, c.end)) {
+				t.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+			}
 			active.update();
 		}
+	}
+
+	public void deleteMeeting(Term t, Meeting m) {
+
+		for (Course c : t.courses) {
+
+			if (c.meetings.contains(m)) {
+
+				c.meetings.remove(m);
+
+				for (Term term : findTermsBetween(c.start, c.end)) {
+					term.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+				}
+
+			}
+		}
+		active.update();
 	}
 
 	/**
 	 * Adds the meeting.
 	 *
 	 * @param currentlySelected
-	 *            the currently selected
-	 * @param m
-	 *            the m
+	 *            the currently selected the m
 	 */
 	public void addMeeting(Course currentlySelected, Meeting m) {
+
 		if (m != null) {
-			m.colour = currentlySelected.colour;
 
-			/* TODO: Deal with conflict. */
-			// ArrayList<Meeting> outerConflict =
-			// m.conflictsWithCourses(chooseTerm.getValue().courses);
-			//
-			// if (outerConflict.size() > 0) {
-			// confirmAddMeetings = HandleConflict.display(m, outerConflict);
-			// }
+			boolean deleteConflicts = true;
 
-			// ArrayList<Meeting> allConflicts = new ArrayList<>();
-			// allConflicts.addAll(outerConflict);
-			// Meeting.deleteMeetings(allConflicts);
-			currentlySelected.meetings.add(m);
-			active.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-			active.update();
-			// CourseSchedule.setTodaysMeetings();
+			ArrayList<Meeting> conflicts = new ArrayList<>();
+
+			ArrayList<Term> courseTerms = findTermsBetween(currentlySelected.start, currentlySelected.end);
+
+			for (Term t : courseTerms) {
+				ArrayList<Meeting> outerConflicts = m.conflictsWithCourses(t.courses);
+				conflicts.addAll(outerConflicts);
+			}
+
+			if (conflicts.size() > 0) {
+				deleteConflicts = new HandleConflict(m, conflicts).display();
+			}
+
+			if (deleteConflicts) {
+
+				for (Meeting conflict : conflicts) {
+
+					for (Term t : courseTerms) {
+						deleteMeeting(t, conflict);
+					}
+				}
+
+				m.colour = currentlySelected.colour;
+				currentlySelected.meetings.add(m);
+
+				for (Term t : courseTerms) {
+					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
+				}
+
+				active.update();
+			}
 		}
 	}
 
@@ -397,5 +446,9 @@ public class ProfileController {
 			}
 		}
 		return null;
+	}
+
+	public void deleteMeetings(ArrayList<Meeting> allConflicts) {
+
 	}
 }

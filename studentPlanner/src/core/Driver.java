@@ -2,8 +2,12 @@ package core;
 
 import java.io.File;
 
+import javafx.scene.paint.Color;
+import model.Course;
 import model.Profile;
+import model.Term;
 import planner.Planner;
+import utility.GenericHashTable;
 import utility.IOManager;
 import utility.JSONParser;
 
@@ -39,12 +43,23 @@ public class Driver {
 
 		/* If no profiles exist, create a new one. */
 		if (lastModified == null) {
+
 			System.out.println("Creating new profile.");
 			active = new Profile("default");
 			JSONParser.saveProfile(active);
+
 		} else {
+
 			System.out.println("Loading existing profile.");
 			active = JSONParser.loadProfile(lastModified);
+
+			/* Make correction for issue #15. */
+			for (Term t : active.terms) {
+				t.courseColors = new GenericHashTable<>(100);
+				for (Course c : t.courses) {
+					t.courseColors.put(Color.web(c.colour), c);
+				}
+			}
 		}
 
 		return active;

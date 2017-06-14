@@ -48,8 +48,6 @@ public class EditOrDeleteMeeting {
 
 		this.pc = pc;
 		this.selected = pc.getMeetingAtTime(cell);
-		System.out.println(this.selected);
-		System.out.println(this.selected.colour);
 		this.meetingCourse = pc.getCourseFromColor(Color.web(selected.colour));
 		display();
 	}
@@ -128,7 +126,7 @@ public class EditOrDeleteMeeting {
 		});
 
 		delete.setOnAction(e -> {
-			pc.deleteMeeting(this.meetingCourse, this.selected);
+			pc.deleteMeeting(pc.active.currentlySelectedTerm, this.selected);
 			window.close();
 		});
 
@@ -159,7 +157,7 @@ public class EditOrDeleteMeeting {
 	 *            the loc
 	 */
 	private void confirmChanges(String type, String day, Time start, Time end, String loc) {
-		pc.deleteMeeting(this.meetingCourse, selected);
+		pc.deleteMeeting(pc.active.currentlySelectedTerm, selected);
 		Meeting add = new Meeting(type, LocalTime.of(start.hour, start.minute), LocalTime.of(end.hour, end.minute), day,
 				loc);
 		add.colour = selected.colour;

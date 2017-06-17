@@ -44,13 +44,16 @@ public class Term implements Comparable<Term> {
 
 	public void updateParams() {
 
-		resetParams();
-
-		this.minStart = this.minStart.minusMinutes(30);
-		this.maxEnd = this.maxEnd.plusMinutes(30);
+		/* resetParams() should be true if any meetings exist in this term. */
+		if (resetParams()) {
+			this.minStart = this.minStart.minusMinutes(30);
+			this.maxEnd = this.maxEnd.plusMinutes(30);
+		}
 	}
 
-	private void resetParams() {
+	private boolean resetParams() {
+
+		boolean changesMade = false;
 
 		this.maxDay = 5;
 
@@ -63,14 +66,19 @@ public class Term implements Comparable<Term> {
 
 				this.maxDay = this.courses.get(0).meetings.get(0).dayOfWeekInt;
 			}
+
+			changesMade = true;
 		}
 
 		for (int i = 1; i < this.courses.size(); i++) {
 			for (int j = 0; j < this.courses.get(i).meetings.size(); j++) {
 
+				changesMade = true;
 				addParams(this.courses.get(i).meetings.get(j));
 			}
 		}
+
+		return changesMade;
 	}
 
 	private void addParams(Meeting m) {

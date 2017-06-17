@@ -8,6 +8,7 @@ import model.Profile;
 import model.Term;
 import planner.Planner;
 import utility.GenericHashTable;
+import utility.GenericLinkedHashTable;
 import utility.IOManager;
 import utility.JSONParser;
 
@@ -52,6 +53,8 @@ public class Driver {
 
 			System.out.println("Loading existing profile.");
 			active = JSONParser.loadProfile(lastModified);
+
+			active.dateEvents = new GenericLinkedHashTable<>(300, false);
 
 			/* Make correction for issue #15. */
 			for (Term t : active.terms) {

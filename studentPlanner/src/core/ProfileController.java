@@ -262,6 +262,7 @@ public class ProfileController {
 	 *            the deleted course
 	 */
 	public void deleteCourse(Course deletedCourse) {
+
 		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
 			t.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
 			t.courses.remove(deletedCourse);

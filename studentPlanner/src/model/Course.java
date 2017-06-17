@@ -17,8 +17,11 @@ public class Course implements Comparable<Course> {
 	public LocalDate end;
 	public ArrayList<Meeting> meetings;
 	public ArrayList<CourseEvent> events;
-	public double grade;
 	public String colour;
+
+	public double percentDone;
+	public double gradeSoFar;
+	public double cumulativeGrade;
 
 	/**
 	 * Instantiates a new course.

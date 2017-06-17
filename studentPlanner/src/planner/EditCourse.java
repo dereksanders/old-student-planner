@@ -113,7 +113,6 @@ public class EditCourse {
 		chooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
-				System.out.println("Changed course selection.");
 				if (current.intValue() > -1) {
 					updateCurrentlySelected(termsCourses.get(current.intValue()));
 				}

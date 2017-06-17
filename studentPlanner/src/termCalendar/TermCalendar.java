@@ -26,6 +26,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.*;
 import model.CalendarEvent;
 import model.Profile;
 import model.Term;
@@ -40,9 +41,9 @@ public class TermCalendar extends View implements Observer {
 	private Observable observable;
 	private TermCalendarController controller;
 
-	private Label upcomingEventsLabel;
 	private HBox termViewBox = new HBox(50);
-	private VBox upcoming = new VBox();
+	private VBox upcomingEvents = new VBox(10);
+	private VBox upcomingLayout = new VBox(15);
 
 	private BooleanProperty selectedTermNotNull = new SimpleBooleanProperty(false);
 
@@ -82,7 +83,6 @@ public class TermCalendar extends View implements Observer {
 		 */
 		tcbp.visibleProperty().bind(selectedTermNotNull);
 
-		upcomingEventsLabel = new Label("");
 		Label termCal = new Label("Term Calendar");
 		Style.setTitleStyle(termCal);
 		HBox header = new HBox(50);
@@ -108,8 +108,8 @@ public class TermCalendar extends View implements Observer {
 		upcomingThreshold.setValue(14);
 		Label showWithinDays = new Label(" days.");
 		upcomingShow.getChildren().addAll(showWithin, upcomingThreshold, showWithinDays);
-		upcoming.getChildren().addAll(upcomingTitle, upcomingShow, upcomingEventsLabel);
-		BorderPane.setAlignment(upcoming, Pos.CENTER);
+		upcomingLayout.getChildren().addAll(upcomingTitle, upcomingShow, upcomingEvents);
+		BorderPane.setAlignment(upcomingLayout, Pos.CENTER);
 		header.getChildren().add(termCal);
 		tcbp.setTop(header);
 		tcbp.setCenter(termViewBox);
@@ -182,6 +182,7 @@ public class TermCalendar extends View implements Observer {
 					if (k == 0) {
 
 						Label dayLabel = new Label(intToDay(j));
+						dayLabel.setStyle("-fx-font-size: 10.0pt;");
 						GridPane.setHalignment(dayLabel, HPos.CENTER);
 						monthGrid.add(dayLabel, j, k);
 					}
@@ -207,7 +208,8 @@ public class TermCalendar extends View implements Observer {
 						PriorityQueue<CalendarEvent> ce = controller.active.dateEvents.get(LocalDate.of(
 								term.start.plusMonths(i).getYear(), term.start.plusMonths(i).getMonthValue(), date));
 						if (ce != null && !ce.isEmpty()) {
-							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().colour + ";");
+							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().colour + ";"
+									+ "-fx-background-radius: 0.0;");
 							if ((Color.web((ce.peek()).colour).getBrightness() < 0.7)) {
 								add.setStyle(add.getStyle() + "-fx-text-fill: #fff;");
 							} else {
@@ -216,7 +218,8 @@ public class TermCalendar extends View implements Observer {
 						} else {
 							add.setStyle(add.getStyle() + "-fx-text-fill: #444;" + "-fx-font-size: 12.4pt;");
 							add.setStyle(add.getStyle()
-									+ "-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #fff, #ccc);");
+									+ "-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #fff, #ccc);"
+									+ "-fx-background-radius: 0.0;");
 						}
 						final int cDate = date;
 						final int offset = i;
@@ -289,31 +292,44 @@ public class TermCalendar extends View implements Observer {
 		return day;
 	}
 
-	/**
-	 * Update upcoming events.
-	 */
 	private void updateUpcomingEvents() {
-		String desc = "";
+
+		this.upcomingEvents.getChildren().clear();
+
 		for (int i = 0; i <= controller.active.showWithinThreshold; i++) {
+
 			if (controller.active.dateEvents.get(Driver.t.current.toLocalDate().plusDays(i)) != null
 					&& !controller.active.dateEvents.get(Driver.t.current.toLocalDate().plusDays(i)).isEmpty()) {
+
+				Label dateOfEvents = new Label("");
+
+				// Events are today
 				if (i == 0) {
-					desc += "Today: \n";
-				} else if (i == 1) {
-					desc += "Tomorrow: \n";
+					dateOfEvents.setText("Today:");
+				}
+				// Events are tomorrow
+				else if (i == 1) {
+					dateOfEvents.setText("Tomorrow:");
 				} else {
-					desc += Pretty.prettyDate(Driver.t.current.toLocalDate().plusDays(i)) + ": \n";
+					dateOfEvents.setText(Pretty.prettyDate(Driver.t.current.toLocalDate().plusDays(i)) + ":");
 				}
+
+				this.upcomingEvents.getChildren().add(dateOfEvents);
+
 				for (CalendarEvent e : controller.active.dateEvents.get(Driver.t.current.toLocalDate().plusDays(i))) {
-					desc += e + "\n";
+
+					HBox eventListing = new HBox(5);
+
+					Rectangle eventIcon = new Rectangle(20, 20);
+					eventIcon.setFill(Color.web(e.colour));
+
+					Label eventDesc = new Label(e.toString());
+
+					eventListing.getChildren().addAll(eventIcon, eventDesc);
+					this.upcomingEvents.getChildren().add(eventListing);
 				}
-				desc += "\n";
 			}
 		}
-		if (!desc.isEmpty()) {
-			desc = desc.substring(0, desc.lastIndexOf("\n"));
-		}
-		upcomingEventsLabel.setText(desc);
 	}
 
 	/*
@@ -328,7 +344,7 @@ public class TermCalendar extends View implements Observer {
 				selectedTermNotNull.set(true);
 				termViewBox.getChildren().clear();
 				termViewBox.getChildren().add(drawCalendar(((Profile) arg0).currentlySelectedTerm));
-				termViewBox.getChildren().add(upcoming);
+				termViewBox.getChildren().add(upcomingLayout);
 			} else {
 				selectedTermNotNull.set(false);
 			}

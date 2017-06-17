@@ -218,7 +218,7 @@ public class CourseSchedule extends View implements Observer {
 							+ " " + firstOfWeek.plusDays(i).getDayOfMonth()
 							+ Pretty.getDateEnding(Integer.toString(firstOfWeek.plusDays(i).getDayOfMonth())));
 
-			dayLabel.setStyle("-fx-font-size: 10.0pt;");
+			dayLabel.setStyle("-fx-font-size: 10.5pt;");
 
 			/*
 			 * The current day is italicized in blue.

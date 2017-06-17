@@ -17,7 +17,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
 import model.Profile;
@@ -132,33 +131,11 @@ public class Grades extends View implements Observer {
 
 		for (Course c : selected.courses) {
 
-			double percentDone = 0;
-			double cumulative = 0;
-			double gradeSoFar = 0;
+			avg += c.cumulativeGrade;
+			avgSoFar += c.gradeSoFar;
 
-			for (CalendarEvent d : c.events) {
-				if (d instanceof CourseEvent) {
-					if (d.start.isBefore(core.Driver.t.current)) {
-						if (((CourseEvent) d).grade != 0) {
-							cumulative += ((CourseEvent) d).grade * (d.weight / 100);
-						}
-						percentDone += (d.weight);
-						gradeSoFar += d.weight * (((CourseEvent) d).grade);
-					}
-				}
-			}
-
-			if (percentDone != 0) {
-				gradeSoFar = gradeSoFar / percentDone;
-			}
-
-			c.grade = cumulative;
-
-			avg += cumulative;
-			avgSoFar += gradeSoFar;
-
-			termSummary.setText(termSummary.getText() + c + ": " + gradeSoFar + "%, with " + percentDone
-					+ "% of the course completed. Total grade: " + cumulative + "%.\n");
+			termSummary.setText(termSummary.getText() + c + ": " + c.gradeSoFar + "%, with " + c.percentDone
+					+ "% of the course completed. Total grade: " + c.cumulativeGrade + "%.\n");
 		}
 
 		int numCourses = selected.courses.size();
@@ -217,6 +194,8 @@ public class Grades extends View implements Observer {
 			} catch (NumberFormatException e1) {
 			}
 
+			chooseEvent.getValue().gradeEntered = true;
+
 			listGrades(selected);
 		});
 
@@ -241,14 +220,10 @@ public class Grades extends View implements Observer {
 			courseSummary.setText(
 					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
 
-			if (d.start.isBefore(core.Driver.t.current)
-					|| d.start.toLocalDate().isEqual(core.Driver.t.current.toLocalDate())) {
-				if (d.grade != 0) {
-					cumulative += d.grade * (d.weight / 100);
-				}
-				percentDone += d.weight;
-				gradeSoFar += d.weight * d.grade;
-
+			if (d.gradeEntered) {
+				selected.cumulativeGrade += d.grade * (d.weight / 100);
+				selected.percentDone += d.weight;
+				selected.gradeSoFar += d.weight * d.grade;
 			}
 		}
 

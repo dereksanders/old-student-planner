@@ -48,6 +48,9 @@ public class Term implements Comparable<Term> {
 		if (resetParams()) {
 			this.minStart = this.minStart.minusMinutes(30);
 			this.maxEnd = this.maxEnd.plusMinutes(30);
+		} else {
+			this.minStart = LocalTime.of(8, 30);
+			this.maxEnd = LocalTime.of(15, 00);
 		}
 	}
 
@@ -56,6 +59,8 @@ public class Term implements Comparable<Term> {
 		boolean changesMade = false;
 
 		this.maxDay = 5;
+		this.minStart = LocalTime.of(11, 30);
+		this.maxEnd = LocalTime.of(0, 0);
 
 		if (this.courses.get(0).meetings.size() > 0) {
 

@@ -168,14 +168,6 @@ public class ProfileController {
 				}
 			}
 
-			for (Meeting m : addedCourse.meetings) {
-				m.colour = addedCourse.colour;
-				for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
-					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-					t.updateParams();
-				}
-			}
-
 			active.update();
 		}
 	}

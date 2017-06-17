@@ -3,7 +3,6 @@ package planner;
 import java.util.ArrayList;
 
 import core.Style;
-import courseSchedule.HandleConflict;
 import core.Driver;
 import core.IllegalCourseException;
 import core.ProfileController;
@@ -139,8 +138,6 @@ public class AddCourse {
 		Color selected = pc.planner.getNextColor();
 		ColorPicker cPicker = new ColorPicker(selected);
 
-		ArrayList<Meeting> addMeetings = new ArrayList<>();
-
 		Button add = new Button("Add Course");
 		ArrayList<Term> termsArray = new ArrayList<>();
 		add.setOnAction(e -> {
@@ -156,7 +153,7 @@ public class AddCourse {
 				}
 				if (legalTerms) {
 					confirmAdd(termsArray, department.getText(), Integer.parseInt(code.getText()), name.getText(),
-							addMeetings, cPicker.getValue());
+							new ArrayList<>(), cPicker.getValue());
 					window.close();
 				} else {
 					error.setText("Invalid term entries.");
@@ -167,43 +164,11 @@ public class AddCourse {
 			}
 		});
 
-		Label meetings = new Label("Weekly Meetings: " + addMeetings.size());
-		Button addMeeting = new Button("Add Meeting");
-
-		addMeeting.setOnAction(e -> {
-
-			Meeting m = new AddMeeting().display();
-
-			if (m != null) {
-
-				boolean confirm = true;
-
-				ArrayList<Meeting> innerConflicts = m.conflictsWith(addMeetings);
-
-				if (innerConflicts.size() > 0) {
-					confirm = new HandleConflict(m, innerConflicts).display();
-				}
-
-				if (confirm) {
-
-					/* Remove inner conflicts from addMeetings. */
-					addMeetings.removeAll(innerConflicts);
-					addMeetings.add(m);
-
-					meetings.setText("Weekly Meetings: " + addMeetings.size());
-					for (int i = 0; i < addMeetings.size(); i++) {
-						meetings.setText(meetings.getText() + "\n Meeting " + (i + 1) + ": " + addMeetings.get(i));
-						window.setHeight(window.getHeight() + 10);
-					}
-				}
-			}
-		});
-
 		BorderPane bp = new BorderPane();
 		HBox top = new HBox(20);
 		VBox layout = new VBox(20);
 		top.getChildren().addAll(header);
-		layout.getChildren().addAll(terms, department, code, name, cPicker, meetings, addMeeting, add, error);
+		layout.getChildren().addAll(terms, department, code, name, cPicker, add, error);
 		bp.setTop(top);
 		bp.setBottom(layout);
 		Scene scene = new Scene(bp);

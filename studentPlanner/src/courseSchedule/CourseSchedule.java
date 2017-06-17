@@ -214,10 +214,11 @@ public class CourseSchedule extends View implements Observer {
 		for (int i = 0; i < daysInSchedule; i++) {
 
 			Label dayLabel = new Label(
-					daysOfTheWeek[i].getText() + "\n" + firstOfWeek.plusDays(i).getMonth().toString().substring(0, 1)
-							+ firstOfWeek.plusDays(i).getMonth().toString().substring(1).toLowerCase() + " "
-							+ firstOfWeek.plusDays(i).getDayOfMonth()
+					daysOfTheWeek[i].getText() + "\n" + Pretty.abbreviateMonth(firstOfWeek.plusDays(i).getMonthValue())
+							+ " " + firstOfWeek.plusDays(i).getDayOfMonth()
 							+ Pretty.getDateEnding(Integer.toString(firstOfWeek.plusDays(i).getDayOfMonth())));
+
+			dayLabel.setStyle("-fx-font-size: 10.0pt;");
 
 			/*
 			 * The current day is italicized in blue.
@@ -250,10 +251,10 @@ public class CourseSchedule extends View implements Observer {
 			for (int j = 0; j < meetingButtons[0].length; j++) {
 
 				meetingButtons[i][j] = new Button();
-				meetingButtons[i][j].setMinWidth(120);
-				meetingButtons[i][j].setMaxWidth(120);
-				meetingButtons[i][j].setMinHeight(48);
-				meetingButtons[i][j].setMaxHeight(48);
+				meetingButtons[i][j].setMinWidth(96);
+				meetingButtons[i][j].setMaxWidth(96);
+				meetingButtons[i][j].setMinHeight(40);
+				meetingButtons[i][j].setMaxHeight(40);
 
 				LocalDateTime cell = LocalDateTime.of(firstOfWeek.plusDays(i),
 						LocalTime.of((j + timesOffset) / 2, ((j + timesOffset) % 2) * 30));
@@ -352,7 +353,7 @@ public class CourseSchedule extends View implements Observer {
 			if (i == 0) {
 
 				mButton.setText(course.toString() + "\n" + meeting.meetingType);
-				mButton.setStyle(mButton.getStyle() + "-fx-font-size: 10.5pt;");
+				mButton.setStyle(mButton.getStyle() + "-fx-font-size: 9.0pt;");
 
 				/*
 				 * Decide if text is white or black based on brightness of

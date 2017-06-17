@@ -172,7 +172,7 @@ public class ProfileController {
 				m.colour = addedCourse.colour;
 				for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
 					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-					t.updateParams(m);
+					t.updateParams();
 				}
 			}
 
@@ -195,7 +195,7 @@ public class ProfileController {
 		original.colour = edit.colour;
 
 		for (Term t : findTermsBetween(original.start, original.end)) {
-			t.resetParams();
+			t.updateParams();
 		}
 
 		/*
@@ -298,27 +298,6 @@ public class ProfileController {
 		return termsBetween;
 	}
 
-	/**
-	 * Delete meeting in the selected term.
-	 *
-	 * @param c
-	 *            the c
-	 * @param m
-	 *            the m
-	 */
-	public void deleteMeeting(Course c, Meeting m) {
-
-		if (m != null) {
-
-			c.meetings.remove(m);
-
-			for (Term t : findTermsBetween(c.start, c.end)) {
-				t.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-			}
-			active.update();
-		}
-	}
-
 	public void deleteMeeting(Term t, Meeting m) {
 
 		for (Course c : t.courses) {
@@ -329,7 +308,7 @@ public class ProfileController {
 
 				for (Term term : findTermsBetween(c.start, c.end)) {
 					term.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-					term.resetParams();
+					term.updateParams();
 				}
 
 			}
@@ -376,7 +355,7 @@ public class ProfileController {
 
 				for (Term t : courseTerms) {
 					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-					t.updateParams(m);
+					t.updateParams();
 				}
 
 				active.update();

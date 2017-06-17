@@ -29,4 +29,50 @@ public class Pretty {
 			return "th";
 		}
 	}
+
+	public static String abbreviateMonth(int month) {
+
+		String abbrev = "";
+
+		switch (month) {
+		case 1:
+			abbrev = "Jan.";
+			break;
+		case 2:
+			abbrev = "Feb.";
+			break;
+		case 3:
+			abbrev = "Mar.";
+			break;
+		case 4:
+			abbrev = "Apr.";
+			break;
+		case 5:
+			abbrev = "May";
+			break;
+		case 6:
+			abbrev = "June";
+			break;
+		case 7:
+			abbrev = "July";
+			break;
+		case 8:
+			abbrev = "Aug.";
+			break;
+		case 9:
+			abbrev = "Sept.";
+			break;
+		case 10:
+			abbrev = "Oct.";
+			break;
+		case 11:
+			abbrev = "Nov.";
+			break;
+		case 12:
+			abbrev = "Dec.";
+			break;
+		}
+
+		return abbrev;
+	}
 }

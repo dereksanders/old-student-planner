@@ -37,12 +37,44 @@ public class Term implements Comparable<Term> {
 		}
 
 		/* Default course schedule params */
-		this.maxDay = 5;
 		this.minStart = LocalTime.of(8, 30);
 		this.maxEnd = LocalTime.of(15, 00);
+		this.maxDay = 5;
 	}
 
-	public void updateParams(Meeting m) {
+	public void updateParams() {
+
+		resetParams();
+
+		this.minStart = this.minStart.minusMinutes(30);
+		this.maxEnd = this.maxEnd.plusMinutes(30);
+	}
+
+	private void resetParams() {
+
+		this.maxDay = 5;
+
+		if (this.courses.get(0).meetings.size() > 0) {
+
+			this.minStart = this.courses.get(0).meetings.get(0).start;
+			this.maxEnd = this.courses.get(0).meetings.get(0).end;
+
+			if (this.courses.get(0).meetings.get(0).dayOfWeekInt > this.maxDay) {
+
+				this.maxDay = this.courses.get(0).meetings.get(0).dayOfWeekInt;
+			}
+		}
+
+		for (int i = 1; i < this.courses.size(); i++) {
+			for (int j = 0; j < this.courses.get(i).meetings.size(); j++) {
+
+				addParams(this.courses.get(i).meetings.get(j));
+			}
+		}
+	}
+
+	private void addParams(Meeting m) {
+
 		if (this.maxDay < m.dayOfWeekInt) {
 			this.maxDay = m.dayOfWeekInt;
 		}
@@ -51,18 +83,6 @@ public class Term implements Comparable<Term> {
 		}
 		if (this.maxEnd.compareTo(m.end) < 0) {
 			this.maxEnd = m.end;
-		}
-	}
-
-	public void resetParams() {
-		this.maxDay = 5;
-		this.minStart = LocalTime.of(8, 30);
-		this.maxEnd = LocalTime.of(15, 00);
-
-		for (Course c : this.courses) {
-			for (Meeting m : c.meetings) {
-				updateParams(m);
-			}
 		}
 	}
 

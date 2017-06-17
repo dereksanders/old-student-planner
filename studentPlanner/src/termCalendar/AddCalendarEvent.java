@@ -33,6 +33,7 @@ public class AddCalendarEvent {
 	private LocalDate date;
 	private TermCalendarController controller;
 	private ComboBox<Time> endTimes;
+	private boolean updateEndTimes = false;
 
 	/**
 	 * Instantiates a new adds the calendar event.
@@ -84,6 +85,7 @@ public class AddCalendarEvent {
 		}
 
 		ChoiceBox<String> typeChoice = new ChoiceBox<>(types);
+
 		TextField name = new TextField();
 		name.setPromptText(typeChoice.getValue() + " title");
 		TextField weight = new TextField();
@@ -92,43 +94,60 @@ public class AddCalendarEvent {
 		Label startTime = new Label("Time:");
 		Label dash = new Label(" - ");
 		ComboBox<Time> startTimes = new ComboBox<>(times);
+
 		endTimes = new ComboBox<>();
 		selectTime.getChildren().addAll(startTimes, dash, endTimes);
 
-		/* Update selectable end-times whenever start-times are altered. */
-		startTimes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
-				selectTime.getChildren().remove(endTimes);
-				ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
-				newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
-				endTimes = new ComboBox<>(newEndTimes);
-				selectTime.getChildren().add(endTimes);
-				endTimes.setDisable(false);
-			}
-		});
-		startTimes.setValue(times.get(17));
 		typeChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
+
 				name.setPromptText(types.get(current.intValue()) + " title");
+
 				if (types.get(current.intValue()).equals("Personal")) {
 					startTime.setText("Time:");
 					cChoice.setVisible(false);
 					weight.setVisible(false);
 					endTimes.setVisible(true);
 					dash.setVisible(true);
+
+					startTimes.getSelectionModel().selectNext();
+					updateEndTimes = true;
+					startTimes.getSelectionModel().selectPrevious();
+
 				} else if (types.get(current.intValue()).equals("Deliverable")) {
 					cChoice.setVisible(true);
 					weight.setVisible(true);
 					startTime.setText("Due Time:");
 					endTimes.setVisible(false);
 					dash.setVisible(false);
+
+					updateEndTimes = false;
 				}
+
 				weight.setPromptText(types.get(current.intValue()) + " weight %");
 			}
 		});
+
 		typeChoice.setValue(types.get(0));
+
+		/* Update selectable end-times whenever start-times are altered. */
+		startTimes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
+				if (updateEndTimes) {
+					selectTime.getChildren().remove(endTimes);
+					ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
+					newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
+					endTimes = new ComboBox<>(newEndTimes);
+					selectTime.getChildren().add(endTimes);
+					endTimes.setDisable(false);
+				}
+			}
+		});
+
+		startTimes.setValue(times.get(17));
+
 		Button addEvent = new Button("Add Event");
 		Label error = new Label("");
 		addEvent.setOnAction(e -> {

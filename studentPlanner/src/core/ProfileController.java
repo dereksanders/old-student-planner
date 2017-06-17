@@ -329,6 +329,7 @@ public class ProfileController {
 
 				for (Term term : findTermsBetween(c.start, c.end)) {
 					term.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+					term.resetParams();
 				}
 
 			}
@@ -375,6 +376,7 @@ public class ProfileController {
 
 				for (Term t : courseTerms) {
 					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
+					t.updateParams(m);
 				}
 
 				active.update();

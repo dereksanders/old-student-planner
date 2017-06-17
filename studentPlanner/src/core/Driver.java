@@ -3,7 +3,9 @@ package core;
 import java.io.File;
 
 import javafx.scene.paint.Color;
+import model.CalendarEvent;
 import model.Course;
+import model.CourseEvent;
 import model.Profile;
 import model.Term;
 import planner.Planner;
@@ -54,13 +56,19 @@ public class Driver {
 			System.out.println("Loading existing profile.");
 			active = JSONParser.loadProfile(lastModified);
 
-			active.dateEvents = new GenericLinkedHashTable<>(300, false);
+			active.dateEvents = new GenericLinkedHashTable<>(300, true);
+			for (CalendarEvent e : active.personalEvents) {
+				active.dateEvents.put(e.start.toLocalDate(), e);
+			}
 
 			/* Make correction for issue #15. */
 			for (Term t : active.terms) {
 				t.courseColors = new GenericHashTable<>(100);
 				for (Course c : t.courses) {
 					t.courseColors.put(Color.web(c.colour), c);
+					for (CourseEvent e : c.events) {
+						active.dateEvents.put(e.start.toLocalDate(), e);
+					}
 				}
 			}
 		}

@@ -18,6 +18,7 @@ public class ProfileSave {
 	public ArrayList<Term> terms;
 	public int showWithinThreshold = 14;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
+	public ArrayList<CalendarEvent> personalEvents;
 
 	public ProfileSave(Profile p) {
 		this.name = p.name;
@@ -26,5 +27,6 @@ public class ProfileSave {
 		this.terms = p.terms;
 		this.showWithinThreshold = p.showWithinThreshold;
 		this.dateEvents = p.dateEvents;
+		this.personalEvents = p.personalEvents;
 	}
 }

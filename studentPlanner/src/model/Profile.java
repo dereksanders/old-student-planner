@@ -21,6 +21,7 @@ public class Profile extends Observable {
 	public ArrayList<Term> terms;
 	public int showWithinThreshold = 14;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
+	public ArrayList<CalendarEvent> personalEvents;
 
 	/**
 	 * Instantiates a new profile.
@@ -32,7 +33,8 @@ public class Profile extends Observable {
 
 		this.name = name;
 		this.terms = new ArrayList<>();
-		this.dateEvents = new GenericLinkedHashTable<>(300, false);
+		this.dateEvents = new GenericLinkedHashTable<>(300, true);
+		this.personalEvents = new ArrayList<>();
 	}
 
 	public Profile(ProfileSave p) {
@@ -42,6 +44,7 @@ public class Profile extends Observable {
 		this.terms = p.terms;
 		this.showWithinThreshold = p.showWithinThreshold;
 		this.dateEvents = p.dateEvents;
+		this.personalEvents = p.personalEvents;
 	}
 
 	public boolean coursesExist() {

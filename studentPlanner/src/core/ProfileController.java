@@ -380,6 +380,8 @@ public class ProfileController {
 			for (Term t : findTermsBetween(course.start, course.end)) {
 				t.courseColors.get(Color.web((event).colour)).events.add((CourseEvent) event);
 			}
+		} else {
+			active.personalEvents.add(event);
 		}
 		active.update();
 	}
@@ -400,6 +402,8 @@ public class ProfileController {
 			for (Term t : findTermsBetween(course.start, course.end)) {
 				t.courseColors.get(Color.web((event).colour)).events.remove(event);
 			}
+		} else {
+			active.personalEvents.remove(event);
 		}
 		active.update();
 	}

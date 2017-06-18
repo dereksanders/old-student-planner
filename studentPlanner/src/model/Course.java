@@ -139,6 +139,8 @@ public class Course implements Comparable<Course> {
 			}
 		}
 
-		this.gradeSoFar = this.gradeSoFar / this.percentDone;
+		if (this.percentDone != 0) {
+			this.gradeSoFar = this.gradeSoFar / this.percentDone;
+		}
 	}
 }

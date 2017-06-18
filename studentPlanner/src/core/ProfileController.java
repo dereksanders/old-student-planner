@@ -46,7 +46,7 @@ public class ProfileController {
 	public void setCurrentlySelectedDate(LocalDate localDate) {
 		this.active.currentlySelectedDate = localDate;
 		this.active.currentlySelectedTerm = findTerm(localDate);
-		active.update();
+		this.active.update();
 	}
 
 	/**

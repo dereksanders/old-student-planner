@@ -64,6 +64,8 @@ public class Planner extends View implements Observer {
 
 		this.options = initOptions();
 		this.mainLayout = initLayout();
+		this.mainLayout
+				.setStyle("-fx-background-color: linear-gradient(from 25.0% 25.0% to 100.0% 100.0%, #fff, #ddd);");
 		this.scene = new Scene(this.mainLayout, initialWidth, initialHeight);
 	}
 

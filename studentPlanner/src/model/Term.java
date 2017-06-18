@@ -143,7 +143,9 @@ public class Term implements Comparable<Term> {
 			this.avgSoFar += c.gradeSoFar;
 		}
 
-		this.avg = this.avg / this.courses.size();
-		this.avgSoFar = this.avgSoFar / this.courses.size();
+		if (this.courses.size() > 0) {
+			this.avg = this.avg / this.courses.size();
+			this.avgSoFar = this.avgSoFar / this.courses.size();
+		}
 	}
 }

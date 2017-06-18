@@ -131,8 +131,6 @@ public class Grades extends View implements Observer {
 		Label termSummaryTitle = new Label("Term Summary - " + selected.name + " (" + selected.start.getYear() + ")");
 		Style.setTitleStyle(termSummaryTitle);
 
-		Label termSummary = new Label("");
-
 		/* Term summary */
 
 		Label courseCol = new Label("Course");
@@ -230,16 +228,16 @@ public class Grades extends View implements Observer {
 		});
 
 		confirmChanges.setOnAction(e -> {
+
 			try {
-				chooseEvent.getValue().weight = Double.parseDouble(weight.getText());
-			} catch (NumberFormatException e1) {
-			}
-			try {
-				chooseEvent.getValue().grade = Double.parseDouble(grade.getText());
+				controller.updateGrade(chooseEvent.getValue(), Double.parseDouble(grade.getText()));
 			} catch (NumberFormatException e1) {
 			}
 
-			chooseEvent.getValue().gradeEntered = true;
+			try {
+				controller.updateWeight(chooseEvent.getValue(), Double.parseDouble(weight.getText()));
+			} catch (NumberFormatException e1) {
+			}
 
 			listGrades(selected);
 		});
@@ -314,10 +312,14 @@ public class Grades extends View implements Observer {
 	@Override
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
+
+			chooseTerm.setItems(FXCollections.observableArrayList(((Profile) o).terms));
 			Term currentlySelected = ((Profile) o).currentlySelectedTerm;
 
 			if (currentlySelected != null) {
+
 				chooseTerm.setValue(currentlySelected);
+
 				coursesToDisplay = FXCollections.observableArrayList(currentlySelected.courses);
 				chooseCourse.setItems(FXCollections.observableArrayList(coursesToDisplay));
 

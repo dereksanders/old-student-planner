@@ -4,6 +4,7 @@ import java.time.LocalDate;
 
 import core.Driver;
 import core.ProfileController;
+import core.Style;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -57,6 +58,7 @@ public class AddTerm {
 		VBox start = new VBox(10);
 		VBox end = new VBox(10);
 		Button add = new Button("Add Term");
+		Style.setButtonStyle(add);
 		Label error = new Label();
 
 		add.setOnAction(e -> {

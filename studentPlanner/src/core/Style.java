@@ -4,6 +4,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -70,14 +71,16 @@ public class Style {
 
 	public static void setButtonStyle(Button button) {
 		button.setStyle(
-				"-fx-font-size: 11.0pt;" + "-fx-text-fill: #" + colorToHex(appGreen) + ";" + "-fx-font-weight: bold;"
-						+ "-fx-background-color: linear-gradient(from 25.0% 25.0% to 100.0% 100.0%, #fff, #ddd);"
-						+ "-fx-border-color: #ccc");
+				"-fx-background-color: linear-gradient(#26ce26, #1b9b1b); -fx-text-fill: #fff; -fx-background-radius: 0;");
 	}
 
 	public static void setTitleStyle(Label title) {
-		title.setStyle(
-				"-fx-font-size: 15.0pt;" + "-fx-text-fill: #" + colorToHex(appGreen) + ";" + "-fx-font-weight: bold;");
+		title.setStyle("-fx-font-size: 15.0pt;" + "-fx-text-fill: #00a300;" + "-fx-font-weight: bold;");
+	}
+
+	public static void setChoiceBoxStyle(ChoiceBox box) {
+		box.setStyle(
+				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}
 
 	/**

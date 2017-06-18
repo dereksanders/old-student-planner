@@ -14,6 +14,7 @@ import core.View;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
@@ -22,8 +23,11 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.Background;
+import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -159,7 +163,7 @@ public class CourseSchedule extends View implements Observer {
 		csbp.setRight(legend);
 		BorderPane.setAlignment(legend, Pos.BOTTOM_LEFT);
 
-		csbp.setStyle("-fx-padding: 10;");
+		csbp.setStyle("-fx-background-color: #fff; -fx-padding: 10;");
 
 		return csbp;
 	}
@@ -322,10 +326,6 @@ public class CourseSchedule extends View implements Observer {
 
 				scheduleGrid.add(meetingButtons[i][j], i + 1, j + 1);
 
-				/*
-				 * TODO: Fix issue #10: Edit/Delete Meetings Doesn't Work on
-				 * Loaded Profiles (Only New Ones).
-				 */
 				meetingButtons[i][j].setOnAction(e -> {
 					if (this.controller.active.currentlySelectedTerm != null) {
 						if (controller.timeIsOccupied(cell)) {

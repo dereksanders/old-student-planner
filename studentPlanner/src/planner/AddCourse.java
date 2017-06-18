@@ -139,6 +139,7 @@ public class AddCourse {
 		ColorPicker cPicker = new ColorPicker(selected);
 
 		Button add = new Button("Add Course");
+		Style.setButtonStyle(add);
 		ArrayList<Term> termsArray = new ArrayList<>();
 		add.setOnAction(e -> {
 			if (legalCode) {

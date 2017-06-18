@@ -2,6 +2,7 @@ package planner;
 
 import core.Driver;
 import core.ProfileController;
+import core.Style;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -79,6 +80,7 @@ public class EditTerm {
 		VBox options = new VBox(20);
 		HBox dates = new HBox(20);
 		Button confirmChanges = new Button("Confirm Changes");
+		Style.setButtonStyle(confirmChanges);
 
 		confirmChanges.setOnAction(e -> {
 			if (start.getValue().isBefore(end.getValue())) {

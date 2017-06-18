@@ -64,8 +64,7 @@ public class Planner extends View implements Observer {
 
 		this.options = initOptions();
 		this.mainLayout = initLayout();
-		this.mainLayout
-				.setStyle("-fx-background-color: linear-gradient(from 25.0% 25.0% to 100.0% 100.0%, #fff, #ddd);");
+		this.mainLayout.setStyle("-fx-background-color: #fff;");
 		this.scene = new Scene(this.mainLayout, initialWidth, initialHeight);
 	}
 
@@ -95,6 +94,7 @@ public class Planner extends View implements Observer {
 	private BorderPane initLayout() {
 		BorderPane bp = new BorderPane();
 		chooseView = new ChoiceBox<>(FXCollections.observableArrayList(this.views));
+		Style.setChoiceBoxStyle(chooseView);
 		chooseView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {

@@ -68,6 +68,7 @@ public class EditCourse {
 
 		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.active.terms);
 		chooseTerm = new ChoiceBox<>(termChoices);
+		Style.setChoiceBoxStyle(chooseTerm);
 
 		title = new TextField();
 		title.setPromptText("Course Title");
@@ -82,6 +83,7 @@ public class EditCourse {
 		ch.getChildren().add(chooseMeeting);
 
 		chooseCourse = new ChoiceBox<>();
+		Style.setChoiceBoxStyle(chooseCourse);
 		termsCourses = FXCollections.observableArrayList();
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -121,6 +123,8 @@ public class EditCourse {
 
 		/* Add meetings */
 		Button addMeeting = new Button("Add Meeting");
+		Style.setButtonStyle(addMeeting);
+
 		addMeeting.setOnAction(e -> {
 			Meeting m = new AddMeeting().display();
 			pc.addMeeting(currentlySelected, m);
@@ -135,6 +139,7 @@ public class EditCourse {
 
 		/* Delete meetings */
 		Button deleteMeeting = new Button("Delete Meeting");
+		Style.setButtonStyle(deleteMeeting);
 
 		deleteMeeting.setOnAction(e -> {
 			pc.deleteMeeting(chooseTerm.getValue(), chooseMeeting.getValue());
@@ -149,6 +154,7 @@ public class EditCourse {
 
 		/* Delete course */
 		Button delete = new Button("Delete Course");
+		Style.setButtonStyle(delete);
 
 		delete.setOnAction(e -> {
 			/* If deleting the currently selected course is confirmed */
@@ -179,6 +185,7 @@ public class EditCourse {
 		});
 
 		Button confirm = new Button("Confirm changes");
+		Style.setButtonStyle(confirm);
 		confirm.setOnAction(e -> {
 			if (confirmChanges()) {
 				window.close();
@@ -219,6 +226,7 @@ public class EditCourse {
 		ch.getChildren().remove(chooseMeeting);
 		ObservableList<Meeting> chooseMeet = FXCollections.observableArrayList(currentlySelected.meetings);
 		chooseMeeting = new ChoiceBox<>(chooseMeet);
+		Style.setChoiceBoxStyle(chooseMeeting);
 		ch.getChildren().add(chooseMeeting);
 		if (chooseMeet.size() > 0) {
 			chooseMeeting.setValue(chooseMeet.get(0));

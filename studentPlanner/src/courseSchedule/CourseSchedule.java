@@ -14,7 +14,6 @@ import core.View;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
@@ -23,11 +22,8 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.CornerRadii;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -53,7 +49,7 @@ public class CourseSchedule extends View implements Observer {
 	public CourseScheduleController controller;
 
 	/* GUI elements */
-	private Label todaysMeetings;
+	private VBox todaysMeetingsList = new VBox(5);
 	private ScrollPane scheduleScroll;
 	private GridPane scheduleGrid;
 	private VBox legend;
@@ -114,8 +110,7 @@ public class CourseSchedule extends View implements Observer {
 		Label title = new Label("Weekly Schedule");
 		Style.setTitleStyle(title);
 
-		todaysMeetings = new Label("Today's Meetings:");
-		setTodaysMeetings();
+		setTodaysMeetingList();
 
 		/* Select week */
 
@@ -151,7 +146,7 @@ public class CourseSchedule extends View implements Observer {
 		headerLayout.getChildren().addAll(title, showCurrentWeek, selectWeek);
 
 		HBox optionsLayout = new HBox(20);
-		optionsLayout.getChildren().addAll(todaysMeetings);
+		optionsLayout.getChildren().addAll(todaysMeetingsList);
 
 		this.legend = new VBox(10);
 		this.legend
@@ -194,23 +189,39 @@ public class CourseSchedule extends View implements Observer {
 		this.legend.getChildren().addAll(legendTitle, allCourses);
 	}
 
-	/**
-	 * Sets the todays meetings.
-	 */
-	private void setTodaysMeetings() {
-		String desc = "";
+	private void setTodaysMeetingList() {
+
+		todaysMeetingsList.getChildren().clear();
+
+		Label todaysMeetingsTitle = new Label("Today's Meetings");
+		Style.setTitleStyle(todaysMeetingsTitle);
+
+		todaysMeetingsList.getChildren().add(todaysMeetingsTitle);
+
 		if (controller.active.currentlySelectedTerm != null) {
+
+			/* Priority queue of today's meetings */
 			PriorityQueue<Meeting> td = controller.active.currentlySelectedTerm.dayMeetings
 					.get(Driver.t.current.getDayOfWeek().getValue() - 1);
+
 			if (td != null && td.size() > 0) {
+
 				for (Meeting m : td) {
-					desc += controller.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)) + " "
-							+ m.meetingType + ": " + m.start + " - " + m.end + "\n";
+
+					HBox meetingListing = new HBox(5);
+
+					Rectangle meetingIcon = new Rectangle(20, 20);
+					meetingIcon.setFill(Color.web(m.colour));
+
+					Label meetingDesc = new Label(
+							controller.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)) + " "
+									+ m.meetingType + ": " + m.start + " - " + m.end);
+
+					meetingListing.getChildren().addAll(meetingIcon, meetingDesc);
+					todaysMeetingsList.getChildren().add(meetingListing);
 				}
-				desc = desc.substring(0, desc.lastIndexOf("\n"));
 			}
 		}
-		todaysMeetings.setText("Today's Meetings:\n" + desc);
 	}
 
 	/**
@@ -223,7 +234,6 @@ public class CourseSchedule extends View implements Observer {
 	 */
 	private void drawSchedule(Term term, LocalDate d) {
 
-		setTodaysMeetings();
 		scheduleGrid.getChildren().clear();
 
 		if (term != null) {
@@ -456,6 +466,7 @@ public class CourseSchedule extends View implements Observer {
 		if (arg0 instanceof Profile) {
 
 			drawSchedule(((Profile) arg0).currentlySelectedTerm, ((Profile) arg0).currentlySelectedDate);
+			setTodaysMeetingList();
 			updateLegend();
 
 			/*

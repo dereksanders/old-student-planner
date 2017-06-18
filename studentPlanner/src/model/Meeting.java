@@ -66,6 +66,19 @@ public class Meeting implements Comparable<Meeting> {
 		return conflicts;
 	}
 
+	@Override
+	public boolean equals(Object o) {
+
+		if (o instanceof Meeting) {
+			if (this.start.equals(((Meeting) o).start) && this.end.equals(((Meeting) o).end)
+					&& this.colour.equals(((Meeting) o).colour)) {
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	public ArrayList<Meeting> conflictsWithCourses(ArrayList<Course> courses) {
 		ArrayList<Meeting> allMeetings = new ArrayList<>();
 		for (Course c : courses) {

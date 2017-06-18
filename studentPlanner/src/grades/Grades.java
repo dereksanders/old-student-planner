@@ -9,14 +9,20 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import model.Course;
 import model.CourseEvent;
 import model.Profile;
@@ -80,6 +86,7 @@ public class Grades extends View implements Observer {
 
 		selectedDisplay = new HBox(50);
 		displayGrades = new VBox(10);
+
 		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
 
 		header.getChildren().addAll(title);
@@ -117,38 +124,72 @@ public class Grades extends View implements Observer {
 	 */
 	private void listGrades(Term selected) {
 
-		Label termSummaryTitle = new Label("Term Summary");
+		Label termSummaryTitle = new Label("Term Summary - " + selected.name + " (" + selected.start.getYear() + ")");
 		Style.setTitleStyle(termSummaryTitle);
 
 		Label termSummary = new Label("");
 
 		/* Term summary */
 
-		termSummary.setText("Grades for " + chooseTerm.getValue() + ":\n");
+		Label courseCol = new Label("Course");
+		courseCol.setStyle("-fx-font-weight: bold;");
+		Label gradeSoFarCol = new Label("Grade (so far)");
+		gradeSoFarCol.setStyle("-fx-font-weight: bold;");
+		Label cumulativeGradeCol = new Label("Grade (cumulative)");
+		cumulativeGradeCol.setStyle("-fx-font-weight: bold;");
 
-		double avgSoFar = 0;
-		double avg = 0;
+		GridPane courseGrid = new GridPane();
 
-		for (Course c : selected.courses) {
+		courseGrid.add(courseCol, 0, 0);
+		GridPane.setValignment(courseCol, VPos.TOP);
+		courseGrid.add(gradeSoFarCol, 1, 0);
+		GridPane.setValignment(gradeSoFarCol, VPos.TOP);
+		courseGrid.add(cumulativeGradeCol, 2, 0);
+		GridPane.setValignment(cumulativeGradeCol, VPos.TOP);
+		courseGrid.getColumnConstraints().add(new ColumnConstraints(200));
+		courseGrid.getColumnConstraints().add(new ColumnConstraints(200));
+		courseGrid.getColumnConstraints().add(new ColumnConstraints(200));
+		courseGrid.getRowConstraints().add(new RowConstraints(30));
 
-			avg += c.cumulativeGrade;
-			avgSoFar += c.gradeSoFar;
+		for (int i = 0; i < selected.courses.size(); i++) {
 
-			termSummary.setText(termSummary.getText() + c + ": " + c.gradeSoFar + "%, with " + c.percentDone
-					+ "% of the course completed. Total grade: " + c.cumulativeGrade + "%.\n");
+			Course sel = selected.courses.get(i);
+
+			HBox courseListing = new HBox(5);
+
+			Rectangle courseIcon = new Rectangle(20, 20);
+			courseIcon.setFill(Color.web(sel.colour));
+
+			Label courseDesc = new Label(sel.toString());
+
+			courseListing.getChildren().addAll(courseIcon, courseDesc);
+
+			Label gradeSoFarDesc = new Label(sel.gradeSoFar + "%");
+			Label cumulativeGradeDesc = new Label(sel.cumulativeGrade + "%");
+
+			courseGrid.add(courseListing, 0, i + 1);
+			courseGrid.add(gradeSoFarDesc, 1, i + 1);
+			GridPane.setValignment(gradeSoFarDesc, VPos.TOP);
+			courseGrid.add(cumulativeGradeDesc, 2, i + 1);
+			GridPane.setValignment(cumulativeGradeDesc, VPos.TOP);
+			courseGrid.getRowConstraints().add(new RowConstraints(30));
 		}
 
-		int numCourses = selected.courses.size();
+		selected.calcGrades();
 
-		avg = avg / numCourses;
-		selected.grade = avg;
+		HBox gradeSoFarBox = new HBox();
+		Label gradeSoFarTitle = new Label("Average so far: ");
+		gradeSoFarTitle.setStyle("-fx-font-weight: bold;");
+		Label gradeSoFar = new Label("" + selected.avgSoFar + "%");
+		gradeSoFarBox.getChildren().addAll(gradeSoFarTitle, gradeSoFar);
 
-		avgSoFar = avgSoFar / numCourses;
+		HBox cumulativeGradeBox = new HBox();
+		Label cumulativeGradeTitle = new Label("Cumulative average: ");
+		cumulativeGradeTitle.setStyle("-fx-font-weight: bold;");
+		Label cumulativeGrade = new Label("" + selected.avg + "%");
+		cumulativeGradeBox.getChildren().addAll(cumulativeGradeTitle, cumulativeGrade);
 
-		termSummary.setText(termSummary.getText() + "Term average (so far): " + avgSoFar + "%.\nTerm average (total): "
-				+ avg + "%");
-
-		displayGrades.getChildren().addAll(termSummaryTitle, termSummary);
+		displayGrades.getChildren().addAll(termSummaryTitle, courseGrid, gradeSoFarBox, cumulativeGradeBox);
 	}
 
 	/**
@@ -204,38 +245,57 @@ public class Grades extends View implements Observer {
 
 		displayGrades.getChildren().clear();
 
-		Label courseSummaryTitle = new Label("Course Summary");
+		Label courseSummaryTitle = new Label("Course Summary - " + selected.toString());
 		Style.setTitleStyle(courseSummaryTitle);
 
-		Label courseSummary = new Label("");
+		Label deliverableCol = new Label("Deliverable");
+		deliverableCol.setStyle("-fx-font-weight: bold;");
+		Label gradeCol = new Label("Grade");
+		gradeCol.setStyle("-fx-font-weight: bold;");
+		Label weightCol = new Label("Weight");
+		weightCol.setStyle("-fx-font-weight: bold;");
 
-		/* Course summary */
+		displayGrades.getChildren().addAll(courseSummaryTitle);
 
-		double percentDone = 0;
-		double cumulative = 0;
-		double gradeSoFar = 0;
+		GridPane eventGrid = new GridPane();
 
-		for (CourseEvent d : selected.events) {
+		eventGrid.add(deliverableCol, 0, 0);
+		eventGrid.add(gradeCol, 1, 0);
+		eventGrid.add(weightCol, 2, 0);
+		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
+		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
+		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
+		eventGrid.getRowConstraints().add(new RowConstraints(30));
 
-			courseSummary.setText(
-					courseSummary.getText() + d.toString() + ", Grade: " + d.grade + "%, Worth: " + d.weight + "%\n");
+		for (int i = 0; i < selected.events.size(); i++) {
 
-			if (d.gradeEntered) {
-				selected.cumulativeGrade += d.grade * (d.weight / 100);
-				selected.percentDone += d.weight;
-				selected.gradeSoFar += d.weight * d.grade;
-			}
+			CourseEvent sel = selected.events.get(i);
+
+			Label eventDesc = new Label(sel.name);
+			Label gradeDesc = new Label("" + sel.grade + "%");
+			Label worthDesc = new Label("" + sel.weight + "%");
+
+			eventGrid.add(eventDesc, 0, i + 1);
+			eventGrid.add(gradeDesc, 1, i + 1);
+			eventGrid.add(worthDesc, 2, i + 1);
+			eventGrid.getRowConstraints().add(new RowConstraints(30));
 		}
 
-		if (percentDone != 0) {
-			gradeSoFar = gradeSoFar / percentDone;
-		}
+		selected.calcGrades();
 
-		courseSummary.setText(courseSummary.getText() + "Grade so far: " + gradeSoFar + "%, with " + percentDone
-				+ "% of the course completed.");
-		courseSummary.setText(courseSummary.getText() + "\n" + "Total grade: " + cumulative + "%.");
+		HBox gradeSoFarBox = new HBox();
+		Label gradeSoFarTitle = new Label("Grade so far: ");
+		gradeSoFarTitle.setStyle("-fx-font-weight: bold;");
+		Label gradeSoFar = new Label("" + selected.gradeSoFar + "%");
+		gradeSoFarBox.getChildren().addAll(gradeSoFarTitle, gradeSoFar);
 
-		displayGrades.getChildren().addAll(courseSummaryTitle, courseSummary);
+		HBox cumulativeGradeBox = new HBox();
+		Label cumulativeGradeTitle = new Label("Cumulative grade: ");
+		cumulativeGradeTitle.setStyle("-fx-font-weight: bold;");
+		Label cumulativeGrade = new Label("" + selected.cumulativeGrade + "%");
+		cumulativeGradeBox.getChildren().addAll(cumulativeGradeTitle, cumulativeGrade);
+
+		displayGrades.getChildren().addAll(eventGrid, gradeSoFarBox, cumulativeGradeBox);
 
 		for (Term t : controller.findTermsBetween(selected.start, selected.end)) {
 			listGrades(t);

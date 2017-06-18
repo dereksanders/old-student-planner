@@ -14,7 +14,10 @@ public class Term implements Comparable<Term> {
 	public String name;
 	public LocalDate start;
 	public LocalDate end;
-	public double grade;
+
+	public double avg;
+	public double avgSoFar;
+
 	public ArrayList<Course> courses;
 	public GenericHashTable<Color, Course> courseColors;
 	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
@@ -128,5 +131,19 @@ public class Term implements Comparable<Term> {
 		} else {
 			return 1;
 		}
+	}
+
+	public void calcGrades() {
+
+		this.avg = 0;
+		this.avgSoFar = 0;
+
+		for (Course c : this.courses) {
+			this.avg += c.cumulativeGrade;
+			this.avgSoFar += c.gradeSoFar;
+		}
+
+		this.avg = this.avg / this.courses.size();
+		this.avgSoFar = this.avgSoFar / this.courses.size();
 	}
 }

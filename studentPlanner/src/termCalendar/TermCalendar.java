@@ -323,7 +323,7 @@ public class TermCalendar extends View implements Observer {
 					Rectangle eventIcon = new Rectangle(20, 20);
 					eventIcon.setFill(Color.web(e.colour));
 
-					Label eventDesc = new Label(e.toString());
+					Label eventDesc = new Label(e.name + " (Due: " + e.start.toLocalTime() + ")");
 
 					eventListing.getChildren().addAll(eventIcon, eventDesc);
 					this.upcomingEvents.getChildren().add(eventListing);

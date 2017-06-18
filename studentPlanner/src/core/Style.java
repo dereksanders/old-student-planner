@@ -70,14 +70,14 @@ public class Style {
 
 	public static void setButtonStyle(Button button) {
 		button.setStyle(
-				"-fx-font-size: 11.0pt;" + "-fx-text-fill: #" + colorToHex(appBlue) + ";" + "-fx-font-weight: bold;"
+				"-fx-font-size: 11.0pt;" + "-fx-text-fill: #" + colorToHex(appGreen) + ";" + "-fx-font-weight: bold;"
 						+ "-fx-background-color: linear-gradient(from 25.0% 25.0% to 100.0% 100.0%, #fff, #ddd);"
 						+ "-fx-border-color: #ccc");
 	}
 
 	public static void setTitleStyle(Label title) {
 		title.setStyle(
-				"-fx-font-size: 18.0pt;" + "-fx-text-fill: #" + colorToHex(appBlue) + ";" + "-fx-font-weight: bold;");
+				"-fx-font-size: 15.0pt;" + "-fx-text-fill: #" + colorToHex(appGreen) + ";" + "-fx-font-weight: bold;");
 	}
 
 	/**

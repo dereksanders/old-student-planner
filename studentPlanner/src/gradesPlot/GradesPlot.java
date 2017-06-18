@@ -48,7 +48,7 @@ public class GradesPlot extends View implements Observer {
 		lineChart.setLegendVisible(false);
 
 		for (Term t : controller.active.terms) {
-			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
+			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
 		}
 
 		lineChart.getData().add(series);
@@ -62,7 +62,7 @@ public class GradesPlot extends View implements Observer {
 			XYChart.Series<String, Number> series = new XYChart.Series<>();
 
 			for (Term t : controller.active.terms) {
-				series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.grade));
+				series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
 			}
 
 			lineChart.getData().clear();

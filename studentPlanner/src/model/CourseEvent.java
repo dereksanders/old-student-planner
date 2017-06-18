@@ -14,4 +14,9 @@ public class CourseEvent extends CalendarEvent {
 		this.colour = colour;
 		this.weight = weight;
 	}
+
+	@Override
+	public String toString() {
+		return name;
+	}
 }

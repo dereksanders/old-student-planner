@@ -149,8 +149,6 @@ public class CourseSchedule extends View implements Observer {
 		optionsLayout.getChildren().addAll(todaysMeetingsList);
 
 		this.legend = new VBox(10);
-		this.legend
-				.setStyle("-fx-background-color: #fff; -fx-border-color: #000; -fx-border-width: 1px; -fx-padding: 5;");
 
 		csbp.setTop(headerLayout);
 		csbp.setCenter(scheduleScroll);
@@ -167,12 +165,20 @@ public class CourseSchedule extends View implements Observer {
 
 		this.legend.getChildren().clear();
 
-		Label legendTitle = new Label("Legend");
-		Style.setTitleStyle(legendTitle);
-
 		VBox allCourses = new VBox(10);
 
 		if (this.controller.active.currentlySelectedTerm != null) {
+
+			if (this.controller.active.currentlySelectedTerm.courses.size() > 0) {
+				Label legendTitle = new Label("Legend");
+				Style.setTitleStyle(legendTitle);
+				this.legend.getChildren().add(legendTitle);
+				this.legend.setStyle(
+						"-fx-background-color: #fff; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-padding: 5;");
+			} else {
+				this.legend.setStyle(
+						"-fx-background-color: #fff; -fx-border-color: #ccc; -fx-border-width: 0px; -fx-padding: 5;");
+			}
 
 			for (Course c : this.controller.active.currentlySelectedTerm.courses) {
 
@@ -186,17 +192,12 @@ public class CourseSchedule extends View implements Observer {
 			}
 		}
 
-		this.legend.getChildren().addAll(legendTitle, allCourses);
+		this.legend.getChildren().add(allCourses);
 	}
 
 	private void setTodaysMeetingList() {
 
 		todaysMeetingsList.getChildren().clear();
-
-		Label todaysMeetingsTitle = new Label("Today's Meetings");
-		Style.setTitleStyle(todaysMeetingsTitle);
-
-		todaysMeetingsList.getChildren().add(todaysMeetingsTitle);
 
 		if (controller.active.currentlySelectedTerm != null) {
 
@@ -205,6 +206,11 @@ public class CourseSchedule extends View implements Observer {
 					.get(Driver.t.current.getDayOfWeek().getValue() - 1);
 
 			if (td != null && td.size() > 0) {
+
+				Label todaysMeetingsTitle = new Label("Today's Meetings");
+				Style.setTitleStyle(todaysMeetingsTitle);
+
+				todaysMeetingsList.getChildren().add(todaysMeetingsTitle);
 
 				for (Meeting m : td) {
 

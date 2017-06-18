@@ -87,7 +87,7 @@ public class Grades extends View implements Observer {
 		selectedDisplay = new HBox(50);
 		displayGrades = new VBox(10);
 		displayGrades
-				.setStyle("-fx-border-width: 1; -fx-border-color: #000; -fx-padding: 10; -fx-background-color: #fff");
+				.setStyle("-fx-border-width: 1; -fx-border-color: #ccc; -fx-padding: 10; -fx-background-color: #fff");
 
 		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
 
@@ -313,7 +313,8 @@ public class Grades extends View implements Observer {
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
 
-			// chooseTerm.setItems(FXCollections.observableArrayList(((Profile) o).terms));
+			// chooseTerm.setItems(FXCollections.observableArrayList(((Profile)
+			// o).terms));
 			Term currentlySelected = ((Profile) o).currentlySelectedTerm;
 
 			if (currentlySelected != null) {

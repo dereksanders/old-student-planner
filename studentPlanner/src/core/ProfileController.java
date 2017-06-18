@@ -262,6 +262,8 @@ public class ProfileController {
 			for (Meeting m : deletedCourse.meetings) {
 				t.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
 			}
+
+			t.updateParams();
 		}
 		for (CalendarEvent e : deletedCourse.events) {
 			this.active.dateEvents.del(e.start.toLocalDate(), e);

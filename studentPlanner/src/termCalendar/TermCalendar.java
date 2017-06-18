@@ -111,7 +111,7 @@ public class TermCalendar extends View implements Observer {
 		upcomingShow.getChildren().addAll(showWithin, upcomingThreshold, showWithinDays);
 		upcomingLayout.getChildren().addAll(upcomingTitle, upcomingShow, upcomingEvents);
 		upcomingLayout
-				.setStyle("-fx-background-color: #fff; -fx-border-width: 1; -fx-border-color: #000; -fx-padding: 10;");
+				.setStyle("-fx-background-color: #fff; -fx-border-width: 1; -fx-border-color: #ccc; -fx-padding: 10;");
 		BorderPane.setAlignment(upcomingLayout, Pos.CENTER);
 
 		header.getChildren().add(termCal);

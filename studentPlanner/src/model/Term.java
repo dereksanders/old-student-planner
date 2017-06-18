@@ -62,7 +62,7 @@ public class Term implements Comparable<Term> {
 		boolean changesMade = false;
 
 		this.maxDay = 5;
-		this.minStart = LocalTime.of(11, 30);
+		this.minStart = LocalTime.of(23, 30);
 		this.maxEnd = LocalTime.of(0, 0);
 
 		if (this.courses.get(0).meetings.size() > 0) {
@@ -78,7 +78,7 @@ public class Term implements Comparable<Term> {
 			changesMade = true;
 		}
 
-		for (int i = 1; i < this.courses.size(); i++) {
+		for (int i = 0; i < this.courses.size(); i++) {
 			for (int j = 0; j < this.courses.get(i).meetings.size(); j++) {
 
 				changesMade = true;

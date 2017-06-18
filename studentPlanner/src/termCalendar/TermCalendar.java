@@ -28,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.*;
 import model.CalendarEvent;
+import model.CourseEvent;
 import model.Profile;
 import model.Term;
 import utility.Pretty;
@@ -328,7 +329,13 @@ public class TermCalendar extends View implements Observer {
 					Rectangle eventIcon = new Rectangle(20, 20);
 					eventIcon.setFill(Color.web(e.colour));
 
-					Label eventDesc = new Label(e.name + " (Due: " + e.start.toLocalTime() + ")");
+					Label eventDesc = new Label();
+
+					if (e instanceof CourseEvent) {
+						eventDesc.setText(e.name + " (Due: " + e.start.toLocalTime() + ")");
+					} else {
+						eventDesc.setText(e.toString());
+					}
 
 					eventListing.getChildren().addAll(eventIcon, eventDesc);
 					this.upcomingEvents.getChildren().add(eventListing);

@@ -313,7 +313,7 @@ public class Grades extends View implements Observer {
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
 
-			chooseTerm.setItems(FXCollections.observableArrayList(((Profile) o).terms));
+			// chooseTerm.setItems(FXCollections.observableArrayList(((Profile) o).terms));
 			Term currentlySelected = ((Profile) o).currentlySelectedTerm;
 
 			if (currentlySelected != null) {

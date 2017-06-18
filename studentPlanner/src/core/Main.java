@@ -7,6 +7,7 @@ import grades.GradesController;
 import gradesPlot.GradesPlot;
 import gradesPlot.GradesPlotController;
 import javafx.application.Application;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import termCalendar.TermCalendar;
@@ -24,6 +25,12 @@ public class Main extends Application {
 	 *            the arguments
 	 */
 	public static void main(String[] args) {
+
+		/*
+		 * This triggers JavaFX's hidden initialization on start. The executable
+		 * will not launch without this.
+		 */
+		final JFXPanel fxPanel = new JFXPanel();
 
 		driver = new Driver();
 

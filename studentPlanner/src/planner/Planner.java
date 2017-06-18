@@ -26,8 +26,8 @@ import model.Profile;
 public class Planner extends View implements Observer {
 
 	private volatile static Planner uniqueInstance;
-	private static int initialWidth = 900;
-	private static int initialHeight = 850;
+	private static int initialWidth = 920;
+	private static int initialHeight = 800;
 
 	public ProfileController pc;
 	public Observable observable;

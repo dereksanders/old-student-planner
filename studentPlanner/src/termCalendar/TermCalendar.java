@@ -109,10 +109,15 @@ public class TermCalendar extends View implements Observer {
 		Label showWithinDays = new Label(" days.");
 		upcomingShow.getChildren().addAll(showWithin, upcomingThreshold, showWithinDays);
 		upcomingLayout.getChildren().addAll(upcomingTitle, upcomingShow, upcomingEvents);
+		upcomingLayout
+				.setStyle("-fx-background-color: #fff; -fx-border-width: 1; -fx-border-color: #000; -fx-padding: 10;");
 		BorderPane.setAlignment(upcomingLayout, Pos.CENTER);
+
 		header.getChildren().add(termCal);
 		tcbp.setTop(header);
 		tcbp.setCenter(termViewBox);
+
+		tcbp.setStyle("-fx-padding: 10;");
 
 		return tcbp;
 	}

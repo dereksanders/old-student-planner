@@ -86,6 +86,8 @@ public class Grades extends View implements Observer {
 
 		selectedDisplay = new HBox(50);
 		displayGrades = new VBox(10);
+		displayGrades
+				.setStyle("-fx-border-width: 1; -fx-border-color: #000; -fx-padding: 10; -fx-background-color: #fff");
 
 		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
 
@@ -112,6 +114,8 @@ public class Grades extends View implements Observer {
 				}
 			}
 		});
+
+		gbp.setStyle("-fx-padding: 10;");
 
 		return gbp;
 	}

@@ -24,7 +24,9 @@ import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import model.Course;
 import model.Meeting;
 import model.Profile;
@@ -45,19 +47,20 @@ public class CourseSchedule extends View implements Observer {
 	public CourseScheduleController controller;
 
 	/* GUI elements */
-	public Label todaysMeetings;
-	public GridPane scheduleGrid;
-	public Label[] daysOfTheWeek = { new Label("Monday"), new Label("Tuesday"), new Label("Wednesday"),
+	private Label todaysMeetings;
+	private GridPane scheduleGrid;
+	private VBox legend;
+	private Label[] daysOfTheWeek = { new Label("Monday"), new Label("Tuesday"), new Label("Wednesday"),
 			new Label("Thursday"), new Label("Friday"), new Label("Saturday"), new Label("Sunday") };
-	public Label[] times;
-	public Button[][] meetingButtons;
-	public CheckBox showCurrentWeek;
+	private Label[] times;
+	private Button[][] meetingButtons;
+	private CheckBox showCurrentWeek;
 	public DatePicker selectWeek;
 
 	/* Dependent on selected Term's parameters */
-	public int daysInSchedule;
-	public int timesInSchedule;
-	public int timesOffset;
+	private int daysInSchedule;
+	private int timesInSchedule;
+	private int timesOffset;
 
 	/**
 	 * Instantiates a new Course Schedule.
@@ -142,11 +145,44 @@ public class CourseSchedule extends View implements Observer {
 		HBox optionsLayout = new HBox(20);
 		optionsLayout.getChildren().addAll(todaysMeetings);
 
+		this.legend = new VBox(10);
+		this.legend
+				.setStyle("-fx-background-color: #fff; -fx-border-color: #000; -fx-border-width: 1px; -fx-padding: 5;");
+
 		csbp.setTop(headerLayout);
 		csbp.setCenter(scheduleGrid);
 		csbp.setBottom(optionsLayout);
+		csbp.setRight(legend);
+
+		csbp.setStyle("-fx-padding: 10;");
 
 		return csbp;
+	}
+
+	private void updateLegend() {
+
+		this.legend.getChildren().clear();
+
+		Label legendTitle = new Label("Legend");
+		Style.setTitleStyle(legendTitle);
+
+		VBox allCourses = new VBox(10);
+
+		if (this.controller.active.currentlySelectedTerm != null) {
+
+			for (Course c : this.controller.active.currentlySelectedTerm.courses) {
+
+				HBox courseListing = new HBox(5);
+				Rectangle courseIcon = new Rectangle(20, 20);
+				courseIcon.setFill(Color.web(c.colour));
+				Label courseDesc = new Label(c.toString());
+				courseListing.getChildren().addAll(courseIcon, courseDesc);
+
+				allCourses.getChildren().add(courseListing);
+			}
+		}
+
+		this.legend.getChildren().addAll(legendTitle, allCourses);
 	}
 
 	/**
@@ -412,6 +448,7 @@ public class CourseSchedule extends View implements Observer {
 		if (arg0 instanceof Profile) {
 
 			drawSchedule(((Profile) arg0).currentlySelectedTerm, ((Profile) arg0).currentlySelectedDate);
+			updateLegend();
 
 			/*
 			 * Test if the first date of the week for the currently selected and

@@ -65,19 +65,6 @@ public class Term implements Comparable<Term> {
 		this.minStart = LocalTime.of(23, 30);
 		this.maxEnd = LocalTime.of(0, 0);
 
-		if (this.courses.get(0).meetings.size() > 0) {
-
-			this.minStart = this.courses.get(0).meetings.get(0).start;
-			this.maxEnd = this.courses.get(0).meetings.get(0).end;
-
-			if (this.courses.get(0).meetings.get(0).dayOfWeekInt > this.maxDay) {
-
-				this.maxDay = this.courses.get(0).meetings.get(0).dayOfWeekInt;
-			}
-
-			changesMade = true;
-		}
-
 		for (int i = 0; i < this.courses.size(); i++) {
 			for (int j = 0; j < this.courses.get(i).meetings.size(); j++) {
 

@@ -14,11 +14,13 @@ import core.View;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
+import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
@@ -48,6 +50,7 @@ public class CourseSchedule extends View implements Observer {
 
 	/* GUI elements */
 	private Label todaysMeetings;
+	private ScrollPane scheduleScroll;
 	private GridPane scheduleGrid;
 	private VBox legend;
 	private Label[] daysOfTheWeek = { new Label("Monday"), new Label("Tuesday"), new Label("Wednesday"),
@@ -92,6 +95,7 @@ public class CourseSchedule extends View implements Observer {
 		/* GridPane containing the entire Course Schedule view */
 		BorderPane csbp = new BorderPane();
 
+		this.scheduleScroll = new ScrollPane();
 		this.scheduleGrid = new GridPane();
 
 		/* Initialize time labels along the axis of the schedule. */
@@ -150,9 +154,10 @@ public class CourseSchedule extends View implements Observer {
 				.setStyle("-fx-background-color: #fff; -fx-border-color: #000; -fx-border-width: 1px; -fx-padding: 5;");
 
 		csbp.setTop(headerLayout);
-		csbp.setCenter(scheduleGrid);
+		csbp.setCenter(scheduleScroll);
 		csbp.setBottom(optionsLayout);
 		csbp.setRight(legend);
+		BorderPane.setAlignment(legend, Pos.BOTTOM_LEFT);
 
 		csbp.setStyle("-fx-padding: 10;");
 
@@ -341,6 +346,9 @@ public class CourseSchedule extends View implements Observer {
 				}
 			}
 		}
+
+		this.scheduleScroll.setContent(scheduleGrid);
+		this.scheduleScroll.setMaxWidth(730);
 	}
 
 	/**

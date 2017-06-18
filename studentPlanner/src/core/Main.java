@@ -37,6 +37,7 @@ public class Main extends Application {
 		/* Instantiate Schedule View & Controller */
 		CourseScheduleController scheduleController = new CourseScheduleController(driver.active, driver.planner);
 		CourseSchedule schedule = new CourseSchedule(driver.active, scheduleController);
+		schedule.planner = driver.planner;
 		driver.planner.addView(schedule);
 
 		/* Instantiate Calendar View & Controller */

@@ -86,11 +86,6 @@ public class EditOrDeleteMeeting {
 		endTime = new ComboBox<>();
 		selectTimes.getChildren().addAll(startTime, min, endTime);
 
-		startTime.setValue(times.get(
-				Time.getDistance(new Time(0, 0), new Time(selected.start.getHour(), selected.start.getMinute()), 30)));
-		endTime.setValue(times
-				.get(Time.getDistance(new Time(0, 0), new Time(selected.end.getHour(), selected.end.getMinute()), 30)));
-
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
@@ -101,6 +96,11 @@ public class EditOrDeleteMeeting {
 				selectTimes.getChildren().add(endTime);
 			}
 		});
+
+		startTime.setValue(times.get(
+				Time.getDistance(new Time(0, 0), new Time(selected.start.getHour(), selected.start.getMinute()), 30)));
+		endTime.setValue(times
+				.get(Time.getDistance(new Time(0, 0), new Time(selected.end.getHour(), selected.end.getMinute()), 30)));
 
 		Label header = new Label("Enter Meeting Info");
 		Style.setTitleStyle(header);

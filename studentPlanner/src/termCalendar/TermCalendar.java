@@ -332,7 +332,12 @@ public class TermCalendar extends View implements Observer {
 					Label eventDesc = new Label();
 
 					if (e instanceof CourseEvent) {
-						eventDesc.setText(e.name + " (Due: " + e.start.toLocalTime() + ")");
+						if (e.start.equals(e.end)) {
+							eventDesc.setText(e.name + " (Due: " + e.start.toLocalTime() + ")");
+						} else {
+							eventDesc
+									.setText(e.name + " (" + e.start.toLocalTime() + " - " + e.end.toLocalTime() + ")");
+						}
 					} else {
 						eventDesc.setText(e.toString());
 					}

@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import core.Driver;
+import core.Style;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -77,21 +78,26 @@ public class EditCalendarEvent {
 		for (CalendarEvent e : controller.active.dateEvents.get(date)) {
 			events.add(e);
 		}
+
 		ChoiceBox<CalendarEvent> chooseEvent = new ChoiceBox<>(events);
+		Style.setChoiceBoxStyle(chooseEvent);
 		chooseEvent.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				updateCurrentlySelected(events.get(newIndex.intValue()));
 			}
 		});
+
 		current = new Label();
 		name = new TextField();
 		name.setPromptText("Event Name");
 		time = new Label("Time: ");
 		HBox selectTimes = new HBox(20);
 		startTime = new ComboBox<>(times);
+		Style.setComboBoxStyle(startTime);
 		dash = new Label(" - ");
 		endTime = new ComboBox<>(times);
+		Style.setComboBoxStyle(endTime);
 		selectTimes.getChildren().addAll(startTime, dash, endTime);
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -100,6 +106,7 @@ public class EditCalendarEvent {
 				ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
 				newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
 				endTime = new ComboBox<>(newEndTimes);
+				Style.setComboBoxStyle(endTime);
 				selectTimes.getChildren().add(endTime);
 			}
 		});
@@ -108,18 +115,23 @@ public class EditCalendarEvent {
 		weight.setPromptText("Enter Event Weight");
 		error = new Label();
 		chooseEvent.setValue(events.get(0));
+
 		Button delete = new Button("Delete Event");
+		Style.setButtonStyle(delete);
 		delete.setOnAction(e -> {
 			controller.deleteEvent(
 					controller.active.currentlySelectedTerm.courseColors.get(Color.web(currentlySelected.colour)),
 					currentlySelected, date);
 			window.close();
 		});
+
 		Button confirm = new Button("Confirm Changes");
+		Style.setButtonStyle(confirm);
 		confirm.setOnAction(e -> {
 			confirmChanges(date);
 			window.close();
 		});
+
 		VBox options = new VBox(20);
 		options.getChildren().addAll(chooseEvent, current, name, time, selectTimes, weight, delete, confirm, error);
 		Scene scene = new Scene(options);

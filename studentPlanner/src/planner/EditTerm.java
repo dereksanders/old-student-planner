@@ -58,6 +58,7 @@ public class EditTerm {
 
 		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.active.terms);
 		ChoiceBox<Term> chooseTerm = new ChoiceBox<>(termChoices);
+		Style.setChoiceBoxStyle(chooseTerm);
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override

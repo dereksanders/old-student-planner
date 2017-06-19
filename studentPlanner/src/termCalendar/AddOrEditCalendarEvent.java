@@ -3,6 +3,7 @@ package termCalendar;
 import java.time.LocalDate;
 
 import core.Driver;
+import core.Style;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -23,8 +24,10 @@ public class AddOrEditCalendarEvent {
 	/**
 	 * Instantiates a new adds the or edit calendar event.
 	 *
-	 * @param date the date
-	 * @param controller the controller
+	 * @param date
+	 *            the date
+	 * @param controller
+	 *            the controller
 	 */
 	public AddOrEditCalendarEvent(LocalDate date, TermCalendarController controller) {
 		this.date = date;
@@ -41,9 +44,15 @@ public class AddOrEditCalendarEvent {
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Term Calendar");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+
 		Label text = new Label("Would you like to add a new event or edit an existing one?");
+
 		Button add = new Button("Add Event");
+		Style.setButtonStyle(add);
+
 		Button edit = new Button("Edit Event");
+		Style.setButtonStyle(edit);
+
 		add.setOnAction(e -> {
 			new AddCalendarEvent(date, controller);
 			window.close();

@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderStroke;
 import javafx.scene.layout.BorderStrokeStyle;
@@ -79,6 +80,11 @@ public class Style {
 	}
 
 	public static void setChoiceBoxStyle(ChoiceBox box) {
+		box.setStyle(
+				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
+	}
+
+	public static void setComboBoxStyle(ComboBox box) {
 		box.setStyle(
 				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}

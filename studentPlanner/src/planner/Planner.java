@@ -26,7 +26,7 @@ import model.Profile;
 public class Planner extends View implements Observer {
 
 	private volatile static Planner uniqueInstance;
-	private static int initialWidth = 920;
+	private static int initialWidth = 940;
 	private static int initialHeight = 800;
 
 	public ProfileController pc;
@@ -63,6 +63,7 @@ public class Planner extends View implements Observer {
 		this.viewPane = new BorderPane();
 
 		this.options = initOptions();
+		this.options.setStyle("-fx-padding: 10; -fx-background-color: #ddd");
 		this.mainLayout = initLayout();
 		this.mainLayout.setStyle("-fx-background-color: #fff;");
 		this.scene = new Scene(this.mainLayout, initialWidth, initialHeight);

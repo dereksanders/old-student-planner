@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 import core.Driver;
+import core.Style;
 import core.Time;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -76,7 +77,10 @@ public class AddCalendarEvent {
 		for (Course c : controller.active.currentlySelectedTerm.courses) {
 			courses.add(c);
 		}
+
 		ChoiceBox<Course> cChoice = new ChoiceBox<>(courses);
+		Style.setChoiceBoxStyle(cChoice);
+
 		if (courses.size() == 0) {
 			cChoice.setVisible(false);
 			types.removeAll("Test", "Assignment");
@@ -85,6 +89,7 @@ public class AddCalendarEvent {
 		}
 
 		ChoiceBox<String> typeChoice = new ChoiceBox<>(types);
+		Style.setChoiceBoxStyle(typeChoice);
 
 		TextField name = new TextField();
 		name.setPromptText(typeChoice.getValue() + " title");
@@ -94,8 +99,10 @@ public class AddCalendarEvent {
 		Label startTime = new Label("Time:");
 		Label dash = new Label(" - ");
 		ComboBox<Time> startTimes = new ComboBox<>(times);
+		Style.setComboBoxStyle(startTimes);
 
 		endTimes = new ComboBox<>();
+		Style.setComboBoxStyle(endTimes);
 		selectTime.getChildren().addAll(startTimes, dash, endTimes);
 
 		typeChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -152,6 +159,7 @@ public class AddCalendarEvent {
 					ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
 					newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
 					endTimes = new ComboBox<>(newEndTimes);
+					Style.setComboBoxStyle(endTimes);
 					selectTime.getChildren().add(endTimes);
 					endTimes.setDisable(false);
 				}
@@ -160,8 +168,10 @@ public class AddCalendarEvent {
 
 		startTimes.setValue(times.get(17));
 
-		Button addEvent = new Button("Add Event");
 		Label error = new Label("");
+		Button addEvent = new Button("Add Event");
+		Style.setButtonStyle(addEvent);
+
 		addEvent.setOnAction(e -> {
 			boolean success = false;
 			if (typeChoice.getValue().equals("Assignment")) {

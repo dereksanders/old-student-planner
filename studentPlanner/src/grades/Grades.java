@@ -14,6 +14,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
@@ -37,6 +38,7 @@ public class Grades extends View implements Observer {
 	private GradesController controller;
 
 	private HBox selectedDisplay;
+	private ScrollPane scroll;
 	private VBox displayGrades;
 	private HBox classGrades;
 	private ComboBox<Course> chooseCourse;
@@ -78,22 +80,29 @@ public class Grades extends View implements Observer {
 
 		ObservableList<Term> termChoices = FXCollections.observableArrayList(controller.active.terms);
 		chooseTerm = new ComboBox<>(termChoices);
+		Style.setComboBoxStyle(chooseTerm);
 		chooseCourse = new ComboBox<>(coursesToDisplay);
+		Style.setComboBoxStyle(chooseCourse);
 
 		Label gSelectedLabel = new Label("Currently selected: ");
 		classGrades = new HBox(50);
 		classGrades.getChildren().addAll(gSelectedLabel, chooseCourse);
 
 		selectedDisplay = new HBox(50);
+
+		scroll = new ScrollPane();
+
 		displayGrades = new VBox(10);
 		displayGrades
 				.setStyle("-fx-border-width: 1; -fx-border-color: #ccc; -fx-padding: 10; -fx-background-color: #fff");
 
 		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
+		scroll.setContent(body);
+		scroll.setStyle("-fx-padding: 10;");
 
 		header.getChildren().addAll(title);
 		gbp.setTop(header);
-		gbp.setCenter(body);
+		gbp.setCenter(scroll);
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -207,10 +216,12 @@ public class Grades extends View implements Observer {
 		TextField weight = new TextField();
 		weight.setPromptText("Enter Weight %");
 		Button confirmChanges = new Button("Confirm");
+		Style.setButtonStyle(confirmChanges);
 
 		ObservableList<CourseEvent> events = FXCollections.observableArrayList();
 		events.addAll(selected.events);
 		ChoiceBox<CourseEvent> chooseEvent = new ChoiceBox<>(events);
+		Style.setChoiceBoxStyle(chooseEvent);
 
 		if (chooseEvent.getValue() == null) {
 			grade.setDisable(true);

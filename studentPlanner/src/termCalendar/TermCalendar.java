@@ -98,6 +98,7 @@ public class TermCalendar extends View implements Observer {
 		}
 
 		ComboBox<Integer> upcomingThreshold = new ComboBox<>(thresholds);
+		Style.setComboBoxStyle(upcomingThreshold);
 		upcomingThreshold.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
@@ -256,6 +257,7 @@ public class TermCalendar extends View implements Observer {
 			}
 		}
 		termCalendar.setContent(area);
+		termCalendar.setStyle("-fx-padding: 10");
 		updateUpcomingEvents();
 		return termCalendar;
 	}

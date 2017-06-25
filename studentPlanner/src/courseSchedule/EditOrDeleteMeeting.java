@@ -82,7 +82,9 @@ public class EditOrDeleteMeeting {
 			}
 		}
 
+		Label typeLabel = new Label("Type:");
 		ChoiceBox<String> meetingType = new ChoiceBox<>(types);
+		Style.setChoiceBoxStyle(meetingType);
 		meetingType.setValue(selected.meetingType);
 
 		Label startDateLabel = new Label("Start Date:");
@@ -93,14 +95,9 @@ public class EditOrDeleteMeeting {
 		CheckBox toEndOfTerm = new CheckBox();
 		toEndOfTerm.setText("To End of Term");
 		toEndOfTerm.setSelected(false);
-		if (!editSet) {
-			toEndOfTerm.setVisible(false);
-			endDateLabel.setVisible(false);
-		}
 
 		DatePicker endDate = new DatePicker();
 		endDate.setValue(selectedSet.getEnd());
-		endDate.setVisible(true);
 
 		toEndOfTerm.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -114,19 +111,27 @@ public class EditOrDeleteMeeting {
 			}
 		});
 
+		Label rep = new Label("Repeat:");
 		ObservableList<String> repeatOptions = FXCollections.observableArrayList("Weekly", "Bi-Weekly", "Monthly",
 				"Never");
 		ChoiceBox<String> chooseRepeat = new ChoiceBox<>(repeatOptions);
 		Style.setChoiceBoxStyle(chooseRepeat);
 		chooseRepeat.setValue(selectedSet.repeat);
+
 		if (!editSet) {
+			endDate.setVisible(false);
+			toEndOfTerm.setVisible(false);
+			endDateLabel.setVisible(false);
 			chooseRepeat.setVisible(false);
+			rep.setVisible(false);
 		}
 
 		HBox selectTimes = new HBox();
 		startTime = new ComboBox<>(times);
+		Style.setComboBoxStyle(startTime);
 		Label min = new Label(" - ");
 		endTime = new ComboBox<>();
+		Style.setComboBoxStyle(endTime);
 		selectTimes.getChildren().addAll(startTime, min, endTime);
 
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -136,6 +141,7 @@ public class EditOrDeleteMeeting {
 				ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
 				newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
 				endTime = new ComboBox<>(newEndTimes);
+				Style.setComboBoxStyle(endTime);
 				selectTimes.getChildren().add(endTime);
 			}
 		});
@@ -148,13 +154,15 @@ public class EditOrDeleteMeeting {
 		Label header = new Label("Enter Meeting Info");
 		Style.setTitleStyle(header);
 		Label hour = new Label("Time:");
-		Label rep = new Label("Repeat:");
 		Label loc = new Label("Location:");
 		TextField locField = new TextField();
 		Label error = new Label();
 		Button confirm = new Button("Confirm changes");
+		Style.setButtonStyle(confirm);
 		Button delete = new Button("Delete Meeting");
+		Style.setButtonStyle(delete);
 		Button cancel = new Button("Cancel");
+		Style.setButtonStyle(cancel);
 
 		confirm.setOnAction(e -> {
 			/* Confirm changes to all instances in the MeetingSet. */
@@ -195,8 +203,9 @@ public class EditOrDeleteMeeting {
 		});
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, meetingType, startDateLabel, startDate, toEndOfTerm, endDateLabel, endDate,
-				hour, selectTimes, rep, chooseRepeat, loc, locField, confirm, delete, cancel, error);
+		options.getChildren().addAll(header, typeLabel, meetingType, startDateLabel, startDate, toEndOfTerm,
+				endDateLabel, endDate, hour, selectTimes, rep, chooseRepeat, loc, locField, confirm, delete, cancel,
+				error);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();

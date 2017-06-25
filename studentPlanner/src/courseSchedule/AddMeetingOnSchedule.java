@@ -79,12 +79,15 @@ public class AddMeetingOnSchedule {
 
 		ChoiceBox<Course> chooseCourse = new ChoiceBox<>(
 				FXCollections.observableArrayList(pc.active.currentlySelectedTerm.courses));
+		Style.setChoiceBoxStyle(chooseCourse);
 
 		if (pc.active.currentlySelectedTerm.courses.size() > 0) {
 			chooseCourse.setValue(pc.active.currentlySelectedTerm.courses.get(0));
 		}
 
+		Label typeLabel = new Label("Type:");
 		ChoiceBox<String> meetingType = new ChoiceBox<>(types);
+		Style.setChoiceBoxStyle(meetingType);
 		meetingType.setValue(types.get(0));
 
 		Label startDateLabel = new Label("Start Date:");
@@ -114,8 +117,10 @@ public class AddMeetingOnSchedule {
 
 		HBox selectTimes = new HBox();
 		startTime = new ComboBox<>(times);
+		Style.setComboBoxStyle(startTime);
 		Label min = new Label(" - ");
 		endTime = new ComboBox<>();
+		Style.setComboBoxStyle(endTime);
 		selectTimes.getChildren().addAll(startTime, min, endTime);
 
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
@@ -125,6 +130,7 @@ public class AddMeetingOnSchedule {
 				ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
 				newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
 				endTime = new ComboBox<>(newEndTimes);
+				Style.setComboBoxStyle(endTime);
 				selectTimes.getChildren().add(endTime);
 			}
 		});
@@ -158,7 +164,9 @@ public class AddMeetingOnSchedule {
 		error.setTextFill(Color.RED);
 
 		Button confirm = new Button("Confirm changes");
+		Style.setButtonStyle(confirm);
 		Button cancel = new Button("Cancel");
+		Style.setButtonStyle(cancel);
 
 		confirm.setOnAction(e -> {
 			if (meetingType.getValue() != null && startTime.getValue() != null && endTime.getValue() != null) {
@@ -185,8 +193,9 @@ public class AddMeetingOnSchedule {
 		});
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, chooseCourse, meetingType, startDateLabel, startDate, endDateLabel,
-				toEndOfTerm, endDate, hour, selectTimes, loc, locField, chooseRepeat, confirm, cancel, error);
+		options.getChildren().addAll(header, chooseCourse, typeLabel, meetingType, startDateLabel, startDate,
+				endDateLabel, toEndOfTerm, endDate, hour, selectTimes, loc, locField, chooseRepeat, confirm, cancel,
+				error);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();

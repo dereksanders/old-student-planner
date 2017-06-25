@@ -185,6 +185,12 @@ public class EditSet {
 		});
 
 		cancel.setOnAction(e -> {
+			mergeSets();
+			window.close();
+		});
+
+		window.setOnCloseRequest(e -> {
+			mergeSets();
 			window.close();
 		});
 
@@ -196,6 +202,11 @@ public class EditSet {
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();
+	}
+
+	private void mergeSets() {
+
+		this.pastSelectedSet.getMeetings().addAll(selectedSet.getMeetings());
 	}
 
 	private void confirmChanges(LocalDate startDate, String type, Time start, Time end, String loc, LocalDate endDate,

@@ -144,6 +144,7 @@ public class AddMeetingOnSchedule {
 		Label loc = new Label("Location:");
 		TextField locField = new TextField();
 
+		Label rep = new Label("Repeat:");
 		ObservableList<String> repeatOptions = FXCollections.observableArrayList(MeetingSet.WEEKLY_REPEAT,
 				MeetingSet.BIWEEKLY_REPEAT, MeetingSet.MONTHLY_REPEAT, MeetingSet.NO_REPEAT);
 		ChoiceBox<String> chooseRepeat = new ChoiceBox<>(repeatOptions);
@@ -194,8 +195,8 @@ public class AddMeetingOnSchedule {
 
 		VBox options = new VBox(20);
 		options.getChildren().addAll(header, chooseCourse, typeLabel, meetingType, startDateLabel, startDate,
-				endDateLabel, toEndOfTerm, endDate, hour, selectTimes, loc, locField, chooseRepeat, confirm, cancel,
-				error);
+				endDateLabel, toEndOfTerm, endDate, hour, selectTimes, loc, locField, rep, chooseRepeat, confirm,
+				cancel, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);

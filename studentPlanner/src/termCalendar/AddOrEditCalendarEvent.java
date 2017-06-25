@@ -65,6 +65,7 @@ public class AddOrEditCalendarEvent {
 		options.getChildren().addAll(add, edit);
 		VBox box = new VBox(20);
 		box.getChildren().addAll(text, options);
+		Style.addPadding(box);
 		Scene scene = new Scene(box);
 		window.setScene(scene);
 		window.showAndWait();

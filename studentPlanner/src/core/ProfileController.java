@@ -307,6 +307,7 @@ public class ProfileController {
 
 				if (ms.getMeetings().contains(m)) {
 					ms.getMeetings().remove(m);
+					this.active.currentlySelectedTerm.dayMeetings.del(m.date, m);
 				}
 			}
 		}
@@ -336,7 +337,7 @@ public class ProfileController {
 
 			if (conflicts.size() > 0) {
 
-				deleteConflicts = new HandleConflict(m, conflicts).display();
+				deleteConflicts = new HandleConflict(m, conflicts, this).display();
 			}
 
 			if (deleteConflicts) {

@@ -218,6 +218,7 @@ public class AddCalendarEvent {
 		VBox options = new VBox(20);
 		options.getChildren().addAll(dateLabel, cChoice, typeChoice, name, startTime, selectTime, weight, addEvent,
 				error);
+		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();

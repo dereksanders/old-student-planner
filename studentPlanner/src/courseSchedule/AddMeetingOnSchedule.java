@@ -196,6 +196,7 @@ public class AddMeetingOnSchedule {
 		options.getChildren().addAll(header, chooseCourse, typeLabel, meetingType, startDateLabel, startDate,
 				endDateLabel, toEndOfTerm, endDate, hour, selectTimes, loc, locField, chooseRepeat, confirm, cancel,
 				error);
+		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();

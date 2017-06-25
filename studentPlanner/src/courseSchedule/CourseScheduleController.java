@@ -98,6 +98,18 @@ public class CourseScheduleController extends ProfileController {
 		return null;
 	}
 
+	public void deleteSingleInstance(MeetingSet ms, Meeting m) {
+
+		if (ms.getMeetings().size() == 1) {
+			deleteMeetingSet(ms);
+		} else {
+
+			ms.getMeetings().remove(m);
+			this.active.currentlySelectedTerm.dayMeetings.del(m.date, m);
+			this.active.update();
+		}
+	}
+
 	public void deleteMeetingSet(MeetingSet deleted) {
 
 		Term t = this.active.currentlySelectedTerm;

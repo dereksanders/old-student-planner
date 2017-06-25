@@ -2,12 +2,16 @@ package courseSchedule;
 
 import java.util.ArrayList;
 
+import core.Driver;
+import core.ProfileController;
+import core.Style;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Meeting;
@@ -16,47 +20,68 @@ public class HandleConflict {
 
 	private Meeting m;
 	private ArrayList<Meeting> conflicts;
+	private ProfileController pc;
 	private boolean confirm;
 
-	public HandleConflict(Meeting m, ArrayList<Meeting> conflicts) {
+	public HandleConflict(Meeting m, ArrayList<Meeting> conflicts, ProfileController pc) {
 		this.m = m;
 		this.conflicts = conflicts;
+		this.pc = pc;
 	}
 
 	public boolean display() {
 		Stage window = new Stage();
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Handle Conflict");
-		Label instructions = new Label(
-				"A conflict exists between the new and old meetings below. Please choose which to delete.");
-		Label newMeeting = new Label(m.toString());
-		String s = "";
-		for (Meeting c : conflicts) {
-			s += c.toString() + "\n";
+		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+
+		Label instructions = new Label("A conflict exists. Please choose which meeting(s) to delete.");
+
+		VBox elements = new VBox(15);
+
+		HBox info = new HBox(15);
+
+		Label newTitle = new Label("New Meeting:");
+		Style.setTitleStyle(newTitle);
+		Label oldTitle = new Label("Conflicts:");
+		Style.setTitleStyle(oldTitle);
+
+		VBox oldListing = new VBox(5);
+		VBox newListing = new VBox(5);
+
+		Label newMeetingDesc = new Label(m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
+
+		newListing.getChildren().addAll(newTitle, newMeetingDesc);
+		oldListing.getChildren().add(oldTitle);
+
+		for (Meeting m : conflicts) {
+
+			oldListing.getChildren().add(new Label(pc.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour))
+					+ " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
 		}
-		s = s.substring(0, s.lastIndexOf("\n"));
-		Label oldMeeting = new Label(s);
-		GridPane grid = new GridPane();
-		BorderPane border = new BorderPane();
+
+		info.getChildren().addAll(newListing, oldListing);
+
 		Button deleteNew = new Button("Delete New Meeting");
+		Style.setButtonStyle(deleteNew);
 		deleteNew.setOnAction(e -> {
 			confirm = false;
 			window.close();
 		});
-		Button deleteOld = new Button("Delete Old Meetings");
+
+		Button deleteOld = new Button("Delete Conflicts");
+		Style.setButtonStyle(deleteOld);
 		deleteOld.setOnAction(e -> {
 			confirm = true;
 			window.close();
 		});
-		grid.add(newMeeting, 0, 0);
-		grid.add(oldMeeting, 1, 0);
-		grid.add(deleteNew, 0, 1);
-		grid.add(deleteOld, 1, 1);
-		HBox top = new HBox();
-		top.getChildren().add(instructions);
-		border.setTop(top);
-		border.setCenter(grid);
-		Scene scene = new Scene(border);
+
+		HBox buttons = new HBox(10);
+		buttons.getChildren().addAll(deleteNew, deleteOld);
+
+		elements.getChildren().addAll(instructions, info, buttons);
+		Style.addPadding(elements);
+		Scene scene = new Scene(elements);
 		window.setScene(scene);
 		window.showAndWait();
 		return confirm;

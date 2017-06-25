@@ -345,7 +345,7 @@ public class CourseSchedule extends View implements Observer {
 				meetingButtons[i][j].setOnAction(e -> {
 					if (this.controller.active.currentlySelectedTerm != null) {
 						if (controller.timeIsOccupied(cell)) {
-							new EditOrDeleteMeeting(cell, controller);
+							new EditInstanceOrSet(cell, controller);
 						} else {
 							new AddMeetingOnSchedule(cell, controller);
 						}

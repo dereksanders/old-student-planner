@@ -95,6 +95,7 @@ public class EditTerm {
 
 		dates.getChildren().addAll(startBox, endBox);
 		options.getChildren().addAll(chooseTerm, dates, confirmChanges, error);
+		Style.addPadding(options);
 		chooseTerm.setValue(pc.active.currentlySelectedTerm);
 		Scene scene = new Scene(options, 500, 200);
 		window.setScene(scene);

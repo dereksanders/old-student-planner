@@ -62,6 +62,11 @@ public class Meeting implements Comparable<Meeting> {
 
 	@Override
 	public int compareTo(Meeting o) {
-		return this.start.compareTo(o.start);
+
+		if (!this.date.equals(o.date)) {
+			return this.date.compareTo(o.date);
+		} else {
+			return this.start.compareTo(o.start);
+		}
 	}
 }

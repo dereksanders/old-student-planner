@@ -172,6 +172,7 @@ public class AddCourse {
 		layout.getChildren().addAll(terms, department, code, name, cPicker, add, error);
 		bp.setTop(top);
 		bp.setBottom(layout);
+		Style.addPadding(bp);
 		Scene scene = new Scene(bp);
 		add.requestFocus();
 		window.setScene(scene);

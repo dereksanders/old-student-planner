@@ -84,6 +84,7 @@ public class AddTerm {
 		bp.setTop(name);
 		bp.setCenter(body);
 		bp.setBottom(options);
+		Style.addPadding(bp);
 		Scene scene = new Scene(bp, 500, 200);
 		add.requestFocus();
 		window.setScene(scene);

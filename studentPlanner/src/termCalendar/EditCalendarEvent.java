@@ -134,6 +134,7 @@ public class EditCalendarEvent {
 
 		VBox options = new VBox(20);
 		options.getChildren().addAll(chooseEvent, current, name, time, selectTimes, weight, delete, confirm, error);
+		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();

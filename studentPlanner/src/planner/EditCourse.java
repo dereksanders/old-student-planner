@@ -153,6 +153,7 @@ public class EditCourse {
 
 		VBox layout = new VBox(20);
 		layout.getChildren().addAll(chooseTerm, chooseCourse, department, code, title, cPicker, delete, confirm, error);
+		Style.addPadding(layout);
 		Scene scene = new Scene(layout);
 		window.setScene(scene);
 		window.showAndWait();

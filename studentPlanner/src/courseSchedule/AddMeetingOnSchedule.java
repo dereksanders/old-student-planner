@@ -1,7 +1,9 @@
 package courseSchedule;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 import core.Driver;
 import core.Style;
@@ -12,8 +14,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -24,6 +28,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
 import model.Meeting;
+import model.MeetingSet;
 
 /**
  * The Class AddMeetingOnSchedule.
@@ -34,6 +39,7 @@ public class AddMeetingOnSchedule {
 	LocalDateTime selected;
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
+	private Label error;
 
 	/**
 	 * Instantiates a new adds the meeting on schedule.
@@ -63,7 +69,7 @@ public class AddMeetingOnSchedule {
 		ObservableList<String> days = FXCollections.observableArrayList();
 		days.addAll("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 		ObservableList<String> types = FXCollections.observableArrayList();
-		types.addAll("Lecture", "Tutorial", "Lab", "Seminar");
+		types.addAll(Meeting.TYPES);
 		ObservableList<Time> times = FXCollections.observableArrayList();
 		for (int i = 0; i < 24; i++) {
 			for (int j = 0; j < 31; j += 30) {
@@ -81,8 +87,30 @@ public class AddMeetingOnSchedule {
 		ChoiceBox<String> meetingType = new ChoiceBox<>(types);
 		meetingType.setValue(types.get(0));
 
-		ChoiceBox<String> daysChoose = new ChoiceBox<>(days);
-		daysChoose.setValue(days.get(selected.getDayOfWeek().getValue() - 1));
+		Label startDateLabel = new Label("Start Date:");
+		DatePicker startDate = new DatePicker();
+		startDate.setValue(selected.toLocalDate());
+
+		Label endDateLabel = new Label("End Date:");
+		CheckBox toEndOfTerm = new CheckBox();
+		toEndOfTerm.setSelected(true);
+		toEndOfTerm.setText("To End of Term");
+
+		DatePicker endDate = new DatePicker();
+		endDate.setValue(pc.active.currentlySelectedTerm.end);
+		endDate.setVisible(false);
+
+		toEndOfTerm.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
+				if (newVal) {
+					endDate.setVisible(false);
+					endDate.setValue(pc.active.currentlySelectedTerm.end);
+				} else {
+					endDate.setVisible(true);
+				}
+			}
+		});
 
 		HBox selectTimes = new HBox();
 		startTime = new ComboBox<>(times);
@@ -106,23 +134,49 @@ public class AddMeetingOnSchedule {
 
 		Label header = new Label("Enter Meeting Info");
 		Style.setTitleStyle(header);
-		Label day = new Label("Day:");
 		Label hour = new Label("Time:");
 		Label loc = new Label("Location:");
 		TextField locField = new TextField();
-		Label error = new Label();
+
+		ObservableList<String> repeatOptions = FXCollections.observableArrayList(MeetingSet.WEEKLY_REPEAT,
+				MeetingSet.BIWEEKLY_REPEAT, MeetingSet.MONTHLY_REPEAT, MeetingSet.NO_REPEAT);
+		ChoiceBox<String> chooseRepeat = new ChoiceBox<>(repeatOptions);
+		Style.setChoiceBoxStyle(chooseRepeat);
+		chooseRepeat.setValue(MeetingSet.WEEKLY_REPEAT);
+
+		chooseRepeat.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
+				if (repeatOptions.get(current.intValue()).equals(MeetingSet.NO_REPEAT)) {
+					toEndOfTerm.setVisible(false);
+					endDateLabel.setVisible(false);
+				}
+			}
+		});
+
+		error = new Label();
+		error.setTextFill(Color.RED);
+
 		Button confirm = new Button("Confirm changes");
 		Button cancel = new Button("Cancel");
 
 		confirm.setOnAction(e -> {
-			if (meetingType.getValue() != null && daysChoose.getValue() != null && startTime.getValue() != null
-					&& endTime.getValue() != null) {
-				confirm(chooseCourse.getValue(), meetingType.getValue(), daysChoose.getValue(), startTime.getValue(),
-						endTime.getValue(), locField.getText());
-				window.close();
+			if (meetingType.getValue() != null && startTime.getValue() != null && endTime.getValue() != null) {
+
+				if (endDate.getValue().isAfter(startDate.getValue())
+						|| endDate.getValue().equals(startDate.getValue())) {
+
+					confirm(chooseCourse.getValue(), startDate.getValue(), meetingType.getValue(), startTime.getValue(),
+							endTime.getValue(), locField.getText(), endDate.getValue(), chooseRepeat.getValue());
+
+					window.close();
+
+				} else {
+					error.setText("Error: End date must be after or equal to start date.");
+				}
+
 			} else {
 				error.setText("Error: You must fill out all fields.");
-				error.setTextFill(Color.RED);
 			}
 		});
 
@@ -131,8 +185,8 @@ public class AddMeetingOnSchedule {
 		});
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, chooseCourse, meetingType, day, daysChoose, hour, selectTimes, loc,
-				locField, confirm, cancel, error);
+		options.getChildren().addAll(header, chooseCourse, meetingType, startDateLabel, startDate, endDateLabel,
+				toEndOfTerm, endDate, hour, selectTimes, loc, locField, chooseRepeat, confirm, cancel, error);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();
@@ -154,9 +208,36 @@ public class AddMeetingOnSchedule {
 	 * @param loc
 	 *            the loc
 	 */
-	private void confirm(Course course, String type, String day, Time start, Time end, String loc) {
-		Meeting add = new Meeting(type, LocalTime.of(start.hour, start.minute), LocalTime.of(end.hour, end.minute), day,
-				loc);
-		pc.addMeeting(course, add);
+	private void confirm(Course course, LocalDate startDate, String type, Time start, Time end, String loc,
+			LocalDate endDate, String repeat) {
+
+		MeetingSet meetingSet = new MeetingSet(new ArrayList<>());
+
+		LocalDate cur = startDate;
+
+		while (cur.isBefore(endDate) || cur.equals(endDate)) {
+
+			Meeting m = new Meeting(type, cur, LocalTime.of(start.hour, start.minute),
+					LocalTime.of(end.hour, end.minute), loc);
+
+			meetingSet.addMeeting(m);
+
+			if (repeat.equals(MeetingSet.NO_REPEAT)) {
+
+				/* Ensure that the while loop above is broken out of. */
+				cur = endDate.plusDays(1);
+
+			} else if (repeat.equals(MeetingSet.WEEKLY_REPEAT)) {
+				cur = cur.plusDays(7);
+
+			} else if (repeat.equals(MeetingSet.BIWEEKLY_REPEAT)) {
+				cur = cur.plusDays(14);
+
+			} else if (repeat.equals(MeetingSet.MONTHLY_REPEAT)) {
+				cur = cur.plusDays(28);
+			}
+		}
+
+		pc.addMeetingSet(course, meetingSet, repeat);
 	}
 }

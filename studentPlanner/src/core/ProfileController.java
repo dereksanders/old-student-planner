@@ -3,6 +3,7 @@ package core;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.PriorityQueue;
 
 import courseSchedule.HandleConflict;
 import javafx.scene.control.Alert;
@@ -12,6 +13,7 @@ import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
 import model.Meeting;
+import model.MeetingSet;
 import model.Profile;
 import model.Term;
 import planner.Planner;
@@ -233,8 +235,8 @@ public class ProfileController {
 
 				if (i == courseTerms.size() - 1) {
 
-					for (Meeting m : original.meetings) {
-						m.colour = original.colour;
+					for (MeetingSet ms : original.meetingSets) {
+						ms.setColor(original.colour);
 					}
 
 					for (CourseEvent e : original.events) {
@@ -259,8 +261,12 @@ public class ProfileController {
 			t.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
 			t.courses.remove(deletedCourse);
 
-			for (Meeting m : deletedCourse.meetings) {
-				t.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
+			for (MeetingSet ms : deletedCourse.meetingSets) {
+				for (Meeting m : ms.getMeetings()) {
+					if (t.dayMeetings.get(m.date).contains(m)) {
+						t.dayMeetings.del(m.date, m);
+					}
+				}
 			}
 
 			t.updateParams();
@@ -293,22 +299,17 @@ public class ProfileController {
 		return termsBetween;
 	}
 
-	public void deleteMeeting(Term t, Meeting m) {
+	private void deleteMeeting(Meeting m) {
 
-		for (Course c : t.courses) {
+		for (Course c : this.active.currentlySelectedTerm.courses) {
 
-			if (c.meetings.contains(m)) {
+			for (MeetingSet ms : c.meetingSets) {
 
-				c.meetings.remove(m);
-
-				for (Term term : findTermsBetween(c.start, c.end)) {
-					term.dayMeetings.get(m.dayOfWeekInt - 1).remove(m);
-					term.updateParams();
+				if (ms.getMeetings().contains(m)) {
+					ms.getMeetings().remove(m);
 				}
-
 			}
 		}
-		active.update();
 	}
 
 	/**
@@ -317,22 +318,24 @@ public class ProfileController {
 	 * @param currentlySelected
 	 *            the currently selected the m
 	 */
-	public void addMeeting(Course currentlySelected, Meeting m) {
+	protected boolean addMeeting(Course currentlySelected, Meeting m) {
 
 		if (m != null) {
 
 			boolean deleteConflicts = true;
 
-			ArrayList<Meeting> conflicts = new ArrayList<>();
+			Term t = this.active.currentlySelectedTerm;
 
-			ArrayList<Term> courseTerms = findTermsBetween(currentlySelected.start, currentlySelected.end);
+			ArrayList<Meeting> possibleConflicts = new ArrayList<>();
 
-			for (Term t : courseTerms) {
-				ArrayList<Meeting> outerConflicts = m.conflictsWithCourses(t.courses);
-				conflicts.addAll(outerConflicts);
+			if (t.dayMeetings.get(m.date) != null) {
+				possibleConflicts.addAll(t.dayMeetings.get(m.date));
 			}
 
+			ArrayList<Meeting> conflicts = m.conflictsWith(possibleConflicts);
+
 			if (conflicts.size() > 0) {
+
 				deleteConflicts = new HandleConflict(m, conflicts).display();
 			}
 
@@ -340,22 +343,14 @@ public class ProfileController {
 
 				for (Meeting conflict : conflicts) {
 
-					for (Term t : courseTerms) {
-						deleteMeeting(t, conflict);
-					}
+					deleteMeeting(conflict);
 				}
 
 				m.colour = currentlySelected.colour;
-				currentlySelected.meetings.add(m);
-
-				for (Term t : courseTerms) {
-					t.dayMeetings.get(m.dayOfWeekInt - 1).add(m);
-					t.updateParams();
-				}
-
-				active.update();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	/**
@@ -416,19 +411,17 @@ public class ProfileController {
 	 */
 	public Meeting getMeetingAtTime(LocalDateTime cell) {
 
-		for (Course c : this.active.currentlySelectedTerm.courses) {
-			for (Meeting m : c.meetings) {
-				if ((m.dayOfWeekInt == cell.getDayOfWeek().getValue())
-						&& (m.start.isBefore(cell.toLocalTime()) || m.start.equals(cell.toLocalTime()))
+		PriorityQueue<Meeting> meetingsThatDay = this.active.currentlySelectedTerm.dayMeetings.get(cell.toLocalDate());
+
+		if (meetingsThatDay != null) {
+			for (Meeting m : meetingsThatDay) {
+				if (m.start.isBefore(cell.toLocalTime()) || m.start.equals(cell.toLocalTime())
 						&& (m.end.isAfter(cell.toLocalTime()) || m.end.equals(cell.toLocalTime()))) {
 					return m;
 				}
 			}
 		}
+
 		return null;
-	}
-
-	public void deleteMeetings(ArrayList<Meeting> allConflicts) {
-
 	}
 }

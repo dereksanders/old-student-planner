@@ -203,7 +203,7 @@ public class CourseSchedule extends View implements Observer {
 
 			/* Priority queue of today's meetings */
 			PriorityQueue<Meeting> td = controller.active.currentlySelectedTerm.dayMeetings
-					.get(Driver.t.current.getDayOfWeek().getValue() - 1);
+					.get(Driver.t.current.toLocalDate());
 
 			if (td != null && td.size() > 0) {
 
@@ -354,32 +354,33 @@ public class CourseSchedule extends View implements Observer {
 			}
 		}
 
-		/* Add all of the selected term's courses to the schedule. */
 		if (term != null) {
-			for (Course c : term.courses) {
-				for (Meeting m : c.meetings) {
-					addToSchedule(c, m, term);
-				}
-			}
+			drawWeeksMeetings(term, firstOfWeek);
 		}
 
 		this.scheduleScroll.setContent(scheduleGrid);
 		this.scheduleScroll.setMaxWidth(730);
 	}
 
-	/**
-	 * Adds the meeting to the Course Schedule.
-	 *
-	 * @param course
-	 *            the course
-	 * @param meeting
-	 *            the meeting
-	 * @param term
-	 *            the term
-	 */
-	private void addToSchedule(Course course, Meeting meeting, Term term) {
+	private void drawWeeksMeetings(Term term, LocalDate firstOfWeek) {
 
-		int mDay = meeting.dayOfWeekInt;
+		for (int i = 0; i < term.maxDay; i++) {
+
+			PriorityQueue<Meeting> q = term.dayMeetings.get(firstOfWeek.plusDays(i));
+
+			if (q != null) {
+				for (Meeting m : q) {
+					addToSchedule(m, term);
+				}
+			}
+		}
+	}
+
+	private void addToSchedule(Meeting meeting, Term term) {
+
+		Course course = term.courseColors.get(Color.web(meeting.colour));
+
+		int mDay = meeting.date.getDayOfWeek().getValue();
 
 		/*
 		 * Get the distance from the first time in the Course Schedule to the

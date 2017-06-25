@@ -25,7 +25,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
 import model.CourseEvent;
-import model.Meeting;
+import model.MeetingSet;
 import model.Term;
 
 /**
@@ -154,7 +154,7 @@ public class AddCourse {
 				}
 				if (legalTerms) {
 					confirmAdd(termsArray, department.getText(), Integer.parseInt(code.getText()), name.getText(),
-							new ArrayList<>(), cPicker.getValue());
+							cPicker.getValue());
 					window.close();
 				} else {
 					error.setText("Invalid term entries.");
@@ -194,11 +194,10 @@ public class AddCourse {
 	 * @param selected
 	 *            the selected
 	 */
-	private void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name,
-			ArrayList<Meeting> meetings, Color selected) {
+	private void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name, Color selected) {
 
-		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end, meetings,
-				new ArrayList<CourseEvent>(), Style.colorToHex(selected));
+		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end,
+				new ArrayList<MeetingSet>(), new ArrayList<CourseEvent>(), Style.colorToHex(selected));
 
 		try {
 

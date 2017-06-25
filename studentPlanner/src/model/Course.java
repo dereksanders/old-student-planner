@@ -15,7 +15,7 @@ public class Course implements Comparable<Course> {
 	public int code;
 	public LocalDate start;
 	public LocalDate end;
-	public ArrayList<Meeting> meetings;
+	public ArrayList<MeetingSet> meetingSets;
 	public ArrayList<CourseEvent> events;
 	public String colour;
 
@@ -44,13 +44,13 @@ public class Course implements Comparable<Course> {
 	 *            the colour
 	 */
 	public Course(String name, String departmentID, int code, LocalDate start, LocalDate end,
-			ArrayList<Meeting> meetings, ArrayList<CourseEvent> events, String colour) {
+			ArrayList<MeetingSet> meetingSets, ArrayList<CourseEvent> events, String colour) {
 		this.name = name;
 		this.departmentID = departmentID;
 		this.code = code;
 		this.start = start;
 		this.end = end;
-		this.meetings = meetings;
+		this.meetingSets = meetingSets;
 		this.events = events;
 		this.colour = colour;
 	}
@@ -61,7 +61,7 @@ public class Course implements Comparable<Course> {
 	 * @see java.lang.Object#clone()
 	 */
 	public Course clone() {
-		return new Course(this.name, this.departmentID, this.code, this.start, this.end, this.meetings, this.events,
+		return new Course(this.name, this.departmentID, this.code, this.start, this.end, this.meetingSets, this.events,
 				this.colour);
 	}
 

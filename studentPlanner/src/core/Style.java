@@ -79,11 +79,13 @@ public class Style {
 		title.setStyle("-fx-font-size: 15.0pt;" + "-fx-text-fill: #00a300;" + "-fx-font-weight: bold;");
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void setChoiceBoxStyle(ChoiceBox box) {
 		box.setStyle(
 				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}
 
+	@SuppressWarnings("rawtypes")
 	public static void setComboBoxStyle(ComboBox box) {
 		box.setStyle(
 				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");

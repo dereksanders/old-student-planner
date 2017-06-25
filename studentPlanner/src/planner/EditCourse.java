@@ -14,13 +14,11 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
-import model.Meeting;
 import model.Term;
 
 /**
@@ -37,10 +35,7 @@ public class EditCourse {
 	private TextField code;
 	private TextField title;
 	private ColorPicker cPicker;
-	private Label meetings;
-	private ChoiceBox<Meeting> chooseMeeting;
 	private Label error;
-	private HBox ch;
 
 	/**
 	 * Instantiates a new edits the course.
@@ -74,13 +69,8 @@ public class EditCourse {
 		title.setPromptText("Course Title");
 		department = new TextField();
 		code = new TextField();
-		meetings = new Label();
 		cPicker = new ColorPicker();
 		error = new Label();
-		ch = new HBox();
-		chooseMeeting = new ChoiceBox<>();
-		chooseMeeting.setVisible(false);
-		ch.getChildren().add(chooseMeeting);
 
 		chooseCourse = new ChoiceBox<>();
 		Style.setChoiceBoxStyle(chooseCourse);
@@ -118,37 +108,6 @@ public class EditCourse {
 				if (current.intValue() > -1) {
 					updateCurrentlySelected(termsCourses.get(current.intValue()));
 				}
-			}
-		});
-
-		/* Add meetings */
-		Button addMeeting = new Button("Add Meeting");
-		Style.setButtonStyle(addMeeting);
-
-		addMeeting.setOnAction(e -> {
-			Meeting m = new AddMeeting().display();
-			pc.addMeeting(currentlySelected, m);
-			updateChooseMeeting();
-			meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
-			for (int i = 0; i < currentlySelected.meetings.size(); i++) {
-				meetings.setText(
-						meetings.getText() + "\n Meeting " + (i + 1) + ": " + currentlySelected.meetings.get(i));
-				window.setHeight(window.getHeight() + 10);
-			}
-		});
-
-		/* Delete meetings */
-		Button deleteMeeting = new Button("Delete Meeting");
-		Style.setButtonStyle(deleteMeeting);
-
-		deleteMeeting.setOnAction(e -> {
-			pc.deleteMeeting(chooseTerm.getValue(), chooseMeeting.getValue());
-			updateChooseMeeting();
-			meetings.setText("Weekly Meeting: " + currentlySelected.meetings.size());
-			for (int i = 0; i < currentlySelected.meetings.size(); i++) {
-				meetings.setText(
-						meetings.getText() + "\n Meeting " + (i + 1) + ": " + currentlySelected.meetings.get(i));
-				window.setHeight(window.getHeight() + 10);
 			}
 		});
 
@@ -193,8 +152,7 @@ public class EditCourse {
 		});
 
 		VBox layout = new VBox(20);
-		layout.getChildren().addAll(chooseTerm, chooseCourse, department, code, title, cPicker, meetings, ch,
-				addMeeting, deleteMeeting, delete, confirm, error);
+		layout.getChildren().addAll(chooseTerm, chooseCourse, department, code, title, cPicker, delete, confirm, error);
 		Scene scene = new Scene(layout);
 		window.setScene(scene);
 		window.showAndWait();
@@ -210,27 +168,10 @@ public class EditCourse {
 
 		chooseCourse.setValue(termsCourses.get(0));
 		currentlySelected = c;
-		updateChooseMeeting();
 		department.setText(currentlySelected.departmentID);
 		code.setText("" + currentlySelected.code);
 		title.setText(currentlySelected.name);
 		cPicker.setValue(Color.web(currentlySelected.colour));
-		meetings.setText("Weekly Meetings: " + currentlySelected.meetings.size());
-	}
-
-	/**
-	 * Update choose meeting.
-	 */
-	private void updateChooseMeeting() {
-
-		ch.getChildren().remove(chooseMeeting);
-		ObservableList<Meeting> chooseMeet = FXCollections.observableArrayList(currentlySelected.meetings);
-		chooseMeeting = new ChoiceBox<>(chooseMeet);
-		Style.setChoiceBoxStyle(chooseMeeting);
-		ch.getChildren().add(chooseMeeting);
-		if (chooseMeet.size() > 0) {
-			chooseMeeting.setValue(chooseMeet.get(0));
-		}
 	}
 
 	/**

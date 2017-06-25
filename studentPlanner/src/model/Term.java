@@ -3,10 +3,9 @@ package model;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.PriorityQueue;
-
 import javafx.scene.paint.Color;
 import utility.GenericHashTable;
+import utility.GenericLinkedHashTable;
 import utility.Pretty;
 
 public class Term implements Comparable<Term> {
@@ -20,7 +19,7 @@ public class Term implements Comparable<Term> {
 
 	public ArrayList<Course> courses;
 	public GenericHashTable<Color, Course> courseColors;
-	public ArrayList<PriorityQueue<Meeting>> dayMeetings;
+	public GenericLinkedHashTable<LocalDate, Meeting> dayMeetings;
 
 	/* Course Schedule params */
 	public int maxDay;
@@ -34,10 +33,7 @@ public class Term implements Comparable<Term> {
 		this.courses = new ArrayList<>();
 		this.courseColors = new GenericHashTable<>(100);
 
-		this.dayMeetings = new ArrayList<>(7);
-		for (int i = 0; i < 7; i++) {
-			this.dayMeetings.add(new PriorityQueue<Meeting>());
-		}
+		this.dayMeetings = new GenericLinkedHashTable<>(300, true);
 
 		/* Default course schedule params */
 		this.minStart = LocalTime.of(8, 30);
@@ -65,11 +61,12 @@ public class Term implements Comparable<Term> {
 		this.minStart = LocalTime.of(23, 30);
 		this.maxEnd = LocalTime.of(0, 0);
 
-		for (int i = 0; i < this.courses.size(); i++) {
-			for (int j = 0; j < this.courses.get(i).meetings.size(); j++) {
-
-				changesMade = true;
-				addParams(this.courses.get(i).meetings.get(j));
+		for (Course c : this.courses) {
+			for (MeetingSet ms : c.meetingSets) {
+				for (Meeting m : ms.getMeetings()) {
+					changesMade = true;
+					addParams(m);
+				}
 			}
 		}
 
@@ -78,8 +75,8 @@ public class Term implements Comparable<Term> {
 
 	private void addParams(Meeting m) {
 
-		if (this.maxDay < m.dayOfWeekInt) {
-			this.maxDay = m.dayOfWeekInt;
+		if (this.maxDay < m.date.getDayOfWeek().getValue()) {
+			this.maxDay = m.date.getDayOfWeek().getValue();
 		}
 		if (this.minStart.compareTo(m.start) > 0) {
 			this.minStart = m.start;

@@ -1,7 +1,9 @@
 package courseSchedule;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 
 import core.Driver;
 import core.Style;
@@ -12,8 +14,10 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -24,6 +28,7 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
 import model.Meeting;
+import model.MeetingSet;
 
 /**
  * The Class EditOrDeleteMeeting.
@@ -32,9 +37,11 @@ public class EditOrDeleteMeeting {
 
 	private CourseScheduleController pc;
 	private Meeting selected;
+	private MeetingSet selectedSet;
 	private Course meetingCourse;
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
+	private boolean editSet;
 
 	/**
 	 * Instantiates a new edits the or delete meeting.
@@ -48,6 +55,8 @@ public class EditOrDeleteMeeting {
 
 		this.pc = pc;
 		this.selected = pc.getMeetingAtTime(cell);
+		this.selectedSet = pc.getMeetingSet(cell);
+		System.out.println(selectedSet);
 		this.meetingCourse = pc.getCourseFromColor(Color.web(selected.colour));
 		display();
 	}
@@ -62,9 +71,8 @@ public class EditOrDeleteMeeting {
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Meeting");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+		this.editSet = new EditSet().display();
 
-		ObservableList<String> days = FXCollections.observableArrayList();
-		days.addAll("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 		ObservableList<String> types = FXCollections.observableArrayList();
 		types.addAll("Lecture", "Tutorial", "Lab", "Seminar");
 		ObservableList<Time> times = FXCollections.observableArrayList();
@@ -77,8 +85,43 @@ public class EditOrDeleteMeeting {
 		ChoiceBox<String> meetingType = new ChoiceBox<>(types);
 		meetingType.setValue(selected.meetingType);
 
-		ChoiceBox<String> daysChoose = new ChoiceBox<>(days);
-		daysChoose.setValue(selected.dayOfWeek);
+		Label startDateLabel = new Label("Start Date:");
+		DatePicker startDate = new DatePicker();
+		startDate.setValue(selectedSet.getStart());
+
+		Label endDateLabel = new Label("End Date:");
+		CheckBox toEndOfTerm = new CheckBox();
+		toEndOfTerm.setText("To End of Term");
+		toEndOfTerm.setSelected(false);
+		if (!editSet) {
+			toEndOfTerm.setVisible(false);
+			endDateLabel.setVisible(false);
+		}
+
+		DatePicker endDate = new DatePicker();
+		endDate.setValue(selectedSet.getEnd());
+		endDate.setVisible(true);
+
+		toEndOfTerm.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
+				if (newVal) {
+					endDate.setVisible(false);
+					endDate.setValue(pc.active.currentlySelectedTerm.end);
+				} else {
+					endDate.setVisible(true);
+				}
+			}
+		});
+
+		ObservableList<String> repeatOptions = FXCollections.observableArrayList("Weekly", "Bi-Weekly", "Monthly",
+				"Never");
+		ChoiceBox<String> chooseRepeat = new ChoiceBox<>(repeatOptions);
+		Style.setChoiceBoxStyle(chooseRepeat);
+		chooseRepeat.setValue(selectedSet.repeat);
+		if (!editSet) {
+			chooseRepeat.setVisible(false);
+		}
 
 		HBox selectTimes = new HBox();
 		startTime = new ComboBox<>(times);
@@ -104,8 +147,8 @@ public class EditOrDeleteMeeting {
 
 		Label header = new Label("Enter Meeting Info");
 		Style.setTitleStyle(header);
-		Label day = new Label("Day:");
 		Label hour = new Label("Time:");
+		Label rep = new Label("Repeat:");
 		Label loc = new Label("Location:");
 		TextField locField = new TextField();
 		Label error = new Label();
@@ -114,9 +157,22 @@ public class EditOrDeleteMeeting {
 		Button cancel = new Button("Cancel");
 
 		confirm.setOnAction(e -> {
-			if (meetingType.getValue() != null && daysChoose.getValue() != null && startTime.getValue() != null
+			/* Confirm changes to all instances in the MeetingSet. */
+			if (editSet && meetingType.getValue() != null && startTime.getValue() != null
 					&& endTime.getValue() != null) {
-				confirmChanges(meetingType.getValue(), daysChoose.getValue(), startTime.getValue(), endTime.getValue(),
+
+				if (endDate.getValue().isAfter(startDate.getValue())
+						|| endDate.getValue().equals(startDate.getValue())) {
+
+					confirmChanges(startDate.getValue(), meetingType.getValue(), startTime.getValue(),
+							endTime.getValue(), locField.getText(), endDate.getValue(), chooseRepeat.getValue());
+
+					window.close();
+				}
+
+			} /* Confirm changes to the single instance of the meeting. */
+			else if (meetingType.getValue() != null && startTime.getValue() != null && endTime.getValue() != null) {
+				confirmChanges(startDate.getValue(), meetingType.getValue(), startTime.getValue(), endTime.getValue(),
 						locField.getText());
 				window.close();
 			} else {
@@ -126,7 +182,11 @@ public class EditOrDeleteMeeting {
 		});
 
 		delete.setOnAction(e -> {
-			pc.deleteMeeting(pc.active.currentlySelectedTerm, this.selected);
+			if (editSet) {
+				deleteSelectedSet();
+			} else {
+				deleteSelectedInstance();
+			}
 			window.close();
 		});
 
@@ -135,8 +195,8 @@ public class EditOrDeleteMeeting {
 		});
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, meetingType, day, daysChoose, hour, selectTimes, loc, locField, confirm,
-				delete, cancel, error);
+		options.getChildren().addAll(header, meetingType, startDateLabel, startDate, toEndOfTerm, endDateLabel, endDate,
+				hour, selectTimes, rep, chooseRepeat, loc, locField, confirm, delete, cancel, error);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();
@@ -156,11 +216,71 @@ public class EditOrDeleteMeeting {
 	 * @param loc
 	 *            the loc
 	 */
-	private void confirmChanges(String type, String day, Time start, Time end, String loc) {
-		pc.deleteMeeting(pc.active.currentlySelectedTerm, selected);
-		Meeting add = new Meeting(type, LocalTime.of(start.hour, start.minute), LocalTime.of(end.hour, end.minute), day,
-				loc);
-		add.colour = selected.colour;
-		pc.addMeeting(this.meetingCourse, add);
+	private void confirmChanges(LocalDate startDate, String type, Time start, Time end, String loc) {
+
+		deleteSelectedInstance();
+
+		MeetingSet ms = new MeetingSet();
+
+		ms.addMeeting(new Meeting(type, startDate, LocalTime.of(start.hour, start.minute),
+				LocalTime.of(end.hour, end.minute), loc));
+
+		pc.addMeetingSet(this.meetingCourse, ms, "Never");
+	}
+
+	private void confirmChanges(LocalDate startDate, String type, Time start, Time end, String loc, LocalDate endDate,
+			String repeat) {
+
+		deleteSelectedSet();
+
+		MeetingSet meetingSet = new MeetingSet(new ArrayList<>());
+
+		LocalDate cur = startDate;
+
+		while (cur.isBefore(endDate) || cur.equals(endDate)) {
+
+			Meeting m = new Meeting(type, cur, LocalTime.of(start.hour, start.minute),
+					LocalTime.of(end.hour, end.minute), loc);
+
+			meetingSet.addMeeting(m);
+
+			switch (repeat) {
+
+			case "Never":
+				/* Ensure that loop is broken out of. */
+				cur = endDate.plusDays(1);
+				break;
+
+			case "Weekly":
+				cur = cur.plusDays(7);
+				break;
+
+			case "Bi-Weekly":
+				cur = cur.plusDays(14);
+				break;
+
+			case "Monthly":
+				cur = cur.plusDays(28);
+				break;
+			}
+		}
+
+		pc.addMeetingSet(this.meetingCourse, meetingSet, repeat);
+	}
+
+	private void deleteSelectedSet() {
+		pc.deleteMeetingSet(this.selectedSet);
+	}
+
+	private void deleteSelectedInstance() {
+		/*
+		 * Create a new MeetingSet containing the single meeting and delete
+		 * that.
+		 */
+		MeetingSet deleted = new MeetingSet(new ArrayList<Meeting>());
+		deleted.addMeeting(selected);
+
+		this.selectedSet.getMeetings().remove(selected);
+		pc.deleteMeetingSet(deleted);
 	}
 }

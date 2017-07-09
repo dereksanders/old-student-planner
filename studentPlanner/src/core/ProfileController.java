@@ -8,7 +8,6 @@ import java.util.PriorityQueue;
 import courseSchedule.HandleConflict;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
@@ -103,8 +102,7 @@ public class ProfileController {
 		}
 
 		/*
-		 * Sort terms chronologically. TODO: Is the sorting ascending or
-		 * descending?
+		 * Sort terms chronologically. TODO: Is the sorting ascending or descending?
 		 */
 		active.terms.sort(null);
 		active.update();
@@ -158,14 +156,14 @@ public class ProfileController {
 
 			for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
 				/*
-				 * Error Condition: One of the terms this course is being added
-				 * to has a course with the same colour.
+				 * Error Condition: One of the terms this course is being added to has a course
+				 * with the same colour.
 				 */
-				if (t.courseColors.get(Color.web(addedCourse.colour)) != null) {
+				if (t.courseColors.get(addedCourse.colour) != null) {
 					throw new IllegalCourseException(
 							"One of the terms this course is being added to has a course with the same colour.");
 				} else {
-					t.courseColors.put(Color.web(addedCourse.colour), addedCourse);
+					t.courseColors.put(addedCourse.colour, addedCourse);
 					t.courses.add(addedCourse);
 				}
 			}
@@ -185,7 +183,8 @@ public class ProfileController {
 		original.name = edit.name;
 		original.departmentID = edit.departmentID;
 		original.code = edit.code;
-		Color originalColor = Color.web(original.colour);
+
+		String originalColor = original.colour;
 		original.colour = edit.colour;
 
 		for (Term t : findTermsBetween(original.start, original.end)) {
@@ -193,8 +192,7 @@ public class ProfileController {
 		}
 
 		/*
-		 * If the edited course belongs to the currently selected term, redraw
-		 * views.
+		 * If the edited course belongs to the currently selected term, redraw views.
 		 */
 		if (this.active.currentlySelectedTerm.courses.contains(original)) {
 
@@ -203,30 +201,29 @@ public class ProfileController {
 
 		/* Check if the course's colour was changed. */
 
-		if (!originalColor.equals(Color.web(original.colour))) {
+		if (!originalColor.equals(original.colour)) {
 
 			ArrayList<Term> courseTerms = findTermsBetween(original.start, original.end);
 
 			for (int i = 0; i < courseTerms.size(); i++) {
 
-				if (courseTerms.get(i).courseColors.get(Color.web(original.colour)) == null) {
+				if (courseTerms.get(i).courseColors.get(original.colour) == null) {
 
 					courseTerms.get(i).courseColors.del(originalColor, original);
-					courseTerms.get(i).courseColors.put(Color.web(original.colour), original);
+					courseTerms.get(i).courseColors.put(original.colour, original);
 
 				} else {
 					/*
-					 * Error Condition: Edited colour is already in use by a
-					 * course in courseTerms.get(i). Need to revert changes to
-					 * courseColors if any have been made and reject changes.
-					 * TODO: Better solution could be adding a listener to the
-					 * colour picker to inform the user when this is the case.
+					 * Error Condition: Edited colour is already in use by a course in
+					 * courseTerms.get(i). Need to revert changes to courseColors if any have been
+					 * made and reject changes. TODO: Better solution could be adding a listener to
+					 * the colour picker to inform the user when this is the case.
 					 */
 					for (int j = 0; j < i; j++) {
-						courseTerms.get(j).courseColors.del(Color.web(original.colour), original);
+						courseTerms.get(j).courseColors.del(original.colour, original);
 						courseTerms.get(j).courseColors.put(originalColor, original);
 					}
-					original.colour = Style.colorToHex(originalColor);
+					original.colour = originalColor;
 					Alert illegalColour = new Alert(AlertType.ERROR,
 							"Edited colour is already in use. Colour change has been reverted.");
 					illegalColour.show();
@@ -258,7 +255,7 @@ public class ProfileController {
 	public void deleteCourse(Course deletedCourse) {
 
 		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
-			t.courseColors.del(Color.web(deletedCourse.colour), deletedCourse);
+			t.courseColors.del(deletedCourse.colour, deletedCourse);
 			t.courses.remove(deletedCourse);
 
 			for (MeetingSet ms : deletedCourse.meetingSets) {
@@ -368,10 +365,8 @@ public class ProfileController {
 		active.dateEvents.put(date, event);
 		if (course != null) {
 			for (Term t : findTermsBetween(course.start, course.end)) {
-				t.courseColors.get(Color.web((event).colour)).events.add((CourseEvent) event);
+				t.courseColors.get(event.colour).events.add((CourseEvent) event);
 			}
-		} else {
-			active.personalEvents.add(event);
 		}
 		active.update();
 	}
@@ -390,15 +385,13 @@ public class ProfileController {
 		active.dateEvents.del(date, event);
 		if (course != null) {
 			for (Term t : findTermsBetween(course.start, course.end)) {
-				t.courseColors.get(Color.web((event).colour)).events.remove(event);
+				t.courseColors.get(event.colour).events.remove(event);
 			}
-		} else {
-			active.personalEvents.remove(event);
 		}
 		active.update();
 	}
 
-	public Course getCourseFromColor(Color c) {
+	public Course getCourseFromColor(String c) {
 
 		return this.active.currentlySelectedTerm.courseColors.get(c);
 	}

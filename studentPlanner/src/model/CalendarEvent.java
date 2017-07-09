@@ -1,8 +1,14 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
-public class CalendarEvent implements Comparable<CalendarEvent> {
+public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public String name;
 	public LocalDateTime start;

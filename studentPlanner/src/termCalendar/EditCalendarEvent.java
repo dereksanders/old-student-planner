@@ -20,7 +20,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.CalendarEvent;
@@ -119,8 +118,7 @@ public class EditCalendarEvent {
 		Button delete = new Button("Delete Event");
 		Style.setButtonStyle(delete);
 		delete.setOnAction(e -> {
-			controller.deleteEvent(
-					controller.active.currentlySelectedTerm.courseColors.get(Color.web(currentlySelected.colour)),
+			controller.deleteEvent(controller.active.currentlySelectedTerm.courseColors.get(currentlySelected.colour),
 					currentlySelected, date);
 			window.close();
 		});
@@ -153,8 +151,7 @@ public class EditCalendarEvent {
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						Double.parseDouble(weight.getText()));
-				Course eventCourse = controller.active.currentlySelectedTerm.courseColors
-						.get(Color.web(currentlySelected.colour));
+				Course eventCourse = controller.active.currentlySelectedTerm.courseColors.get(currentlySelected.colour);
 				controller.deleteEvent(eventCourse, currentlySelected, date);
 				controller.addEvent(eventCourse, edited, date);
 			} else {

@@ -4,6 +4,11 @@ import java.time.LocalDateTime;
 
 public class CourseEvent extends CalendarEvent {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public double grade = 0;
 	public boolean gradeEntered = false;
 

@@ -1,5 +1,6 @@
 package utility;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.PriorityQueue;
 
@@ -11,7 +12,12 @@ import java.util.PriorityQueue;
  * @param <H>
  *            the generic type
  */
-public class GenericLinkedHashTable<G, H> {
+public class GenericLinkedHashTable<G, H> implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public int n;
 	public G[] keys;

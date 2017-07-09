@@ -2,8 +2,12 @@ package utility;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FilenameFilter;
+import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -11,10 +15,6 @@ import java.nio.file.Paths;
 
 /**
  * The Class IOManager.
- *
- * @author Derek Sanders (Student no. 10021587)
- * @version 1.1
- * @since November 29th, 2015
  */
 
 public class IOManager {
@@ -120,37 +120,68 @@ public class IOManager {
 		try {
 			Files.delete(file);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
 
-	/**
-	 * Finds the last modified .json file in the directory.
-	 *
-	 * @param directory
-	 *            the directory
-	 * @return the file
-	 */
-	public static File lastModifiedJSON(String directory) {
+	public static void saveObject(Object o, String dir) {
 
-		File[] profiles = findJSONFiles(directory);
+		// Create save directory if it does not already exist.
+		if (!Files.exists(Paths.get(dir))) {
+			try {
+				Files.createDirectory(Paths.get(dir));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 
-		if (profiles.length == 0) {
+		try {
+			File f = new File(dir + "//" + o.toString());
+			FileOutputStream fos = new FileOutputStream(f);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(o);
+			oos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-			System.out.println("No profiles found. Returning null.");
+	public static Object loadObject(File saveFile) {
+
+		Object o = null;
+
+		try {
+			FileInputStream fis = new FileInputStream(saveFile);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			o = ois.readObject();
+			ois.close();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+
+		return o;
+	}
+
+	public static File getLastModifiedFile(String directory) {
+
+		File dir = new File(directory);
+		File[] files = findAllFiles(dir);
+
+		if (files.length == 0) {
+
+			System.out.println("No files found in directory. Returning null.");
 			return null;
 
 		} else {
 
-			File lastModified = profiles[0];
+			File lastModified = files[0];
 
-			if (profiles.length > 1) {
-				for (int i = 1; i < profiles.length; i++) {
-					if (profiles[i].lastModified() < lastModified.lastModified()) {
+			if (files.length > 1) {
+				for (int i = 1; i < files.length; i++) {
+					if (files[i].lastModified() < lastModified.lastModified()) {
 
-						lastModified = profiles[i];
+						lastModified = files[i];
 					}
 				}
 			}
@@ -158,20 +189,15 @@ public class IOManager {
 		}
 	}
 
-	/**
-	 * Finds all .json files in the directory.
-	 *
-	 * @param directory
-	 *            the directory name
-	 * @return the file[]
-	 */
-	public static File[] findJSONFiles(String directory) {
-		File dir = new File(directory);
+	private static File[] findAllFiles(File dir) {
 
-		return dir.listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String filename) {
-				return filename.endsWith(".json");
+		File[] files = dir.listFiles(new FileFilter() {
+			@Override
+			public boolean accept(File f) {
+				return f.isFile();
 			}
 		});
+
+		return files;
 	}
 }

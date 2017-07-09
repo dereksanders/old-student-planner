@@ -1,14 +1,19 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import javafx.scene.paint.Color;
 import utility.GenericHashTable;
 import utility.GenericLinkedHashTable;
 import utility.Pretty;
 
-public class Term implements Comparable<Term> {
+public class Term implements Comparable<Term>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public String name;
 	public LocalDate start;
@@ -18,7 +23,7 @@ public class Term implements Comparable<Term> {
 	public double avgSoFar;
 
 	public ArrayList<Course> courses;
-	public GenericHashTable<Color, Course> courseColors;
+	public GenericHashTable<String, Course> courseColors;
 	public GenericLinkedHashTable<LocalDate, Meeting> dayMeetings;
 
 	/* Course Schedule params */

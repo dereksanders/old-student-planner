@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Meeting;
@@ -56,8 +55,8 @@ public class HandleConflict {
 
 		for (Meeting m : conflicts) {
 
-			oldListing.getChildren().add(new Label(pc.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour))
-					+ " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
+			oldListing.getChildren().add(new Label(pc.active.currentlySelectedTerm.courseColors.get(m.colour) + " "
+					+ m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
 		}
 
 		info.getChildren().addAll(newListing, oldListing);

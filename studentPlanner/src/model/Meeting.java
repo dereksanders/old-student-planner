@@ -1,12 +1,18 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
 
 import utility.Pretty;
 
-public class Meeting implements Comparable<Meeting> {
+public class Meeting implements Comparable<Meeting>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static String[] TYPES = { "Lecture", "Tutorial", "Lab", "Seminar" };
 

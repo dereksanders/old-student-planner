@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import core.Driver;
 import core.ProfileController;
-import javafx.scene.paint.Color;
 import model.Course;
 import model.Meeting;
 import model.MeetingSet;
@@ -22,8 +21,7 @@ public class CourseScheduleController extends ProfileController {
 
 	public void showCurrentWeek(Boolean newVal) {
 		/*
-		 * Actions to perform when the checkbox to show the current week is
-		 * toggled.
+		 * Actions to perform when the checkbox to show the current week is toggled.
 		 */
 
 		/* If the new value is to show the current week. */
@@ -88,7 +86,7 @@ public class CourseScheduleController extends ProfileController {
 
 		Meeting m = getMeetingAtTime(cell);
 
-		for (MeetingSet ms : this.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)).meetingSets) {
+		for (MeetingSet ms : this.active.currentlySelectedTerm.courseColors.get(m.colour).meetingSets) {
 
 			if (ms.getMeetings().contains(m)) {
 				return ms;

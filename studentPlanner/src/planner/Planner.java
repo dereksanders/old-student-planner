@@ -163,7 +163,7 @@ public class Planner extends View implements Observer {
 	 */
 	public Color getNextColor() {
 		for (Color c : Style.selectableColors) {
-			if (this.pc.active.currentlySelectedTerm.courseColors.get(c) == null) {
+			if (this.pc.active.currentlySelectedTerm.courseColors.get(Style.colorToHex(c)) == null) {
 				return c;
 			}
 		}

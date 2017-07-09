@@ -115,8 +115,7 @@ public class CourseSchedule extends View implements Observer {
 		/* Select week */
 
 		/*
-		 * Initially, the present week is shown when the user starts the
-		 * application
+		 * Initially, the present week is shown when the user starts the application
 		 */
 		showCurrentWeek = new CheckBox("Show current week");
 		showCurrentWeek.setSelected(true);
@@ -130,8 +129,8 @@ public class CourseSchedule extends View implements Observer {
 		});
 
 		/*
-		 * Since the checkbox to show the current week is active on startup,
-		 * this should initially be disabled.
+		 * Since the checkbox to show the current week is active on startup, this should
+		 * initially be disabled.
 		 */
 		selectWeek.setVisible(false);
 
@@ -219,9 +218,8 @@ public class CourseSchedule extends View implements Observer {
 					Rectangle meetingIcon = new Rectangle(20, 20);
 					meetingIcon.setFill(Color.web(m.colour));
 
-					Label meetingDesc = new Label(
-							controller.active.currentlySelectedTerm.courseColors.get(Color.web(m.colour)) + " "
-									+ m.meetingType + ": " + m.start + " - " + m.end);
+					Label meetingDesc = new Label(controller.active.currentlySelectedTerm.courseColors.get(m.colour)
+							+ " " + m.meetingType + ": " + m.start + " - " + m.end);
 
 					meetingListing.getChildren().addAll(meetingIcon, meetingDesc);
 					todaysMeetingsList.getChildren().add(meetingListing);
@@ -246,8 +244,7 @@ public class CourseSchedule extends View implements Observer {
 
 			/*
 			 * The # of days in the schedule should be equal to the int value of
-			 * dayOfTheWeek of the meeting latest in the week (Mon - Sun, 1 to
-			 * 7).
+			 * dayOfTheWeek of the meeting latest in the week (Mon - Sun, 1 to 7).
 			 */
 			daysInSchedule = term.maxDay;
 
@@ -255,8 +252,8 @@ public class CourseSchedule extends View implements Observer {
 					new Time(term.maxEnd.getHour(), term.maxEnd.getMinute()), 30);
 
 			/*
-			 * Calculates how many time labels we are to skip based on the
-			 * earliest start time.
+			 * Calculates how many time labels we are to skip based on the earliest start
+			 * time.
 			 */
 			timesOffset = Time.getDistance(new Time(0, 0), new Time(term.minStart.getHour(), term.minStart.getMinute()),
 					30);
@@ -378,13 +375,13 @@ public class CourseSchedule extends View implements Observer {
 
 	private void addToSchedule(Meeting meeting, Term term) {
 
-		Course course = term.courseColors.get(Color.web(meeting.colour));
+		Course course = term.courseColors.get(meeting.colour);
 
 		int mDay = meeting.date.getDayOfWeek().getValue();
 
 		/*
-		 * Get the distance from the first time in the Course Schedule to the
-		 * start time of the meeting.
+		 * Get the distance from the first time in the Course Schedule to the start time
+		 * of the meeting.
 		 */
 		int timeDist = Time.getDistance(new Time(term.minStart.getHour(), term.minStart.getMinute()),
 				new Time(meeting.start.getHour(), meeting.start.getMinute()), 30);
@@ -408,8 +405,7 @@ public class CourseSchedule extends View implements Observer {
 			Button mButton = meetingButtons[mDay - 1][timeDist + cellNumber];
 
 			/*
-			 * Styling for first cell of meeting which contains text describing
-			 * it.
+			 * Styling for first cell of meeting which contains text describing it.
 			 */
 			if (i == 0) {
 
@@ -417,8 +413,7 @@ public class CourseSchedule extends View implements Observer {
 				mButton.setStyle(mButton.getStyle() + "-fx-font-size: 9.0pt;");
 
 				/*
-				 * Decide if text is white or black based on brightness of
-				 * background colour.
+				 * Decide if text is white or black based on brightness of background colour.
 				 */
 				if (Color.web(course.colour).getBrightness() < 0.7) {
 					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #fff;");
@@ -435,8 +430,7 @@ public class CourseSchedule extends View implements Observer {
 					mButton.setBorder(new Border(Style.noBottomBorderStroke));
 				}
 				/*
-				 * Border styling for cells along far left column (except for
-				 * top left).
+				 * Border styling for cells along far left column (except for top left).
 				 */
 				else if ((mDay - 1) == 0) {
 					mButton.setBorder(new Border(Style.noTopBottomBorderStroke));
@@ -477,9 +471,8 @@ public class CourseSchedule extends View implements Observer {
 			updateLegend();
 
 			/*
-			 * Test if the first date of the week for the currently selected and
-			 * current dates are the same - if so, showCurrentWeek should be
-			 * true.
+			 * Test if the first date of the week for the currently selected and current
+			 * dates are the same - if so, showCurrentWeek should be true.
 			 */
 
 			LocalDate currentlySelected = ((Profile) arg0).currentlySelectedDate;

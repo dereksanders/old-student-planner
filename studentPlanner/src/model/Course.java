@@ -1,5 +1,6 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
@@ -8,7 +9,12 @@ import core.ProfileController;
 /**
  * The Class Course.
  */
-public class Course implements Comparable<Course> {
+public class Course implements Comparable<Course>, Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public String name;
 	public String departmentID;

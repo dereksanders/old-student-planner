@@ -1,16 +1,23 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
-import core.ProfileSave;
+
+import core.Driver;
 import utility.GenericLinkedHashTable;
-import utility.JSONParser;
+import utility.IOManager;
 
 /**
  * The Class Profile.
  */
-public class Profile extends Observable {
+public class Profile extends Observable implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public String name;
 	public Term currentlySelectedTerm;
@@ -21,7 +28,6 @@ public class Profile extends Observable {
 	public ArrayList<Term> terms;
 	public int showWithinThreshold = 14;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
-	public ArrayList<CalendarEvent> personalEvents;
 
 	/**
 	 * Instantiates a new profile.
@@ -34,17 +40,6 @@ public class Profile extends Observable {
 		this.name = name;
 		this.terms = new ArrayList<>();
 		this.dateEvents = new GenericLinkedHashTable<>(300, true);
-		this.personalEvents = new ArrayList<>();
-	}
-
-	public Profile(ProfileSave p) {
-		this.name = p.name;
-		this.currentlySelectedTerm = p.currentlySelectedTerm;
-		this.currentlySelectedDate = p.currentlySelectedDate;
-		this.terms = p.terms;
-		this.showWithinThreshold = p.showWithinThreshold;
-		this.dateEvents = p.dateEvents;
-		this.personalEvents = p.personalEvents;
 	}
 
 	public boolean coursesExist() {
@@ -58,9 +53,14 @@ public class Profile extends Observable {
 	}
 
 	public void update() {
-		JSONParser.saveProfile(this);
+		save();
 		setChanged();
 		notifyObservers();
+	}
+
+	public void save() {
+		IOManager.saveObject(this, Driver.saveDir);
+		IOManager.saveObject(this, Driver.backupDir);
 	}
 
 	@Override

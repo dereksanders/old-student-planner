@@ -1,11 +1,17 @@
 package model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
 import javafx.scene.paint.Color;
 
-public class MeetingSet {
+public class MeetingSet implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public static String NO_REPEAT = "Never";
 	public static String WEEKLY_REPEAT = "Weekly";

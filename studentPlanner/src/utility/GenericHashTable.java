@@ -1,5 +1,7 @@
 package utility;
 
+import java.io.Serializable;
+
 /**
  * The Class GenericHashTable.
  *
@@ -8,7 +10,12 @@ package utility;
  * @param <H>
  *            the generic type
  */
-public class GenericHashTable<G, H> {
+public class GenericHashTable<G, H> implements Serializable {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	public int n;
 	public G[] keys;

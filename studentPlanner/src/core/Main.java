@@ -12,7 +12,6 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import termCalendar.TermCalendar;
 import termCalendar.TermCalendarController;
-import utility.JSONParser;
 
 public class Main extends Application {
 
@@ -27,9 +26,10 @@ public class Main extends Application {
 	public static void main(String[] args) {
 
 		/*
-		 * This triggers JavaFX's hidden initialization on start. The executable
-		 * will not launch without this.
+		 * This triggers JavaFX's hidden initialization on start. The executable will
+		 * not launch without this.
 		 */
+		@SuppressWarnings("unused")
 		final JFXPanel fxPanel = new JFXPanel();
 
 		driver = new Driver();
@@ -83,7 +83,7 @@ public class Main extends Application {
 	@Override
 	public void stop() throws Exception {
 		System.out.println("Saving and exiting..");
-		JSONParser.saveProfile(driver.active);
+		driver.active.save();
 	}
 
 }

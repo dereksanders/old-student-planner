@@ -9,7 +9,6 @@ import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
@@ -39,8 +38,7 @@ public class EditInstanceOrSet {
 		this.pc = pc;
 		this.selected = pc.getMeetingAtTime(cell);
 		this.selectedSet = pc.getMeetingSet(cell);
-		this.meetingCourse = pc.getCourseFromColor(Color.web(selected.colour));
-		System.out.println(selectedSet);
+		this.meetingCourse = pc.getCourseFromColor(selected.colour);
 		display();
 	}
 

@@ -1,8 +1,6 @@
-/utility/
-/courseSchedule/
-/model/
 /core/
+/model/
+/courseSchedule/
 /termCalendar/
+/utility/
 /planner/
-/grades/
-/gradesPlot/

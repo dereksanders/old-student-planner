@@ -74,7 +74,7 @@ public class EditCalendarEvent {
 		window.setTitle("Edit Event");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
-		for (CalendarEvent e : controller.active.dateEvents.get(date)) {
+		for (CalendarEvent e : controller.profile.dateEvents.get(date)) {
 			events.add(e);
 		}
 
@@ -118,7 +118,7 @@ public class EditCalendarEvent {
 		Button delete = new Button("Delete Event");
 		Style.setButtonStyle(delete);
 		delete.setOnAction(e -> {
-			controller.deleteEvent(controller.active.currentlySelectedTerm.courseColors.get(currentlySelected.colour),
+			controller.deleteEvent(controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.colour),
 					currentlySelected, date);
 			window.close();
 		});
@@ -151,7 +151,7 @@ public class EditCalendarEvent {
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						Double.parseDouble(weight.getText()));
-				Course eventCourse = controller.active.currentlySelectedTerm.courseColors.get(currentlySelected.colour);
+				Course eventCourse = controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.colour);
 				controller.deleteEvent(eventCourse, currentlySelected, date);
 				controller.addEvent(eventCourse, edited, date);
 			} else {

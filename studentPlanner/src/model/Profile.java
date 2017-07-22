@@ -5,7 +5,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
 
-import core.Driver;
+import core.Main;
 import utility.GenericLinkedHashTable;
 import utility.IOManager;
 
@@ -42,27 +42,51 @@ public class Profile extends Observable implements Serializable {
 		this.dateEvents = new GenericLinkedHashTable<>(300, true);
 	}
 
+	/**
+	 * Tests if courses exist in this profile.
+	 *
+	 * @return true if courses exist
+	 */
 	public boolean coursesExist() {
+
 		boolean coursesExist = false;
+
 		for (Term t : this.terms) {
 			if (t.courses.size() != 0) {
 				coursesExist = true;
 			}
 		}
+
 		return coursesExist;
 	}
 
+	/**
+	 * Operations performed whenever this profile changes.
+	 */
 	public void update() {
 		save();
 		setChanged();
 		notifyObservers();
 	}
 
+	/**
+	 * Saves this profile.
+	 */
 	public void save() {
-		IOManager.saveObject(this, Driver.saveDir);
-		IOManager.saveObject(this, Driver.backupDir);
+		IOManager.saveObject(this, Main.driver.saveDir);
+		IOManager.saveObject(this, Main.driver.backupDir);
 	}
 
+	public void save(String saveDir, String backupDir) {
+		IOManager.saveObject(this, saveDir);
+		IOManager.saveObject(this, backupDir);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return this.name;

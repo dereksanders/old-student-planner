@@ -5,7 +5,7 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import core.Driver;
+import core.Clock;
 import core.Style;
 import core.View;
 import javafx.beans.property.BooleanProperty;
@@ -58,13 +58,13 @@ public class TermCalendar extends View implements Observer {
 	 * @param controller
 	 *            the controller
 	 */
-	public TermCalendar(Observable observable, TermCalendarController controller) {
-
-		this.observable = observable;
-		observable.addObserver(this);
+	public TermCalendar(TermCalendarController controller) {
 
 		this.controller = controller;
-		controller.calendar = this;
+		this.controller.calendar = this;
+
+		this.observable = controller.profile;
+		this.observable.addObserver(this);
 
 		this.mainLayout = initLayout();
 	}
@@ -79,8 +79,7 @@ public class TermCalendar extends View implements Observer {
 		BorderPane tcbp = new BorderPane();
 
 		/*
-		 * Term Calendar should only display if the currently selected term is
-		 * not null.
+		 * Term Calendar should only display if the currently selected term is not null.
 		 */
 		tcbp.visibleProperty().bind(selectedTermNotNull);
 
@@ -102,7 +101,7 @@ public class TermCalendar extends View implements Observer {
 		upcomingThreshold.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				controller.active.showWithinThreshold = thresholds.get(newIndex.intValue());
+				controller.profile.showWithinThreshold = thresholds.get(newIndex.intValue());
 				updateUpcomingEvents();
 			}
 		});
@@ -134,14 +133,13 @@ public class TermCalendar extends View implements Observer {
 	private ScrollPane drawCalendar(Term term) {
 
 		/*
-		 * TODO: Fix issue #13. The scroll-bar of the ScrollPane cuts off the
-		 * edges of the calendar when there are more than 4 months.
+		 * TODO: Fix issue #13. The scroll-bar of the ScrollPane cuts off the edges of
+		 * the calendar when there are more than 4 months.
 		 */
 		ScrollPane termCalendar = new ScrollPane();
 
 		/*
-		 * Calculate the number of months between the Term's start and end
-		 * dates.
+		 * Calculate the number of months between the Term's start and end dates.
 		 */
 		int numMonths = ((term.end.getYear() - term.start.getYear()) * 12) + term.end.getMonthValue()
 				- term.start.getMonthValue() + 1; // length of the term in
@@ -156,8 +154,7 @@ public class TermCalendar extends View implements Observer {
 			GridPane monthGrid = new GridPane();
 
 			/*
-			 * Get the date of the first day of the month (so that we know its
-			 * weekday).
+			 * Get the date of the first day of the month (so that we know its weekday).
 			 */
 			LocalDate firstOfMonth = LocalDate.of(term.start.plusMonths(i).getYear(),
 					term.start.plusMonths(i).getMonthValue(), 1);
@@ -175,9 +172,8 @@ public class TermCalendar extends View implements Observer {
 			Button[][] dayButtons = new Button[6][7];
 
 			/*
-			 * Numbering is false when the day button represents a date before
-			 * the first day of the month - the greyed out days in the calendar
-			 * prior to the 1st.
+			 * Numbering is false when the day button represents a date before the first day
+			 * of the month - the greyed out days in the calendar prior to the 1st.
 			 */
 			boolean numbering = false;
 			int date = 1;
@@ -212,7 +208,7 @@ public class TermCalendar extends View implements Observer {
 						Button add = new Button("" + date);
 						add.setMinWidth(40);
 						add.setMinHeight(40);
-						PriorityQueue<CalendarEvent> ce = controller.active.dateEvents.get(LocalDate.of(
+						PriorityQueue<CalendarEvent> ce = controller.profile.dateEvents.get(LocalDate.of(
 								term.start.plusMonths(i).getYear(), term.start.plusMonths(i).getMonthValue(), date));
 						if (ce != null && !ce.isEmpty()) {
 							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().colour + ";"
@@ -304,10 +300,10 @@ public class TermCalendar extends View implements Observer {
 
 		this.upcomingEvents.getChildren().clear();
 
-		for (int i = 0; i <= controller.active.showWithinThreshold; i++) {
+		for (int i = 0; i <= controller.profile.showWithinThreshold; i++) {
 
-			if (controller.active.dateEvents.get(Driver.t.current.toLocalDate().plusDays(i)) != null
-					&& !controller.active.dateEvents.get(Driver.t.current.toLocalDate().plusDays(i)).isEmpty()) {
+			if (controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i)) != null
+					&& !controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i)).isEmpty()) {
 
 				Label dateOfEvents = new Label("");
 
@@ -319,12 +315,12 @@ public class TermCalendar extends View implements Observer {
 				else if (i == 1) {
 					dateOfEvents.setText("Tomorrow:");
 				} else {
-					dateOfEvents.setText(Pretty.prettyDate(Driver.t.current.toLocalDate().plusDays(i)) + ":");
+					dateOfEvents.setText(Pretty.prettyDate(Clock.now.toLocalDate().plusDays(i)) + ":");
 				}
 
 				this.upcomingEvents.getChildren().add(dateOfEvents);
 
-				for (CalendarEvent e : controller.active.dateEvents.get(Driver.t.current.toLocalDate().plusDays(i))) {
+				for (CalendarEvent e : controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i))) {
 
 					HBox eventListing = new HBox(5);
 

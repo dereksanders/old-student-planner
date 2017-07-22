@@ -8,6 +8,9 @@ import utility.GenericHashTable;
 import utility.GenericLinkedHashTable;
 import utility.Pretty;
 
+/**
+ * The Class Term.
+ */
 public class Term implements Comparable<Term>, Serializable {
 
 	/**
@@ -31,6 +34,16 @@ public class Term implements Comparable<Term>, Serializable {
 	public LocalTime minStart;
 	public LocalTime maxEnd;
 
+	/**
+	 * Instantiates a new term.
+	 *
+	 * @param name
+	 *            the name
+	 * @param start
+	 *            the start
+	 * @param end
+	 *            the end
+	 */
 	public Term(String name, LocalDate start, LocalDate end) {
 		this.name = name;
 		this.start = start;
@@ -46,9 +59,11 @@ public class Term implements Comparable<Term>, Serializable {
 		this.maxDay = 5;
 	}
 
+	/**
+	 * Updates this term's minStart, maxEnd, and maxDay.
+	 */
 	public void updateParams() {
 
-		/* resetParams() should be true if any meetings exist in this term. */
 		if (resetParams()) {
 			this.minStart = this.minStart.minusMinutes(30);
 			this.maxEnd = this.maxEnd.plusMinutes(30);
@@ -58,13 +73,18 @@ public class Term implements Comparable<Term>, Serializable {
 		}
 	}
 
+	/**
+	 * Helps updateParams.
+	 *
+	 * @return true if meetings exist in this term.
+	 */
 	private boolean resetParams() {
 
 		boolean changesMade = false;
 
-		this.maxDay = 5;
 		this.minStart = LocalTime.of(23, 30);
 		this.maxEnd = LocalTime.of(0, 0);
+		this.maxDay = 5;
 
 		for (Course c : this.courses) {
 			for (MeetingSet ms : c.meetingSets) {
@@ -78,34 +98,59 @@ public class Term implements Comparable<Term>, Serializable {
 		return changesMade;
 	}
 
-	private void addParams(Meeting m) {
+	/**
+	 * Checks the meeting's start, end, and day against the term's minStart, maxEnd,
+	 * and maxDay.
+	 *
+	 * @param meeting
+	 *            the meeting
+	 */
+	private void addParams(Meeting meeting) {
 
-		if (this.maxDay < m.date.getDayOfWeek().getValue()) {
-			this.maxDay = m.date.getDayOfWeek().getValue();
+		if (this.minStart.compareTo(meeting.start) > 0) {
+			this.minStart = meeting.start;
 		}
-		if (this.minStart.compareTo(m.start) > 0) {
-			this.minStart = m.start;
+		if (this.maxEnd.compareTo(meeting.end) < 0) {
+			this.maxEnd = meeting.end;
 		}
-		if (this.maxEnd.compareTo(m.end) < 0) {
-			this.maxEnd = m.end;
+		if (this.maxDay < meeting.date.getDayOfWeek().getValue()) {
+			this.maxDay = meeting.date.getDayOfWeek().getValue();
 		}
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object o) {
+
 		if (o instanceof Term) {
+
 			if (this.start.isEqual(((Term) o).start) && this.end.isEqual(((Term) o).end)) {
 				return true;
 			}
 		}
+
 		return false;
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return name + " (" + Pretty.prettyShortDate(start) + " - " + Pretty.prettyShortDate(end) + ")";
 	}
 
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Comparable#compareTo(java.lang.Object)
+	 */
 	@Override
 	public int compareTo(Term arg0) {
 
@@ -122,6 +167,9 @@ public class Term implements Comparable<Term>, Serializable {
 		}
 	}
 
+	/**
+	 * Calculates this term's grades.
+	 */
 	public void calcGrades() {
 
 		this.avg = 0;

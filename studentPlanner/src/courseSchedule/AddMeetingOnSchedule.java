@@ -13,6 +13,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
@@ -20,6 +21,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -78,11 +80,11 @@ public class AddMeetingOnSchedule {
 		}
 
 		ChoiceBox<Course> chooseCourse = new ChoiceBox<>(
-				FXCollections.observableArrayList(pc.active.currentlySelectedTerm.courses));
+				FXCollections.observableArrayList(pc.profile.currentlySelectedTerm.courses));
 		Style.setChoiceBoxStyle(chooseCourse);
 
-		if (pc.active.currentlySelectedTerm.courses.size() > 0) {
-			chooseCourse.setValue(pc.active.currentlySelectedTerm.courses.get(0));
+		if (pc.profile.currentlySelectedTerm.courses.size() > 0) {
+			chooseCourse.setValue(pc.profile.currentlySelectedTerm.courses.get(0));
 		}
 
 		Label typeLabel = new Label("Type:");
@@ -100,7 +102,7 @@ public class AddMeetingOnSchedule {
 		toEndOfTerm.setText("To End of Term");
 
 		DatePicker endDate = new DatePicker();
-		endDate.setValue(pc.active.currentlySelectedTerm.end);
+		endDate.setValue(pc.profile.currentlySelectedTerm.end);
 		endDate.setVisible(false);
 
 		toEndOfTerm.selectedProperty().addListener(new ChangeListener<Boolean>() {
@@ -108,9 +110,38 @@ public class AddMeetingOnSchedule {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
 				if (newVal) {
 					endDate.setVisible(false);
-					endDate.setValue(pc.active.currentlySelectedTerm.end);
+					endDate.setValue(pc.profile.currentlySelectedTerm.end);
 				} else {
 					endDate.setVisible(true);
+				}
+			}
+		});
+
+		endDate.valueProperty().addListener(new ChangeListener<LocalDate>() {
+
+			@Override
+			public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue,
+					LocalDate newValue) {
+				if (newValue.isAfter(pc.profile.currentlySelectedTerm.end)) {
+					new Alert(AlertType.ERROR,
+							"The date selected is beyond the end date of the selected term."
+									+ " You can only add meetings to one term at a time."
+									+ " It has been changed to the end of term.").showAndWait();
+					endDate.setValue(pc.profile.currentlySelectedTerm.end);
+				}
+			}
+		});
+
+		startDate.valueProperty().addListener(new ChangeListener<LocalDate>() {
+			@Override
+			public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue,
+					LocalDate newValue) {
+				if (newValue.isAfter(pc.profile.currentlySelectedTerm.end)) {
+					new Alert(AlertType.ERROR,
+							"The date selected is beyond the end date of the selected term."
+									+ " You can only add meetings to one term at a time."
+									+ " It has been changed to the start of term.").showAndWait();
+					startDate.setValue(pc.profile.currentlySelectedTerm.start);
 				}
 			}
 		});

@@ -37,8 +37,6 @@ public class EditInstanceOrSet {
 
 		this.pc = pc;
 		this.selected = pc.getMeetingAtTime(cell);
-		this.selectedSet = pc.getMeetingSet(cell);
-		this.meetingCourse = pc.getCourseFromColor(selected.colour);
 		display();
 	}
 
@@ -86,17 +84,17 @@ public class EditInstanceOrSet {
 		elements.getChildren().addAll(options, meetingListings);
 
 		editInstance.setOnAction(e -> {
-			new EditInstance(meetingCourse, selected, selectedSet, pc);
+			new EditInstance(meetingCourse, selected, pc);
 			window.close();
 		});
 
 		editAll.setOnAction(e -> {
-			new EditSet(meetingCourse, selected, selectedSet, pc, false);
+			new EditSet(meetingCourse, selected, pc, false);
 			window.close();
 		});
 
 		editThisAndFuture.setOnAction(e -> {
-			new EditSet(meetingCourse, selected, selectedSet, pc, true);
+			new EditSet(meetingCourse, selected, pc, true);
 			window.close();
 		});
 

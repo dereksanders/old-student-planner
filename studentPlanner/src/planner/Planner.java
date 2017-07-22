@@ -17,7 +17,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
 import model.Profile;
 
 /**
@@ -154,20 +153,6 @@ public class Planner extends View implements Observer {
 		options.getChildren().addAll(addTerm, editTerm, addCourse, editCourse);
 
 		return options;
-	}
-
-	/**
-	 * Gets the next color in the sequence of application colors.
-	 *
-	 * @return the next color
-	 */
-	public Color getNextColor() {
-		for (Color c : Style.selectableColors) {
-			if (this.pc.active.currentlySelectedTerm.courseColors.get(Style.colorToHex(c)) == null) {
-				return c;
-			}
-		}
-		return Color.WHITE;
 	}
 
 	/**

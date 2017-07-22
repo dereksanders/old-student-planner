@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import core.Style;
 import core.Driver;
-import core.IllegalCourseException;
 import core.ProfileController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -34,6 +33,7 @@ import model.Term;
 public class AddCourse {
 
 	private ProfileController pc;
+	private ChoiceBox<Term> chooseEndTerm;
 	private boolean legalCode;
 
 	/**
@@ -75,40 +75,55 @@ public class AddCourse {
 		termsControls.getChildren().addAll(plus, minus);
 
 		/* List of terms to choose from. */
-		ArrayList<ChoiceBox<Term>> termChoices = new ArrayList<>();
-		ObservableList<Term> profileTerms = FXCollections.observableArrayList(pc.active.terms);
-		termChoices.add(new ChoiceBox<>(profileTerms));
+		ObservableList<Term> profileTerms = FXCollections.observableArrayList(pc.profile.terms);
+		System.out.println(profileTerms.size());
+
+		ChoiceBox<Term> chooseStartTerm = new ChoiceBox<>(profileTerms);
+		Style.setChoiceBoxStyle(chooseStartTerm);
+
+		chooseEndTerm = new ChoiceBox<>(profileTerms);
+		Style.setChoiceBoxStyle(chooseEndTerm);
 
 		/* Term options */
-		Label startTerm = new Label("Term(s):");
+
 		VBox terms = new VBox(10);
+		Label startTerm = new Label("Start Term:");
 		terms.getChildren().add(startTerm);
-		terms.getChildren().addAll(termChoices);
-		terms.getChildren().addAll(termsControls);
-		if (pc.active.currentlySelectedTerm != null) {
-			termChoices.get(0).setValue(pc.active.currentlySelectedTerm);
-		}
+		terms.getChildren().add(chooseStartTerm);
 
-		/* When the "+" or "-" Term buttons are pressed. */
-		plus.setOnAction(e -> {
-			termChoices.add(new ChoiceBox<>(profileTerms));
-			terms.getChildren().clear();
-			terms.getChildren().add(startTerm);
-			terms.getChildren().addAll(termChoices);
-			terms.getChildren().addAll(termsControls);
-			minus.setVisible(true);
-		});
+		Label endTerm = new Label("End Term:");
+		terms.getChildren().add(endTerm);
+		terms.getChildren().add(chooseEndTerm);
 
-		minus.setOnAction(e -> {
-			termChoices.remove(termChoices.size() - 1);
-			terms.getChildren().clear();
-			terms.getChildren().add(startTerm);
-			terms.getChildren().addAll(termChoices);
-			terms.getChildren().addAll(termsControls);
-			if (termChoices.size() == 1) {
-				minus.setVisible(false);
+		chooseStartTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
+
+				if (current.intValue() > -1) {
+
+					Term selectedEndTerm = chooseEndTerm.getValue();
+					terms.getChildren().remove(chooseEndTerm);
+
+					ObservableList<Term> newEndTerms = FXCollections.observableArrayList();
+					newEndTerms.addAll(profileTerms.subList(current.intValue(), profileTerms.size()));
+
+					chooseEndTerm = new ChoiceBox<Term>(newEndTerms);
+					Style.setChoiceBoxStyle(chooseEndTerm);
+
+					if (selectedEndTerm != null && newEndTerms.contains(selectedEndTerm)) {
+						chooseEndTerm.setValue(selectedEndTerm);
+					} else {
+						chooseEndTerm.setValue(newEndTerms.get(0));
+					}
+
+					terms.getChildren().add(chooseEndTerm);
+				}
 			}
 		});
+
+		if (pc.profile.currentlySelectedTerm != null) {
+			chooseStartTerm.setValue(pc.profile.currentlySelectedTerm);
+		}
 
 		TextField name = new TextField();
 		name.setPromptText("Course Title");
@@ -123,6 +138,7 @@ public class AddCourse {
 		TextField code = new TextField();
 		code.setPromptText("Course Code (e.g. 101)");
 		code.textProperty().addListener(new ChangeListener<String>() {
+
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String old, String current) {
 				try {
@@ -135,30 +151,16 @@ public class AddCourse {
 		});
 
 		/* Select by default the next unused application color. */
-		Color selected = pc.planner.getNextColor();
+		Color selected = pc.getNextColor();
 		ColorPicker cPicker = new ColorPicker(selected);
 
 		Button add = new Button("Add Course");
 		Style.setButtonStyle(add);
-		ArrayList<Term> termsArray = new ArrayList<>();
 		add.setOnAction(e -> {
 			if (legalCode) {
-				boolean legalTerms = true;
-				for (ChoiceBox<Term> t : termChoices) {
-					if (t.getValue() != null && !termsArray.contains(t.getValue())) {
-						termsArray.add(t.getValue());
-					} else {
-						legalTerms = false;
-						break;
-					}
-				}
-				if (legalTerms) {
-					confirmAdd(termsArray, department.getText(), Integer.parseInt(code.getText()), name.getText(),
-							cPicker.getValue());
-					window.close();
-				} else {
-					error.setText("Invalid term entries.");
-				}
+				confirmAdd(this.pc.getTermsBetween(chooseStartTerm.getValue(), chooseEndTerm.getValue()),
+						department.getText(), Integer.parseInt(code.getText()), name.getText(), cPicker.getValue());
+				window.close();
 			} else {
 				error.setText("Invalid course code. Must be an integer.");
 				error.setTextFill(Color.RED);
@@ -197,16 +199,9 @@ public class AddCourse {
 	 */
 	private void confirmAdd(ArrayList<Term> terms, String departmentID, int code, String name, Color selected) {
 
-		Course c = new Course(name, departmentID, code, terms.get(0).start, terms.get(terms.size() - 1).end,
-				new ArrayList<MeetingSet>(), new ArrayList<CourseEvent>(), Style.colorToHex(selected));
+		Course c = new Course(name, departmentID, code, terms, new ArrayList<MeetingSet>(),
+				new ArrayList<CourseEvent>(), Style.colorToHex(selected));
 
-		try {
-
-			this.pc.addCourse(c);
-
-		} catch (IllegalCourseException e) {
-
-			e.printStackTrace();
-		}
+		this.pc.addCourse(c);
 	}
 }

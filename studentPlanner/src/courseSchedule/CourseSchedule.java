@@ -8,7 +8,7 @@ import java.util.Observer;
 import java.util.PriorityQueue;
 
 import core.Style;
-import core.Driver;
+import core.Clock;
 import core.Time;
 import core.View;
 import javafx.beans.value.ChangeListener;
@@ -33,16 +33,12 @@ import model.Course;
 import model.Meeting;
 import model.Profile;
 import model.Term;
-import planner.Planner;
 import utility.Pretty;
 
 /**
  * The Class CourseSchedule.
  */
 public class CourseSchedule extends View implements Observer {
-
-	/* The Planner this view belongs to. */
-	public Planner planner;
 
 	/* Observable & Controller */
 	public Observable observable;
@@ -73,16 +69,16 @@ public class CourseSchedule extends View implements Observer {
 	 * @param controller
 	 *            the controller
 	 */
-	public CourseSchedule(Observable observable, CourseScheduleController controller) {
-
-		this.observable = observable;
-		observable.addObserver(this);
+	public CourseSchedule(CourseScheduleController controller) {
 
 		this.controller = controller;
-		controller.schedule = this;
+		this.controller.schedule = this;
+
+		this.observable = controller.profile;
+		this.observable.addObserver(this);
 
 		this.mainLayout = initLayout();
-		this.controller.setCurrentlySelectedDate(Driver.t.current.toLocalDate());
+		this.controller.setCurrentlySelectedDate(Clock.now.toLocalDate());
 	}
 
 	/**
@@ -166,9 +162,9 @@ public class CourseSchedule extends View implements Observer {
 
 		VBox allCourses = new VBox(10);
 
-		if (this.controller.active.currentlySelectedTerm != null) {
+		if (this.controller.profile.currentlySelectedTerm != null) {
 
-			if (this.controller.active.currentlySelectedTerm.courses.size() > 0) {
+			if (this.controller.profile.currentlySelectedTerm.courses.size() > 0) {
 				Label legendTitle = new Label("Legend");
 				Style.setTitleStyle(legendTitle);
 				this.legend.getChildren().add(legendTitle);
@@ -179,11 +175,11 @@ public class CourseSchedule extends View implements Observer {
 						"-fx-background-color: #fff; -fx-border-color: #ccc; -fx-border-width: 0px; -fx-padding: 5;");
 			}
 
-			for (Course c : this.controller.active.currentlySelectedTerm.courses) {
+			for (Course c : this.controller.profile.currentlySelectedTerm.courses) {
 
 				HBox courseListing = new HBox(5);
 				Rectangle courseIcon = new Rectangle(20, 20);
-				courseIcon.setFill(Color.web(c.colour));
+				courseIcon.setFill(Color.web(c.color));
 				Label courseDesc = new Label(c.toString());
 				courseListing.getChildren().addAll(courseIcon, courseDesc);
 
@@ -198,11 +194,11 @@ public class CourseSchedule extends View implements Observer {
 
 		todaysMeetingsList.getChildren().clear();
 
-		if (controller.active.currentlySelectedTerm != null) {
+		if (controller.profile.currentlySelectedTerm != null) {
 
 			/* Priority queue of today's meetings */
-			PriorityQueue<Meeting> td = controller.active.currentlySelectedTerm.dayMeetings
-					.get(Driver.t.current.toLocalDate());
+			PriorityQueue<Meeting> td = controller.profile.currentlySelectedTerm.dayMeetings
+					.get(Clock.now.toLocalDate());
 
 			if (td != null && td.size() > 0) {
 
@@ -216,10 +212,9 @@ public class CourseSchedule extends View implements Observer {
 					HBox meetingListing = new HBox(5);
 
 					Rectangle meetingIcon = new Rectangle(20, 20);
-					meetingIcon.setFill(Color.web(m.colour));
+					meetingIcon.setFill(Color.web(m.course.color));
 
-					Label meetingDesc = new Label(controller.active.currentlySelectedTerm.courseColors.get(m.colour)
-							+ " " + m.meetingType + ": " + m.start + " - " + m.end);
+					Label meetingDesc = new Label(m.course + " " + m.meetingType + ": " + m.start + " - " + m.end);
 
 					meetingListing.getChildren().addAll(meetingIcon, meetingDesc);
 					todaysMeetingsList.getChildren().add(meetingListing);
@@ -281,7 +276,7 @@ public class CourseSchedule extends View implements Observer {
 			/*
 			 * The current day is italicized in blue.
 			 */
-			if (firstOfWeek.plusDays(i).isEqual(Driver.t.current.toLocalDate())) {
+			if (firstOfWeek.plusDays(i).isEqual(Clock.now.toLocalDate())) {
 
 				dayLabel.setStyle(dayLabel.getStyle() + "-fx-font-family: Verdana;" + "-fx-font-style: italic;"
 						+ "-fx-text-fill: #" + Style.colorToHex(Style.appBlue) + ";");
@@ -320,7 +315,7 @@ public class CourseSchedule extends View implements Observer {
 				/*
 				 * Times past the current time will be grey, future times white.
 				 */
-				if (Driver.t.current.isAfter(cell)) {
+				if (Clock.now.isAfter(cell)) {
 					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #"
 							+ Style.colorToHex(Style.appGrey) + ";");
 				} else {
@@ -340,7 +335,7 @@ public class CourseSchedule extends View implements Observer {
 				scheduleGrid.add(meetingButtons[i][j], i + 1, j + 1);
 
 				meetingButtons[i][j].setOnAction(e -> {
-					if (this.controller.active.currentlySelectedTerm != null) {
+					if (this.controller.profile.currentlySelectedTerm != null) {
 						if (controller.timeIsOccupied(cell)) {
 							new EditInstanceOrSet(cell, controller);
 						} else {
@@ -375,7 +370,7 @@ public class CourseSchedule extends View implements Observer {
 
 	private void addToSchedule(Meeting meeting, Term term) {
 
-		Course course = term.courseColors.get(meeting.colour);
+		Course course = meeting.course;
 
 		int mDay = meeting.date.getDayOfWeek().getValue();
 
@@ -415,7 +410,7 @@ public class CourseSchedule extends View implements Observer {
 				/*
 				 * Decide if text is white or black based on brightness of background colour.
 				 */
-				if (Color.web(course.colour).getBrightness() < 0.7) {
+				if (Color.web(course.color).getBrightness() < 0.7) {
 					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #fff;");
 				} else {
 					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #000;");
@@ -447,7 +442,7 @@ public class CourseSchedule extends View implements Observer {
 
 			/* Background styling for meeting cells. */
 			mButton.setStyle(
-					mButton.getStyle() + "-fx-background-color: #" + course.colour + "; -fx-background-radius: 0.0;");
+					mButton.getStyle() + "-fx-background-color: #" + course.color + "; -fx-background-radius: 0.0;");
 
 			/* Define tooltip when meeting is hovered over. */
 			Tooltip tp = new Tooltip(course.name + "\n" + meeting.location);
@@ -476,7 +471,7 @@ public class CourseSchedule extends View implements Observer {
 			 */
 
 			LocalDate currentlySelected = ((Profile) arg0).currentlySelectedDate;
-			LocalDate current = Driver.t.current.toLocalDate();
+			LocalDate current = Clock.now.toLocalDate();
 
 			LocalDate currentlySelectedFirstOfWeek = currentlySelected
 					.minusDays(currentlySelected.getDayOfWeek().getValue() - 1);

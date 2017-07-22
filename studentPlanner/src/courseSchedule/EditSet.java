@@ -41,20 +41,19 @@ public class EditSet {
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
 
-	public EditSet(Course meetingCourse, Meeting selected, MeetingSet selectedSet, CourseScheduleController pc,
-			boolean editThisAndFuture) {
+	public EditSet(Course meetingCourse, Meeting selected, CourseScheduleController pc, boolean editThisAndFuture) {
 
 		this.meetingCourse = meetingCourse;
 		this.selected = selected;
-		this.pastSelectedSet = selectedSet;
+		this.pastSelectedSet = selected.set;
 
 		if (editThisAndFuture) {
 
 			MeetingSet thisAndFuture = new MeetingSet();
 
-			for (int i = selectedSet.getMeetings().indexOf(selected); i < selectedSet.getMeetings().size(); i++) {
-				thisAndFuture.addMeeting(selectedSet.getMeetings().get(i));
-				selectedSet.getMeetings().remove(i);
+			for (int i = selected.set.getMeetings().indexOf(selected); i < selected.set.getMeetings().size(); i++) {
+				thisAndFuture.addMeeting(selected.set.getMeetings().get(i));
+				selected.set.getMeetings().remove(i);
 				i--;
 			}
 
@@ -62,7 +61,7 @@ public class EditSet {
 
 		} else {
 
-			this.selectedSet = selectedSet;
+			this.selectedSet = selected.set;
 		}
 
 		this.pc = pc;
@@ -108,7 +107,7 @@ public class EditSet {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
 				if (newVal) {
 					endDate.setVisible(false);
-					endDate.setValue(pc.active.currentlySelectedTerm.end);
+					endDate.setValue(pc.profile.currentlySelectedTerm.end);
 				} else {
 					endDate.setVisible(true);
 				}

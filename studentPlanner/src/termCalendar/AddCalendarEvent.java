@@ -74,7 +74,7 @@ public class AddCalendarEvent {
 		}
 
 		ObservableList<Course> courses = FXCollections.observableArrayList();
-		for (Course c : controller.active.currentlySelectedTerm.courses) {
+		for (Course c : controller.profile.currentlySelectedTerm.courses) {
 			courses.add(c);
 		}
 
@@ -177,7 +177,7 @@ public class AddCalendarEvent {
 			if (typeChoice.getValue().equals("Assignment")) {
 				try {
 					/* Add course event */
-					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().colour,
+					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
 							LocalDateTime.of(date,
 									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 							LocalDateTime.of(date,
@@ -192,7 +192,7 @@ public class AddCalendarEvent {
 			} else if (typeChoice.getValue().equals("Test")) {
 				try {
 					/* Add course event */
-					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().colour,
+					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
 							LocalDateTime.of(date,
 									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 							LocalDateTime.of(date, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)),

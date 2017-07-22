@@ -53,13 +53,13 @@ public class Grades extends View implements Observer {
 	 * @param controller
 	 *            the controller
 	 */
-	public Grades(Observable observable, GradesController controller) {
-
-		this.observable = observable;
-		observable.addObserver(this);
+	public Grades(GradesController controller) {
 
 		this.controller = controller;
-		controller.grades = this;
+		this.controller.grades = this;
+
+		this.observable = controller.profile;
+		this.observable.addObserver(this);
 
 		this.mainLayout = initLayout();
 	}
@@ -78,7 +78,7 @@ public class Grades extends View implements Observer {
 		HBox header = new HBox(50);
 		VBox body = new VBox(20);
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(controller.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(controller.profile.terms);
 		chooseTerm = new ComboBox<>(termChoices);
 		Style.setComboBoxStyle(chooseTerm);
 		chooseCourse = new ComboBox<>(coursesToDisplay);
@@ -108,7 +108,7 @@ public class Grades extends View implements Observer {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				if (newIndex.intValue() != -1) {
-					controller.setCurrentlySelectedTerm(controller.active.terms.get(newIndex.intValue()));
+					controller.setCurrentlySelectedTerm(controller.profile.terms.get(newIndex.intValue()));
 				}
 			}
 		});
@@ -116,10 +116,14 @@ public class Grades extends View implements Observer {
 		chooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				if (newIndex.intValue() < 1) {
-					listGrades(coursesToDisplay.get(0));
+				if (chooseCourse.getItems().size() > 0) {
+					if (newIndex.intValue() < 1) {
+						listGrades(coursesToDisplay.get(0));
+					} else {
+						listGrades(coursesToDisplay.get(newIndex.intValue()));
+					}
 				} else {
-					listGrades(coursesToDisplay.get(newIndex.intValue()));
+					displayGrades.getChildren().clear();
 				}
 			}
 		});
@@ -169,7 +173,7 @@ public class Grades extends View implements Observer {
 			HBox courseListing = new HBox(5);
 
 			Rectangle courseIcon = new Rectangle(20, 20);
-			courseIcon.setFill(Color.web(sel.colour));
+			courseIcon.setFill(Color.web(sel.color));
 
 			Label courseDesc = new Label(sel.toString());
 
@@ -310,7 +314,7 @@ public class Grades extends View implements Observer {
 
 		displayGrades.getChildren().addAll(eventGrid, gradeSoFarBox, cumulativeGradeBox);
 
-		for (Term t : controller.findTermsBetween(selected.start, selected.end)) {
+		for (Term t : selected.terms) {
 			listGrades(t);
 		}
 	}
@@ -324,8 +328,8 @@ public class Grades extends View implements Observer {
 	public void update(Observable o, Object arg) {
 		if (o instanceof Profile) {
 
-			// chooseTerm.setItems(FXCollections.observableArrayList(((Profile)
-			// o).terms));
+			chooseTerm.setItems(FXCollections.observableArrayList(((Profile) o).terms));
+
 			Term currentlySelected = ((Profile) o).currentlySelectedTerm;
 
 			if (currentlySelected != null) {

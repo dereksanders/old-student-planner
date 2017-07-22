@@ -2,8 +2,6 @@ package courseSchedule;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-
 import core.Driver;
 import core.Style;
 import core.Time;
@@ -32,17 +30,15 @@ public class EditInstance {
 
 	private Course meetingCourse;
 	private Meeting selected;
-	private MeetingSet selectedSet;
 	private CourseScheduleController pc;
 
 	/* GUI elements */
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
 
-	public EditInstance(Course meetingCourse, Meeting selected, MeetingSet selectedSet, CourseScheduleController pc) {
+	public EditInstance(Course meetingCourse, Meeting selected, CourseScheduleController pc) {
 		this.meetingCourse = meetingCourse;
 		this.selected = selected;
-		this.selectedSet = selectedSet;
 		this.pc = pc;
 		display();
 	}
@@ -71,7 +67,7 @@ public class EditInstance {
 
 		Label startDateLabel = new Label("Start Date:");
 		DatePicker startDate = new DatePicker();
-		startDate.setValue(selectedSet.getStart());
+		startDate.setValue(selected.date);
 
 		HBox selectTimes = new HBox();
 		startTime = new ComboBox<>(times);
@@ -155,13 +151,6 @@ public class EditInstance {
 
 	private void deleteSelectedInstance() {
 
-		this.selectedSet.getMeetings().remove(selected);
-		/*
-		 * Create a new MeetingSet containing the single meeting and delete
-		 * that.
-		 */
-		MeetingSet deleted = new MeetingSet(new ArrayList<Meeting>());
-		deleted.addMeeting(selected);
-		pc.deleteMeetingSet(deleted);
+		this.pc.deleteMeetingFromSet(this.selected);
 	}
 }

@@ -56,14 +56,14 @@ public class EditTerm {
 		window.setTitle("Edit Term");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.profile.terms);
 		ChoiceBox<Term> chooseTerm = new ChoiceBox<>(termChoices);
 		Style.setChoiceBoxStyle(chooseTerm);
 
 		chooseTerm.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				updateTermSelected(pc.active.terms.get(newIndex.intValue()));
+				updateTermSelected(pc.profile.terms.get(newIndex.intValue()));
 			}
 		});
 
@@ -96,7 +96,7 @@ public class EditTerm {
 		dates.getChildren().addAll(startBox, endBox);
 		options.getChildren().addAll(chooseTerm, dates, confirmChanges, error);
 		Style.addPadding(options);
-		chooseTerm.setValue(pc.active.currentlySelectedTerm);
+		chooseTerm.setValue(pc.profile.currentlySelectedTerm);
 		Scene scene = new Scene(options, 500, 200);
 		window.setScene(scene);
 		window.showAndWait();

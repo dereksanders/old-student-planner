@@ -11,19 +11,23 @@ import utility.IOManager;
  */
 public class Driver {
 
-	/* Static Fields */
-	public static String saveDir = "res";;
-	public static String backupDir = "res//backup";
-	public static TimeDateThread t = new TimeDateThread();
+	public Clock clock;
+	public String saveDir;
+	public String backupDir;
 
 	protected Planner planner;
-	public Profile active;
+	protected Profile active;
 	protected ProfileController pc;
 
-	public Driver() {
+	public Driver(String saveDir, String backupDir) {
+
+		this.clock = new Clock();
+
+		this.saveDir = saveDir;
+		this.backupDir = backupDir;
 		this.active = initProfile();
 		this.planner = Planner.getInstance(this.active);
-		this.pc = new ProfileController(this.active, this.planner);
+		this.pc = new ProfileController(this.active);
 		this.planner.pc = this.pc;
 	}
 
@@ -31,7 +35,7 @@ public class Driver {
 
 		Profile active = null;
 		/*
-		 * Find the last modified .json file. If it does not exist, returns null.
+		 * Find the last modified file. If it does not exist, returns null.
 		 */
 		File lastModified = IOManager.getLastModifiedFile(saveDir);
 
@@ -40,7 +44,7 @@ public class Driver {
 
 			System.out.println("Creating new profile.");
 			active = new Profile("default");
-			active.save();
+			active.save(this.saveDir, this.backupDir);
 
 		} else {
 

@@ -1,6 +1,9 @@
 /core/
-/model/
 /courseSchedule/
-/termCalendar/
-/utility/
+/grades/
+/gradesPlot/
+/model/
 /planner/
+/termCalendar/
+/tests/
+/utility/

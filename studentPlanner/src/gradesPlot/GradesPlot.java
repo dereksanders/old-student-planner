@@ -19,13 +19,13 @@ public class GradesPlot extends View implements Observer {
 
 	private static LineChart<String, Number> lineChart;
 
-	public GradesPlot(Observable observable, GradesPlotController controller) {
-
-		this.observable = observable;
-		observable.addObserver(this);
+	public GradesPlot(GradesPlotController controller) {
 
 		this.controller = controller;
-		controller.gradesPlot = this;
+		this.controller.gradesPlot = this;
+
+		this.observable = controller.profile;
+		this.observable.addObserver(this);
 
 		this.mainLayout = initLayout();
 	}
@@ -47,7 +47,7 @@ public class GradesPlot extends View implements Observer {
 		series.setName("My grades");
 		lineChart.setLegendVisible(false);
 
-		for (Term t : controller.active.terms) {
+		for (Term t : controller.profile.terms) {
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
 		}
 
@@ -61,7 +61,7 @@ public class GradesPlot extends View implements Observer {
 		if (arg0 instanceof Profile) {
 			XYChart.Series<String, Number> series = new XYChart.Series<>();
 
-			for (Term t : controller.active.terms) {
+			for (Term t : controller.profile.terms) {
 				series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
 			}
 

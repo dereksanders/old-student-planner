@@ -61,7 +61,13 @@ public class EditCourse {
 		window.setTitle("Edit Course");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.active.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList();
+		for (Term t : pc.profile.terms) {
+			if (t.courses.size() > 0) {
+				termChoices.add(t);
+			}
+		}
+
 		chooseTerm = new ChoiceBox<>(termChoices);
 		Style.setChoiceBoxStyle(chooseTerm);
 
@@ -81,8 +87,8 @@ public class EditCourse {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 
 				/*
-				 * Clear the course selection box and add those belonging to the
-				 * newly selected term.
+				 * Clear the course selection box and add those belonging to the newly selected
+				 * term.
 				 */
 				termsCourses.clear();
 				for (Course c : termChoices.get(newIndex.intValue()).courses) {
@@ -90,17 +96,15 @@ public class EditCourse {
 				}
 
 				chooseCourse.setItems(termsCourses);
-
-				/*
-				 * If courses exist for the newly selected term, set the default
-				 * selected course.
-				 */
-				if (termsCourses.size() > 0) {
-					updateCurrentlySelected(termsCourses.get(0));
-				}
+				updateCurrentlySelected(termsCourses.get(0));
 			}
 		});
-		chooseTerm.setValue(pc.active.currentlySelectedTerm);
+
+		if (termChoices.contains(pc.profile.currentlySelectedTerm)) {
+			chooseTerm.setValue(pc.profile.currentlySelectedTerm);
+		} else {
+			chooseTerm.setValue(termChoices.get(0));
+		}
 
 		chooseCourse.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
@@ -120,7 +124,7 @@ public class EditCourse {
 			if (new DeleteCourse(currentlySelected).display()) {
 				pc.deleteCourse(currentlySelected);
 				/* If no more courses exist, close the "Edit Course" window */
-				if (!pc.active.coursesExist()) {
+				if (!pc.profile.coursesExist()) {
 
 					/* TODO: Why set this to null? */
 					currentlySelected = null;
@@ -172,7 +176,7 @@ public class EditCourse {
 		department.setText(currentlySelected.departmentID);
 		code.setText("" + currentlySelected.code);
 		title.setText(currentlySelected.name);
-		cPicker.setValue(Color.web(currentlySelected.colour));
+		cPicker.setValue(Color.web(currentlySelected.color));
 	}
 
 	/**
@@ -186,7 +190,7 @@ public class EditCourse {
 			changes.name = title.getText();
 			changes.departmentID = department.getText();
 			changes.code = Integer.parseInt(code.getText());
-			changes.colour = Style.colorToHex(cPicker.getValue());
+			changes.color = Style.colorToHex(cPicker.getValue());
 			this.pc.editCourse(currentlySelected, changes);
 			return true;
 		} catch (NumberFormatException e) {

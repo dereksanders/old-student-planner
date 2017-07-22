@@ -91,6 +91,12 @@ public class IOManager {
 		return rawData;
 	}
 
+	/**
+	 * Creates the directory.
+	 *
+	 * @param directory
+	 *            the directory
+	 */
 	public static void createDirectory(String directory) {
 		try {
 			Files.createDirectory(Paths.get(directory));
@@ -99,6 +105,12 @@ public class IOManager {
 		}
 	}
 
+	/**
+	 * Removes the directory.
+	 *
+	 * @param directory
+	 *            the directory
+	 */
 	public static void removeDirectory(String directory) {
 		try {
 			Files.delete(Paths.get(directory));
@@ -125,6 +137,14 @@ public class IOManager {
 
 	}
 
+	/**
+	 * Save object.
+	 *
+	 * @param o
+	 *            the o
+	 * @param dir
+	 *            the dir
+	 */
 	public static void saveObject(Object o, String dir) {
 
 		// Create save directory if it does not already exist.
@@ -147,6 +167,13 @@ public class IOManager {
 		}
 	}
 
+	/**
+	 * Load object.
+	 *
+	 * @param saveFile
+	 *            the save file
+	 * @return the object
+	 */
 	public static Object loadObject(File saveFile) {
 
 		Object o = null;
@@ -163,6 +190,13 @@ public class IOManager {
 		return o;
 	}
 
+	/**
+	 * Gets the last modified file.
+	 *
+	 * @param directory
+	 *            the directory
+	 * @return the last modified file
+	 */
 	public static File getLastModifiedFile(String directory) {
 
 		File dir = new File(directory);
@@ -189,7 +223,18 @@ public class IOManager {
 		}
 	}
 
+	/**
+	 * Find all files.
+	 *
+	 * @param dir
+	 *            the dir
+	 * @return the file[]
+	 */
 	private static File[] findAllFiles(File dir) {
+
+		if (!dir.exists()) {
+			createDirectory(dir.getPath());
+		}
 
 		File[] files = dir.listFiles(new FileFilter() {
 			@Override

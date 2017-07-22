@@ -4,8 +4,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import javafx.scene.paint.Color;
-
 public class MeetingSet implements Serializable {
 
 	/**
@@ -45,13 +43,13 @@ public class MeetingSet implements Serializable {
 		return this.meetings;
 	}
 
-	public Color getColor() {
-		return Color.web(this.meetings.get(0).colour);
+	public Course getCourse() {
+		return this.meetings.get(0).course;
 	}
 
-	public void setColor(String color) {
+	public void setCourse(Course c) {
 		for (Meeting m : this.meetings) {
-			m.colour = color;
+			m.course = c;
 		}
 	}
 

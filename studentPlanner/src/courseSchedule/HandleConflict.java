@@ -19,13 +19,11 @@ public class HandleConflict {
 
 	private Meeting m;
 	private ArrayList<Meeting> conflicts;
-	private ProfileController pc;
 	private boolean confirm;
 
 	public HandleConflict(Meeting m, ArrayList<Meeting> conflicts, ProfileController pc) {
 		this.m = m;
 		this.conflicts = conflicts;
-		this.pc = pc;
 	}
 
 	public boolean display() {
@@ -55,8 +53,8 @@ public class HandleConflict {
 
 		for (Meeting m : conflicts) {
 
-			oldListing.getChildren().add(new Label(pc.active.currentlySelectedTerm.courseColors.get(m.colour) + " "
-					+ m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
+			oldListing.getChildren().add(
+					new Label(m.course + " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
 		}
 
 		info.getChildren().addAll(newListing, oldListing);

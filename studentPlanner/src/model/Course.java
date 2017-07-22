@@ -1,10 +1,7 @@
 package model;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.ArrayList;
-
-import core.ProfileController;
 
 /**
  * The Class Course.
@@ -12,18 +9,17 @@ import core.ProfileController;
 public class Course implements Comparable<Course>, Serializable {
 
 	/**
-	 * 
+	 *
 	 */
 	private static final long serialVersionUID = 1L;
 
 	public String name;
 	public String departmentID;
 	public int code;
-	public LocalDate start;
-	public LocalDate end;
+	public ArrayList<Term> terms;
 	public ArrayList<MeetingSet> meetingSets;
 	public ArrayList<CourseEvent> events;
-	public String colour;
+	public String color;
 
 	public double percentDone;
 	public double gradeSoFar;
@@ -38,27 +34,24 @@ public class Course implements Comparable<Course>, Serializable {
 	 *            the department ID
 	 * @param code
 	 *            the code
-	 * @param start
-	 *            the start
-	 * @param end
-	 *            the end
-	 * @param meetings
-	 *            the meetings
+	 * @param terms
+	 *            the terms
+	 * @param meetingSets
+	 *            the meeting sets
 	 * @param events
 	 *            the events
 	 * @param colour
 	 *            the colour
 	 */
-	public Course(String name, String departmentID, int code, LocalDate start, LocalDate end,
-			ArrayList<MeetingSet> meetingSets, ArrayList<CourseEvent> events, String colour) {
+	public Course(String name, String departmentID, int code, ArrayList<Term> terms, ArrayList<MeetingSet> meetingSets,
+			ArrayList<CourseEvent> events, String colour) {
 		this.name = name;
 		this.departmentID = departmentID;
 		this.code = code;
-		this.start = start;
-		this.end = end;
+		this.terms = terms;
 		this.meetingSets = meetingSets;
 		this.events = events;
-		this.colour = colour;
+		this.color = colour;
 	}
 
 	/*
@@ -67,8 +60,8 @@ public class Course implements Comparable<Course>, Serializable {
 	 * @see java.lang.Object#clone()
 	 */
 	public Course clone() {
-		return new Course(this.name, this.departmentID, this.code, this.start, this.end, this.meetingSets, this.events,
-				this.colour);
+		return new Course(this.name, this.departmentID, this.code, this.terms, this.meetingSets, this.events,
+				this.color);
 	}
 
 	/*
@@ -99,17 +92,6 @@ public class Course implements Comparable<Course>, Serializable {
 		return false;
 	}
 
-	/**
-	 * Gets the terms.
-	 *
-	 * @param pc
-	 *            the pc
-	 * @return the terms
-	 */
-	public ArrayList<Term> getTerms(ProfileController pc) {
-		return pc.findTermsBetween(this.start, this.end);
-	}
-
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -130,6 +112,9 @@ public class Course implements Comparable<Course>, Serializable {
 		}
 	}
 
+	/**
+	 * Calc grades.
+	 */
 	public void calcGrades() {
 
 		this.percentDone = 0;

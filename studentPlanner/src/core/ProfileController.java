@@ -6,8 +6,10 @@ import java.util.ArrayList;
 import java.util.PriorityQueue;
 
 import courseSchedule.HandleConflict;
+import courseSchedule.PromptNewColor;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
@@ -15,27 +17,23 @@ import model.Meeting;
 import model.MeetingSet;
 import model.Profile;
 import model.Term;
-import planner.Planner;
 
 /**
- * The Class ProfileController.
+ * Performs operations on a profile.
  */
 public class ProfileController {
 
-	public Profile active;
-	public Planner planner;
+	public Profile profile;
 
 	/**
 	 * Instantiates a new profile controller.
 	 *
-	 * @param active
-	 *            the active
-	 * @param p
-	 *            the p
+	 * @param profile
+	 *            the profile
 	 */
-	public ProfileController(Profile active, Planner p) {
-		this.active = active;
-		this.planner = p;
+	public ProfileController(Profile profile) {
+
+		this.profile = profile;
 	}
 
 	/**
@@ -45,9 +43,10 @@ public class ProfileController {
 	 *            the new currently selected date
 	 */
 	public void setCurrentlySelectedDate(LocalDate localDate) {
-		this.active.currentlySelectedDate = localDate;
-		this.active.currentlySelectedTerm = findTerm(localDate);
-		this.active.update();
+
+		this.profile.currentlySelectedDate = localDate;
+		this.profile.currentlySelectedTerm = findTerm(localDate);
+		this.profile.update();
 	}
 
 	/**
@@ -57,8 +56,23 @@ public class ProfileController {
 	 *            the new currently selected term
 	 */
 	public void setCurrentlySelectedTerm(Term term) {
-		this.active.currentlySelectedTerm = term;
-		active.update();
+
+		this.profile.currentlySelectedTerm = term;
+		profile.update();
+	}
+
+	/**
+	 * Gets the next color in the sequence of application colors.
+	 *
+	 * @return the next color
+	 */
+	public Color getNextColor() {
+		for (Color c : Style.selectableColors) {
+			if (this.profile.currentlySelectedTerm.courseColors.get(Style.colorToHex(c)) == null) {
+				return c;
+			}
+		}
+		return Color.WHITE;
 	}
 
 	/* Term Operations */
@@ -66,201 +80,241 @@ public class ProfileController {
 	/**
 	 * Adds the term.
 	 *
-	 * @param add
-	 *            the add
+	 * @param added
+	 *            the term being added
 	 */
-	public void addTerm(Term add) {
+	public void addTerm(Term added) {
 
 		/* If the user has defined a Term to add. */
-		if (add != null) {
+		if (added != null) {
 
-			this.active.terms.add(add);
+			this.profile.terms.add(added);
 
-			/*
-			 * If the profile previously had zero Terms:
-			 * 
-			 * 1) Enable the Edit Term and Add Course buttons.
-			 * 
-			 * 2) Select the new Term & its start date
-			 * 
-			 * 3) Initialize the Term Calendar.
-			 */
-			if (this.active.terms.size() == 1) {
+			if (this.profile.terms.size() == 1) {
 
-				LocalDate selected = this.active.currentlySelectedDate;
+				LocalDate selected = this.profile.currentlySelectedDate;
 
-				/* If the currently selected date is within the new Term. */
-				if (((selected.isEqual(add.start) || selected.isAfter(add.start))
-						&& (selected.isEqual(add.end) || selected.isBefore(add.end)))) {
+				/*
+				 * If the currently selected date is within the new term, keep it as the
+				 * selected date and select the new term.
+				 */
+				if (findTerm(selected).equals(added)) {
 
-					setCurrentlySelectedDate(selected);
+					this.profile.currentlySelectedTerm = added;
+
 				} else {
 
-					setCurrentlySelectedDate(this.active.terms.get(0).start);
+					/* Set the currently selected date to the start date of the new Term. */
+					setCurrentlySelectedDate(this.profile.terms.get(0).start);
 				}
 			}
 		}
 
-		/*
-		 * Sort terms chronologically. TODO: Is the sorting ascending or descending?
-		 */
-		active.terms.sort(null);
-		active.update();
-	}
-
-	public void editTerm(Term old, Term edited) {
-		old.name = edited.name;
-		old.start = edited.start;
-		old.end = edited.end;
-		this.active.update();
+		profile.terms.sort(null);
+		profile.update();
 	}
 
 	/**
-	 * Delete term.
+	 * Edits the values of *only* the editable fields of the term.
+	 *
+	 * @param original
+	 *            the term being edited
+	 * @param edited
+	 *            the term with the desired values
 	 */
-	public void deleteTerm(Term t) {
-		this.active.terms.remove(t);
-		this.active.update();
+	public void editTerm(Term original, Term edited) {
+
+		original.name = edited.name;
+		original.start = edited.start;
+		original.end = edited.end;
+		this.profile.update();
 	}
 
 	/**
-	 * Find the term for the specified date.
+	 * Deletes term.
+	 *
+	 * @param deleted
+	 *            the term being deleted
+	 */
+	public void deleteTerm(Term deleted) {
+
+		this.profile.terms.remove(deleted);
+		this.profile.update();
+	}
+
+	/**
+	 * Finds the term for the specified date.
 	 *
 	 * @param date
 	 *            the date
 	 * @return the term
 	 */
 	public Term findTerm(LocalDate date) {
-		Term result = null;
-		for (Term t : active.terms) {
+
+		Term found = null;
+
+		for (Term t : profile.terms) {
 			if ((t.start.isBefore(date) || t.start.equals(date)) && (t.end.isAfter(date) || t.end.equals(date))) {
-				result = t;
+				found = t;
 				break;
 			}
 		}
-		return result;
+
+		return found;
 	}
 
-	/* Course operations */
+	/**
+	 * Gets the terms between.
+	 *
+	 * @param start
+	 *            the start
+	 * @param end
+	 *            the end
+	 * @return the terms between
+	 */
+	public ArrayList<Term> getTermsBetween(Term start, Term end) {
+
+		ArrayList<Term> termsBetween = new ArrayList<>();
+
+		int startIndex = this.profile.terms.indexOf(start);
+		int endIndex = this.profile.terms.indexOf(end);
+
+		for (int i = startIndex; i <= endIndex; i++) {
+			termsBetween.add(this.profile.terms.get(i));
+		}
+
+		return termsBetween;
+	}
+
+	/* Course Operations */
 
 	/**
 	 * Adds the course.
 	 *
-	 * @param addedCourse
-	 *            the added course
-	 * @throws IllegalCourseException
+	 * @param added
+	 *            the course being added
 	 */
-	public void addCourse(Course addedCourse) throws IllegalCourseException {
+	public void addCourse(Course added) {
 
-		if (addedCourse != null) {
+		if (added != null) {
 
-			for (Term t : findTermsBetween(addedCourse.start, addedCourse.end)) {
-				/*
-				 * Error Condition: One of the terms this course is being added to has a course
-				 * with the same colour.
-				 */
-				if (t.courseColors.get(addedCourse.colour) != null) {
-					throw new IllegalCourseException(
-							"One of the terms this course is being added to has a course with the same colour.");
-				} else {
-					t.courseColors.put(addedCourse.colour, addedCourse);
-					t.courses.add(addedCourse);
-				}
+			while (colorInUse(added)) {
+				added.color = promptNewColor(added.color);
 			}
 
-			active.update();
+			for (Term t : added.terms) {
+				t.courseColors.put(added.color, added);
+				t.courses.add(added);
+			}
+
+			profile.update();
 		}
 	}
 
 	/**
-	 * Edits the course.
+	 * Checks if the color of the course being added is in use in any of its terms.
+	 *
+	 * @param added
+	 *            the course being added
+	 * @return true, if in use
+	 */
+	private boolean colorInUse(Course added) {
+
+		boolean colorInUse = false;
+
+		for (Term t : added.terms) {
+			/*
+			 * Error Condition: One of the terms this course is being added to has a course
+			 * with the same color.
+			 */
+			if (t.courseColors.get(added.color) != null) {
+				new Alert(AlertType.ERROR,
+						"One of the terms this course is being added to has a course with the same color.")
+								.showAndWait();
+				colorInUse = true;
+				break;
+			}
+		}
+
+		return colorInUse;
+	}
+
+	/**
+	 * Prompts the user to choose a new color for the course being added.
+	 *
+	 * @param oldColor
+	 *            the old color
+	 * @return the new color
+	 */
+	private String promptNewColor(String oldColor) {
+		return new PromptNewColor(oldColor).display();
+	}
+
+	/**
+	 * Edits the values of *only* the editable fields of the course.
 	 *
 	 * @param original
-	 *            the edited
+	 *            the course being edited
+	 * @param edited
+	 *            the course with the desired values
 	 */
-	public void editCourse(Course original, Course edit) {
+	public void editCourse(Course original, Course edited) {
 
-		original.name = edit.name;
-		original.departmentID = edit.departmentID;
-		original.code = edit.code;
+		original.name = edited.name;
+		original.departmentID = edited.departmentID;
+		original.code = edited.code;
 
-		String originalColor = original.colour;
-		original.colour = edit.colour;
+		String originalColor = original.color;
+		original.color = edited.color;
 
-		for (Term t : findTermsBetween(original.start, original.end)) {
-			t.updateParams();
-		}
+		/* Check if the course's color was changed. */
 
-		/*
-		 * If the edited course belongs to the currently selected term, redraw views.
-		 */
-		if (this.active.currentlySelectedTerm.courses.contains(original)) {
+		if (!originalColor.equals(original.color)) {
 
-			setCurrentlySelectedDate(this.active.currentlySelectedDate);
-		}
+			for (int i = 0; i < original.terms.size(); i++) {
 
-		/* Check if the course's colour was changed. */
+				if (original.terms.get(i).courseColors.get(original.color) == null) {
 
-		if (!originalColor.equals(original.colour)) {
-
-			ArrayList<Term> courseTerms = findTermsBetween(original.start, original.end);
-
-			for (int i = 0; i < courseTerms.size(); i++) {
-
-				if (courseTerms.get(i).courseColors.get(original.colour) == null) {
-
-					courseTerms.get(i).courseColors.del(originalColor, original);
-					courseTerms.get(i).courseColors.put(original.colour, original);
+					original.terms.get(i).courseColors.del(originalColor, original);
+					original.terms.get(i).courseColors.put(original.color, original);
 
 				} else {
 					/*
-					 * Error Condition: Edited colour is already in use by a course in
-					 * courseTerms.get(i). Need to revert changes to courseColors if any have been
-					 * made and reject changes. TODO: Better solution could be adding a listener to
-					 * the colour picker to inform the user when this is the case.
+					 * Error Condition: Edited color is already in use by a course in one of the
+					 * course's terms. Need to revert changes to courseColors if any have been made
+					 * and reject changes. TODO: Better solution could be adding a listener to the
+					 * color picker to inform the user when this is the case.
 					 */
 					for (int j = 0; j < i; j++) {
-						courseTerms.get(j).courseColors.del(original.colour, original);
-						courseTerms.get(j).courseColors.put(originalColor, original);
+						original.terms.get(j).courseColors.del(original.color, original);
+						original.terms.get(j).courseColors.put(originalColor, original);
 					}
-					original.colour = originalColor;
-					Alert illegalColour = new Alert(AlertType.ERROR,
-							"Edited colour is already in use. Colour change has been reverted.");
-					illegalColour.show();
+					original.color = originalColor;
+					new Alert(AlertType.ERROR, "Edited color is already in use. Color change has been reverted.")
+							.showAndWait();
 					break;
-				}
-
-				if (i == courseTerms.size() - 1) {
-
-					for (MeetingSet ms : original.meetingSets) {
-						ms.setColor(original.colour);
-					}
-
-					for (CourseEvent e : original.events) {
-						e.colour = original.colour;
-					}
 				}
 			}
 		}
 
-		active.update();
+		profile.update();
 	}
 
 	/**
-	 * Delete course.
+	 * Deletes the course.
 	 *
-	 * @param deletedCourse
+	 * @param deleted
 	 *            the deleted course
 	 */
-	public void deleteCourse(Course deletedCourse) {
+	public void deleteCourse(Course deleted) {
 
-		for (Term t : findTermsBetween(deletedCourse.start, deletedCourse.end)) {
-			t.courseColors.del(deletedCourse.colour, deletedCourse);
-			t.courses.remove(deletedCourse);
+		for (Term t : deleted.terms) {
+			t.courseColors.del(deleted.color, deleted);
+			t.courses.remove(deleted);
 
-			for (MeetingSet ms : deletedCourse.meetingSets) {
+			for (MeetingSet ms : deleted.meetingSets) {
 				for (Meeting m : ms.getMeetings()) {
-					if (t.dayMeetings.get(m.date).contains(m)) {
+					if (t.dayMeetings.get(m.date) != null && t.dayMeetings.get(m.date).contains(m)) {
 						t.dayMeetings.del(m.date, m);
 					}
 				}
@@ -268,73 +322,45 @@ public class ProfileController {
 
 			t.updateParams();
 		}
-		for (CalendarEvent e : deletedCourse.events) {
-			this.active.dateEvents.del(e.start.toLocalDate(), e);
-		}
-		active.update();
-	}
 
-	/**
-	 * Find terms between.
-	 *
-	 * @param start
-	 *            the start
-	 * @param end
-	 *            the end
-	 * @return the array list
-	 */
-	public ArrayList<Term> findTermsBetween(LocalDate start, LocalDate end) {
-
-		ArrayList<Term> termsBetween = new ArrayList<>();
-
-		for (Term t : this.active.terms) {
-			if ((t.start.isEqual(start) || t.start.isAfter(start)) && (t.end.isEqual(end) || t.end.isBefore(end))) {
-				termsBetween.add(t);
-			}
+		for (CalendarEvent e : deleted.events) {
+			this.profile.dateEvents.del(e.start.toLocalDate(), e);
 		}
 
-		return termsBetween;
+		profile.update();
 	}
 
-	private void deleteMeeting(Meeting m) {
-
-		for (Course c : this.active.currentlySelectedTerm.courses) {
-
-			for (MeetingSet ms : c.meetingSets) {
-
-				if (ms.getMeetings().contains(m)) {
-					ms.getMeetings().remove(m);
-					this.active.currentlySelectedTerm.dayMeetings.del(m.date, m);
-				}
-			}
-		}
-	}
+	/* Meeting Operations */
 
 	/**
 	 * Adds the meeting.
 	 *
-	 * @param currentlySelected
-	 *            the currently selected the m
+	 * @param selected
+	 *            the selected course
+	 * @param added
+	 *            the meeting being added
+	 * @return true, if successful
 	 */
-	protected boolean addMeeting(Course currentlySelected, Meeting m) {
+	protected boolean addMeeting(Course selected, Meeting added) {
 
-		if (m != null) {
+		if (added != null) {
 
 			boolean deleteConflicts = true;
 
-			Term t = this.active.currentlySelectedTerm;
-
 			ArrayList<Meeting> possibleConflicts = new ArrayList<>();
 
-			if (t.dayMeetings.get(m.date) != null) {
-				possibleConflicts.addAll(t.dayMeetings.get(m.date));
+			Term t = this.profile.currentlySelectedTerm;
+			PriorityQueue<Meeting> sameDayMeetings = t.dayMeetings.get(added.date);
+
+			if (sameDayMeetings != null) {
+				possibleConflicts.addAll(sameDayMeetings);
 			}
 
-			ArrayList<Meeting> conflicts = m.conflictsWith(possibleConflicts);
+			ArrayList<Meeting> conflicts = added.conflictsWith(possibleConflicts);
 
 			if (conflicts.size() > 0) {
 
-				deleteConflicts = new HandleConflict(m, conflicts, this).display();
+				deleteConflicts = new HandleConflict(added, conflicts, this).display();
 			}
 
 			if (deleteConflicts) {
@@ -344,7 +370,7 @@ public class ProfileController {
 					deleteMeeting(conflict);
 				}
 
-				m.colour = currentlySelected.colour;
+				added.course = selected;
 				return true;
 			}
 		}
@@ -352,70 +378,84 @@ public class ProfileController {
 	}
 
 	/**
-	 * Adds the event.
+	 * Deletes the meeting.
 	 *
-	 * @param course
-	 *            the course
-	 * @param event
-	 *            the event
-	 * @param date
-	 *            the date
+	 * @param deleted
+	 *            the meeting being deleted
 	 */
-	public void addEvent(Course course, CalendarEvent event, LocalDate date) {
-		active.dateEvents.put(date, event);
-		if (course != null) {
-			for (Term t : findTermsBetween(course.start, course.end)) {
-				t.courseColors.get(event.colour).events.add((CourseEvent) event);
-			}
-		}
-		active.update();
+	private void deleteMeeting(Meeting deleted) {
+
+		deleted.set.getMeetings().remove(deleted);
+		this.profile.currentlySelectedTerm.dayMeetings.del(deleted.date, deleted);
 	}
 
 	/**
-	 * Delete event.
+	 * Gets the meeting occurring at the specified time.
 	 *
-	 * @param course
-	 *            the course
-	 * @param event
-	 *            the event
-	 * @param date
-	 *            the date
+	 * @param dateTime
+	 *            the date and time
+	 * @return the meeting at the specified time
 	 */
-	public void deleteEvent(Course course, CalendarEvent event, LocalDate date) {
-		active.dateEvents.del(date, event);
-		if (course != null) {
-			for (Term t : findTermsBetween(course.start, course.end)) {
-				t.courseColors.get(event.colour).events.remove(event);
-			}
-		}
-		active.update();
-	}
+	public Meeting getMeetingAtTime(LocalDateTime dateTime) {
 
-	public Course getCourseFromColor(String c) {
-
-		return this.active.currentlySelectedTerm.courseColors.get(c);
-	}
-
-	/**
-	 * Gets the meeting at time.
-	 *
-	 * @param cell
-	 *            the cell
-	 * @return the meeting at time
-	 */
-	public Meeting getMeetingAtTime(LocalDateTime cell) {
-
-		PriorityQueue<Meeting> meetingsThatDay = this.active.currentlySelectedTerm.dayMeetings.get(cell.toLocalDate());
+		PriorityQueue<Meeting> meetingsThatDay = this.profile.currentlySelectedTerm.dayMeetings
+				.get(dateTime.toLocalDate());
 
 		if (meetingsThatDay != null) {
 			for (Meeting m : meetingsThatDay) {
-				if (m.start.isBefore(cell.toLocalTime()) || m.start.equals(cell.toLocalTime())
-						&& (m.end.isAfter(cell.toLocalTime()) || m.end.equals(cell.toLocalTime()))) {
+				if (m.start.isBefore(dateTime.toLocalTime()) || m.start.equals(dateTime.toLocalTime())
+						&& (m.end.isAfter(dateTime.toLocalTime()) || m.end.equals(dateTime.toLocalTime()))) {
 					return m;
 				}
 			}
 		}
 
 		return null;
+	}
+
+	/* Event Operations */
+
+	/**
+	 * Adds the event.
+	 *
+	 * @param course
+	 *            the course the event belongs to - can be null if the event is
+	 *            personal
+	 * @param added
+	 *            the event being added
+	 * @param date
+	 *            the date of the event
+	 */
+	public void addEvent(Course course, CalendarEvent added, LocalDate date) {
+
+		profile.dateEvents.put(date, added);
+
+		if (course != null) {
+			course.events.add((CourseEvent) added);
+		}
+
+		profile.update();
+	}
+
+	/**
+	 * Deletes the event.
+	 *
+	 * @param course
+	 *            the course the event belongs to - can be null if the event is
+	 *            personal
+	 * @param deleted
+	 *            the event being deleted
+	 * @param date
+	 *            the date of the event
+	 */
+	public void deleteEvent(Course course, CalendarEvent deleted, LocalDate date) {
+
+		profile.dateEvents.del(date, deleted);
+
+		if (course != null) {
+			course.events.remove(deleted);
+		}
+
+		profile.update();
 	}
 }

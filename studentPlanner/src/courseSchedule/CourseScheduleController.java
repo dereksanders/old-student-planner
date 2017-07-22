@@ -2,35 +2,49 @@ package courseSchedule;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import core.Driver;
+
+import core.Clock;
 import core.ProfileController;
 import model.Course;
 import model.Meeting;
 import model.MeetingSet;
 import model.Profile;
 import model.Term;
-import planner.Planner;
 
+/**
+ * The Class CourseScheduleController.
+ */
 public class CourseScheduleController extends ProfileController {
 
+	/**
+	 * The schedule.
+	 */
 	public CourseSchedule schedule;
 
-	public CourseScheduleController(Profile active, Planner p) {
-		super(active, p);
+	/**
+	 * Instantiates a new course schedule controller.
+	 *
+	 * @param profile
+	 *            the profile
+	 */
+	public CourseScheduleController(Profile profile) {
+		super(profile);
 	}
 
-	public void showCurrentWeek(Boolean newVal) {
-		/*
-		 * Actions to perform when the checkbox to show the current week is toggled.
-		 */
+	/**
+	 * Show current week.
+	 *
+	 * @param showCurrentWeek
+	 *            the show current week
+	 */
+	public void showCurrentWeek(Boolean showCurrentWeek) {
 
-		/* If the new value is to show the current week. */
-		if (newVal) {
+		if (showCurrentWeek) {
 
 			/* Disable selecting a different week. */
 			schedule.selectWeek.setVisible(false);
 
-			LocalDate present = Driver.t.current.toLocalDate();
+			LocalDate present = Clock.now.toLocalDate();
 			schedule.selectWeek.setValue(present);
 			updateWeekSelected(present);
 		}
@@ -53,76 +67,84 @@ public class CourseScheduleController extends ProfileController {
 		setCurrentlySelectedDate(newDate);
 	}
 
+	/**
+	 * Time is occupied.
+	 *
+	 * @param cell
+	 *            the cell
+	 * @return true, if successful
+	 */
 	public boolean timeIsOccupied(LocalDateTime cell) {
 
-		if (getMeetingAtTime(cell) != null) {
-			return true;
-		}
-
-		return false;
+		return getMeetingAtTime(cell) != null;
 	}
 
-	public void addMeetingSet(Course c, MeetingSet ms, String repeat) {
+	/**
+	 * Adds the meeting set.
+	 *
+	 * @param course
+	 *            the course the meetings belong to
+	 * @param meetingSet
+	 *            the set of all meetings being added - some may not end up being
+	 *            added due to conflicts
+	 * @param repeat
+	 *            the repeat setting of the meeting
+	 */
+	public void addMeetingSet(Course course, MeetingSet meetingSet, String repeat) {
 
-		Term t = this.active.currentlySelectedTerm;
+		Term t = this.profile.currentlySelectedTerm;
 
-		MeetingSet add = new MeetingSet();
-		add.repeat = repeat;
+		MeetingSet added = new MeetingSet();
+		added.repeat = repeat;
 
-		for (Meeting m : ms.getMeetings()) {
+		for (Meeting m : meetingSet.getMeetings()) {
 
-			if (addMeeting(c, m)) {
-				add.addMeeting(m);
+			if (addMeeting(course, m)) {
+				added.addMeeting(m);
+				m.set = added;
 				t.dayMeetings.put(m.date, m);
 			}
 		}
 
-		c.meetingSets.add(add);
+		course.meetingSets.add(added);
 		t.updateParams();
-		this.active.update();
+		this.profile.update();
 	}
 
-	public MeetingSet getMeetingSet(LocalDateTime cell) {
+	/**
+	 * Deletes the meeting from its meeting set.
+	 * 
+	 * @param deleted
+	 *            the meeting being deleted
+	 */
+	public void deleteMeetingFromSet(Meeting deleted) {
 
-		Meeting m = getMeetingAtTime(cell);
-
-		for (MeetingSet ms : this.active.currentlySelectedTerm.courseColors.get(m.colour).meetingSets) {
-
-			if (ms.getMeetings().contains(m)) {
-				return ms;
-			}
-		}
-
-		return null;
-	}
-
-	public void deleteSingleInstance(MeetingSet ms, Meeting m) {
-
-		if (ms.getMeetings().size() == 1) {
-			deleteMeetingSet(ms);
+		if (deleted.set.getMeetings().size() == 1) {
+			deleteMeetingSet(deleted.set);
 		} else {
-
-			ms.getMeetings().remove(m);
-			this.active.currentlySelectedTerm.dayMeetings.del(m.date, m);
-			this.active.update();
+			deleted.set.getMeetings().remove(deleted);
+			this.profile.currentlySelectedTerm.dayMeetings.del(deleted.date, deleted);
+			this.profile.update();
 		}
 	}
 
+	/**
+	 * Deletes the meeting set.
+	 *
+	 * @param deleted
+	 *            the meeting set being deleted
+	 */
 	public void deleteMeetingSet(MeetingSet deleted) {
 
-		Term t = this.active.currentlySelectedTerm;
+		Term t = this.profile.currentlySelectedTerm;
 
 		for (Meeting m : deleted.getMeetings()) {
 			t.dayMeetings.del(m.date, m);
 		}
 
-		for (Course c : this.active.currentlySelectedTerm.courses) {
-			if (c.meetingSets.contains(deleted)) {
-				c.meetingSets.remove(deleted);
-			}
-		}
+		deleted.getCourse().meetingSets.remove(deleted);
 
 		t.updateParams();
-		this.active.update();
+		this.profile.update();
 	}
 }

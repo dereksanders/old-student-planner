@@ -15,7 +15,7 @@ import termCalendar.TermCalendarController;
 
 public class Main extends Application {
 
-	private static Driver driver;
+	public static Driver driver;
 
 	/**
 	 * The main method.
@@ -26,33 +26,32 @@ public class Main extends Application {
 	public static void main(String[] args) {
 
 		/*
-		 * This triggers JavaFX's hidden initialization on start. The executable will
-		 * not launch without this.
+		 * This triggers JavaFX's hidden initialization on start. The jar will not
+		 * launch without this.
 		 */
 		@SuppressWarnings("unused")
 		final JFXPanel fxPanel = new JFXPanel();
 
-		driver = new Driver();
+		driver = new Driver("res", "res//backup");
 
-		/* Instantiate Schedule View & Controller */
-		CourseScheduleController scheduleController = new CourseScheduleController(driver.active, driver.planner);
-		CourseSchedule schedule = new CourseSchedule(driver.active, scheduleController);
-		schedule.planner = driver.planner;
+		/* CourseSchedule */
+		CourseScheduleController scheduleController = new CourseScheduleController(driver.active);
+		CourseSchedule schedule = new CourseSchedule(scheduleController);
 		driver.planner.addView(schedule);
 
-		/* Instantiate Calendar View & Controller */
-		TermCalendarController calendarController = new TermCalendarController(driver.active, driver.planner);
-		TermCalendar calendar = new TermCalendar(driver.active, calendarController);
+		/* TermCalendar */
+		TermCalendarController calendarController = new TermCalendarController(driver.active);
+		TermCalendar calendar = new TermCalendar(calendarController);
 		driver.planner.addView(calendar);
 
-		/* Instantiate Grades View & Controller */
-		GradesController gradesController = new GradesController(driver.active, driver.planner);
-		Grades grades = new Grades(driver.active, gradesController);
+		/* Grades */
+		GradesController gradesController = new GradesController(driver.active);
+		Grades grades = new Grades(gradesController);
 		driver.planner.addView(grades);
 
-		/* Instantiate GradesPlot View & Controller */
-		GradesPlotController gradesPlotController = new GradesPlotController(driver.active, driver.planner);
-		GradesPlot gradesPlot = new GradesPlot(driver.active, gradesPlotController);
+		/* GradesPlot */
+		GradesPlotController gradesPlotController = new GradesPlotController(driver.active);
+		GradesPlot gradesPlot = new GradesPlot(gradesPlotController);
 		driver.planner.addView(gradesPlot);
 
 		driver.planner.refresh();
@@ -84,6 +83,7 @@ public class Main extends Application {
 	public void stop() throws Exception {
 		System.out.println("Saving and exiting..");
 		driver.active.save();
+		System.exit(0);
 	}
 
 }

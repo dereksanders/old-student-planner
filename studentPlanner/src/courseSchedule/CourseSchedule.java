@@ -446,6 +446,7 @@ public class CourseSchedule extends View implements Observer {
 
 			/* Define tooltip when meeting is hovered over. */
 			Tooltip tp = new Tooltip(course.name + "\n" + meeting.location);
+			tp.setStyle("-fx-background-color: #2e2e2e;" + "-fx-text-fill: #fff;" + "-fx-font-size: 10.0pt;");
 			mButton.setTooltip(tp);
 
 			cellNumber++;

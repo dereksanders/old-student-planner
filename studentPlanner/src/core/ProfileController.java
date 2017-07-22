@@ -402,8 +402,8 @@ public class ProfileController {
 
 		if (meetingsThatDay != null) {
 			for (Meeting m : meetingsThatDay) {
-				if (m.start.isBefore(dateTime.toLocalTime()) || m.start.equals(dateTime.toLocalTime())
-						&& (m.end.isAfter(dateTime.toLocalTime()) || m.end.equals(dateTime.toLocalTime()))) {
+				if ((m.start.isBefore(dateTime.toLocalTime()) || m.start.equals(dateTime.toLocalTime()))
+						&& (m.end.isAfter(dateTime.toLocalTime()))) {
 					return m;
 				}
 			}

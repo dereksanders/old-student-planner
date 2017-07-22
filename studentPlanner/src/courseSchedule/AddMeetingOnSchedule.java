@@ -259,7 +259,7 @@ public class AddMeetingOnSchedule {
 
 		while (cur.isBefore(endDate) || cur.equals(endDate)) {
 
-			Meeting m = new Meeting(type, cur, LocalTime.of(start.hour, start.minute),
+			Meeting m = new Meeting(course, type, cur, LocalTime.of(start.hour, start.minute),
 					LocalTime.of(end.hour, end.minute), loc);
 
 			meetingSet.addMeeting(m);
@@ -280,6 +280,6 @@ public class AddMeetingOnSchedule {
 			}
 		}
 
-		pc.addMeetingSet(course, meetingSet, repeat);
+		pc.addMeetingSet(meetingSet, repeat);
 	}
 }

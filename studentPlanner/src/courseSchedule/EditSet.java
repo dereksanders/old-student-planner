@@ -31,23 +31,23 @@ import model.MeetingSet;
 
 public class EditSet {
 
-	private Course meetingCourse;
 	private Meeting selected;
 	private MeetingSet selectedSet;
 	private MeetingSet pastSelectedSet;
 	private CourseScheduleController pc;
+	private boolean editThisAndFuture;
 
 	/* GUI elements */
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
 
-	public EditSet(Course meetingCourse, Meeting selected, CourseScheduleController pc, boolean editThisAndFuture) {
+	public EditSet(Meeting selected, CourseScheduleController pc, boolean editThisAndFuture) {
 
-		this.meetingCourse = meetingCourse;
 		this.selected = selected;
 		this.pastSelectedSet = selected.set;
+		this.editThisAndFuture = editThisAndFuture;
 
-		if (editThisAndFuture) {
+		if (this.editThisAndFuture) {
 
 			MeetingSet thisAndFuture = new MeetingSet();
 
@@ -75,6 +75,11 @@ public class EditSet {
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Meeting");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+
+		ObservableList<Course> courses = FXCollections.observableArrayList(pc.profile.currentlySelectedTerm.courses);
+		ChoiceBox<Course> chooseCourse = new ChoiceBox<>(courses);
+		Style.setChoiceBoxStyle(chooseCourse);
+		chooseCourse.setValue(selected.course);
 
 		ObservableList<String> types = FXCollections.observableArrayList();
 		types.addAll(Meeting.TYPES);
@@ -166,8 +171,9 @@ public class EditSet {
 				if (endDate.getValue().isAfter(startDate.getValue())
 						|| endDate.getValue().equals(startDate.getValue())) {
 
-					confirmChanges(startDate.getValue(), meetingType.getValue(), startTime.getValue(),
-							endTime.getValue(), locField.getText(), endDate.getValue(), chooseRepeat.getValue());
+					confirmChanges(chooseCourse.getValue(), meetingType.getValue(), startDate.getValue(),
+							startTime.getValue(), endTime.getValue(), locField.getText(), endDate.getValue(),
+							chooseRepeat.getValue());
 
 					window.close();
 				}
@@ -184,19 +190,23 @@ public class EditSet {
 		});
 
 		cancel.setOnAction(e -> {
-			mergeSets();
+			if (this.editThisAndFuture) {
+				mergeSets();
+			}
 			window.close();
 		});
 
 		window.setOnCloseRequest(e -> {
-			mergeSets();
+			if (this.editThisAndFuture) {
+				mergeSets();
+			}
 			window.close();
 		});
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, typeLabel, meetingType, startDateLabel, startDate, toEndOfTerm,
-				endDateLabel, endDate, hour, selectTimes, rep, chooseRepeat, loc, locField, confirm, delete, cancel,
-				error);
+		options.getChildren().addAll(header, chooseCourse, typeLabel, meetingType, startDateLabel, startDate,
+				toEndOfTerm, endDateLabel, endDate, hour, selectTimes, rep, chooseRepeat, loc, locField, confirm,
+				delete, cancel, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
@@ -208,8 +218,8 @@ public class EditSet {
 		this.pastSelectedSet.getMeetings().addAll(selectedSet.getMeetings());
 	}
 
-	private void confirmChanges(LocalDate startDate, String type, Time start, Time end, String loc, LocalDate endDate,
-			String repeat) {
+	private void confirmChanges(Course course, String type, LocalDate startDate, Time start, Time end, String loc,
+			LocalDate endDate, String repeat) {
 
 		deleteSelectedSet();
 
@@ -219,7 +229,7 @@ public class EditSet {
 
 		while (cur.isBefore(endDate) || cur.equals(endDate)) {
 
-			Meeting m = new Meeting(type, cur, LocalTime.of(start.hour, start.minute),
+			Meeting m = new Meeting(course, type, cur, LocalTime.of(start.hour, start.minute),
 					LocalTime.of(end.hour, end.minute), loc);
 
 			meetingSet.addMeeting(m);
@@ -239,7 +249,7 @@ public class EditSet {
 			}
 		}
 
-		pc.addMeetingSet(this.meetingCourse, meetingSet, repeat);
+		pc.addMeetingSet(meetingSet, repeat);
 	}
 
 	private void deleteSelectedSet() {

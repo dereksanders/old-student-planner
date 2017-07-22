@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 import core.Clock;
 import core.ProfileController;
-import model.Course;
 import model.Meeting;
 import model.MeetingSet;
 import model.Profile;
@@ -90,7 +89,7 @@ public class CourseScheduleController extends ProfileController {
 	 * @param repeat
 	 *            the repeat setting of the meeting
 	 */
-	public void addMeetingSet(Course course, MeetingSet meetingSet, String repeat) {
+	public void addMeetingSet(MeetingSet meetingSet, String repeat) {
 
 		Term t = this.profile.currentlySelectedTerm;
 
@@ -99,14 +98,14 @@ public class CourseScheduleController extends ProfileController {
 
 		for (Meeting m : meetingSet.getMeetings()) {
 
-			if (addMeeting(course, m)) {
+			if (addMeeting(m)) {
 				added.addMeeting(m);
 				m.set = added;
 				t.dayMeetings.put(m.date, m);
 			}
 		}
 
-		course.meetingSets.add(added);
+		added.getCourse().meetingSets.add(added);
 		t.updateParams();
 		this.profile.update();
 	}

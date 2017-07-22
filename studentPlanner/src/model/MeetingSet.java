@@ -47,12 +47,6 @@ public class MeetingSet implements Serializable {
 		return this.meetings.get(0).course;
 	}
 
-	public void setCourse(Course c) {
-		for (Meeting m : this.meetings) {
-			m.course = c;
-		}
-	}
-
 	@Override
 	public String toString() {
 		return "MeetingSet " + this.hashCode() + ": " + this.meetings.size() + " meetings repeating " + repeat;

@@ -11,9 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import model.Course;
 import model.Meeting;
-import model.MeetingSet;
 
 /**
  * The Class EditOrDeleteMeeting.
@@ -22,8 +20,6 @@ public class EditInstanceOrSet {
 
 	private CourseScheduleController pc;
 	private Meeting selected;
-	private MeetingSet selectedSet;
-	private Course meetingCourse;
 
 	/**
 	 * Instantiates a new edits the or delete meeting.
@@ -65,10 +61,10 @@ public class EditInstanceOrSet {
 		VBox meetingListings = new VBox(5);
 		meetingListings.getChildren().add(listing);
 
-		for (Meeting m : selectedSet.getMeetings()) {
+		for (Meeting m : this.selected.set.getMeetings()) {
 
 			Label current = new Label(
-					meetingCourse + " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
+					this.selected.course + " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
 
 			if (m.equals(selected)) {
 				current.setStyle(
@@ -84,17 +80,17 @@ public class EditInstanceOrSet {
 		elements.getChildren().addAll(options, meetingListings);
 
 		editInstance.setOnAction(e -> {
-			new EditInstance(meetingCourse, selected, pc);
+			new EditInstance(selected, pc);
 			window.close();
 		});
 
 		editAll.setOnAction(e -> {
-			new EditSet(meetingCourse, selected, pc, false);
+			new EditSet(selected, pc, false);
 			window.close();
 		});
 
 		editThisAndFuture.setOnAction(e -> {
-			new EditSet(meetingCourse, selected, pc, true);
+			new EditSet(selected, pc, true);
 			window.close();
 		});
 

@@ -341,7 +341,7 @@ public class ProfileController {
 	 *            the meeting being added
 	 * @return true, if successful
 	 */
-	protected boolean addMeeting(Course selected, Meeting added) {
+	protected boolean addMeeting(Meeting added) {
 
 		if (added != null) {
 
@@ -370,7 +370,6 @@ public class ProfileController {
 					deleteMeeting(conflict);
 				}
 
-				added.course = selected;
 				return true;
 			}
 		}

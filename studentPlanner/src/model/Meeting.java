@@ -42,7 +42,8 @@ public class Meeting implements Comparable<Meeting>, Serializable {
 	 * @param location
 	 *            the location
 	 */
-	public Meeting(String meetingType, LocalDate date, LocalTime start, LocalTime end, String location) {
+	public Meeting(Course course, String meetingType, LocalDate date, LocalTime start, LocalTime end, String location) {
+		this.course = course;
 		this.meetingType = meetingType;
 		this.date = date;
 		this.start = start;

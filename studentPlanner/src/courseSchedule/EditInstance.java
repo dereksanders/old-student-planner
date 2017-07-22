@@ -28,7 +28,6 @@ import model.MeetingSet;
 
 public class EditInstance {
 
-	private Course meetingCourse;
 	private Meeting selected;
 	private CourseScheduleController pc;
 
@@ -36,8 +35,7 @@ public class EditInstance {
 	private ComboBox<Time> startTime;
 	private ComboBox<Time> endTime;
 
-	public EditInstance(Course meetingCourse, Meeting selected, CourseScheduleController pc) {
-		this.meetingCourse = meetingCourse;
+	public EditInstance(Meeting selected, CourseScheduleController pc) {
 		this.selected = selected;
 		this.pc = pc;
 		display();
@@ -50,6 +48,11 @@ public class EditInstance {
 		window.initModality(Modality.APPLICATION_MODAL);
 		window.setTitle("Edit Meeting");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
+
+		ObservableList<Course> courses = FXCollections.observableArrayList(pc.profile.currentlySelectedTerm.courses);
+		ChoiceBox<Course> chooseCourse = new ChoiceBox<>(courses);
+		Style.setChoiceBoxStyle(chooseCourse);
+		chooseCourse.setValue(selected.course);
 
 		ObservableList<String> types = FXCollections.observableArrayList();
 		types.addAll(Meeting.TYPES);
@@ -110,8 +113,8 @@ public class EditInstance {
 		confirm.setOnAction(e -> {
 			/* Confirm changes to all instances in the MeetingSet. */
 			if (meetingType.getValue() != null && startTime.getValue() != null && endTime.getValue() != null) {
-				confirmChanges(startDate.getValue(), meetingType.getValue(), startTime.getValue(), endTime.getValue(),
-						locField.getText());
+				confirmChanges(chooseCourse.getValue(), meetingType.getValue(), startDate.getValue(),
+						startTime.getValue(), endTime.getValue(), locField.getText());
 				window.close();
 			} else {
 				error.setText("Error: You must fill out all fields.");
@@ -129,24 +132,24 @@ public class EditInstance {
 		});
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, typeLabel, meetingType, startDateLabel, startDate, hour, selectTimes, loc,
-				locField, confirm, delete, cancel, error);
+		options.getChildren().addAll(header, chooseCourse, typeLabel, meetingType, startDateLabel, startDate, hour,
+				selectTimes, loc, locField, confirm, delete, cancel, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
 		window.showAndWait();
 	}
 
-	private void confirmChanges(LocalDate startDate, String type, Time start, Time end, String loc) {
+	private void confirmChanges(Course course, String type, LocalDate startDate, Time start, Time end, String loc) {
 
 		deleteSelectedInstance();
 
 		MeetingSet ms = new MeetingSet();
 
-		ms.addMeeting(new Meeting(type, startDate, LocalTime.of(start.hour, start.minute),
+		ms.addMeeting(new Meeting(course, type, startDate, LocalTime.of(start.hour, start.minute),
 				LocalTime.of(end.hour, end.minute), loc));
 
-		pc.addMeetingSet(this.meetingCourse, ms, MeetingSet.NO_REPEAT);
+		pc.addMeetingSet(ms, MeetingSet.NO_REPEAT);
 	}
 
 	private void deleteSelectedInstance() {

@@ -69,7 +69,7 @@ public class AddTerm {
 				confirm(name.getText(), startDate.getValue(), endDate.getValue());
 				window.close();
 			} else {
-				error.setText("Error: Start date must be after end date.");
+				error.setText("Error: Start date must be before end date.");
 				error.setTextFill(Color.RED);
 			}
 		});

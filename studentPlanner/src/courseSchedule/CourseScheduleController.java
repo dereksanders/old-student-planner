@@ -15,9 +15,6 @@ import model.Term;
  */
 public class CourseScheduleController extends ProfileController {
 
-	/**
-	 * The schedule.
-	 */
 	public CourseSchedule schedule;
 
 	/**
@@ -121,8 +118,7 @@ public class CourseScheduleController extends ProfileController {
 		if (deleted.set.getMeetings().size() == 1) {
 			deleteMeetingSet(deleted.set);
 		} else {
-			deleted.set.getMeetings().remove(deleted);
-			this.profile.currentlySelectedTerm.dayMeetings.del(deleted.date, deleted);
+			deleteMeeting(deleted);
 			this.profile.update();
 		}
 	}

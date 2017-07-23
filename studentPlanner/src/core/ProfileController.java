@@ -88,25 +88,34 @@ public class ProfileController {
 		/* If the user has defined a Term to add. */
 		if (added != null) {
 
-			this.profile.terms.add(added);
+			if (!existingTermOverlaps(added)) {
 
-			if (this.profile.terms.size() == 1) {
+				this.profile.terms.add(added);
 
-				LocalDate selected = this.profile.currentlySelectedDate;
+				if (this.profile.terms.size() == 1) {
 
-				/*
-				 * If the currently selected date is within the new term, keep it as the
-				 * selected date and select the new term.
-				 */
-				if (findTerm(selected).equals(added)) {
+					LocalDate selected = this.profile.currentlySelectedDate;
 
-					this.profile.currentlySelectedTerm = added;
+					/*
+					 * If the currently selected date is within the new term, keep it as the
+					 * selected date and select the new term.
+					 */
+					if (findTerm(selected).equals(added)) {
 
-				} else {
+						this.profile.currentlySelectedTerm = added;
 
-					/* Set the currently selected date to the start date of the new Term. */
-					setCurrentlySelectedDate(this.profile.terms.get(0).start);
+					} else {
+
+						/* Set the currently selected date to the start date of the new Term. */
+						setCurrentlySelectedDate(this.profile.terms.get(0).start);
+					}
 				}
+
+			} else {
+
+				new Alert(AlertType.ERROR,
+						"An existing term conflicts with the one being added. Please enter non-overlapping start and end dates for terms.")
+								.showAndWait();
 			}
 		}
 
@@ -124,10 +133,19 @@ public class ProfileController {
 	 */
 	public void editTerm(Term original, Term edited) {
 
-		original.name = edited.name;
-		original.start = edited.start;
-		original.end = edited.end;
-		this.profile.update();
+		if (!existingTermOverlaps(edited)) {
+
+			original.name = edited.name;
+			original.start = edited.start;
+			original.end = edited.end;
+			this.profile.update();
+
+		} else {
+
+			new Alert(AlertType.ERROR,
+					"An existing term conflicts with your changes. Please enter non-overlapping start and end dates for terms.")
+							.showAndWait();
+		}
 	}
 
 	/**
@@ -186,6 +204,28 @@ public class ProfileController {
 		return termsBetween;
 	}
 
+	/**
+	 * Checks if an existing term overlaps with the start and end dates of the term
+	 * being added.
+	 *
+	 * @param added
+	 *            the term being added
+	 * @return true, if an existing term overlaps
+	 */
+	private boolean existingTermOverlaps(Term added) {
+
+		boolean overlapExists = false;
+
+		for (Term t : this.profile.terms) {
+
+			if (!(t.end.isBefore(added.start) || t.start.isAfter(added.end))) {
+				overlapExists = true;
+			}
+		}
+
+		return overlapExists;
+	}
+
 	/* Course Operations */
 
 	/**
@@ -209,45 +249,6 @@ public class ProfileController {
 
 			profile.update();
 		}
-	}
-
-	/**
-	 * Checks if the color of the course being added is in use in any of its terms.
-	 *
-	 * @param added
-	 *            the course being added
-	 * @return true, if in use
-	 */
-	private boolean colorInUse(Course added) {
-
-		boolean colorInUse = false;
-
-		for (Term t : added.terms) {
-			/*
-			 * Error Condition: One of the terms this course is being added to has a course
-			 * with the same color.
-			 */
-			if (t.courseColors.get(added.color) != null) {
-				new Alert(AlertType.ERROR,
-						"One of the terms this course is being added to has a course with the same color.")
-								.showAndWait();
-				colorInUse = true;
-				break;
-			}
-		}
-
-		return colorInUse;
-	}
-
-	/**
-	 * Prompts the user to choose a new color for the course being added.
-	 *
-	 * @param oldColor
-	 *            the old color
-	 * @return the new color
-	 */
-	private String promptNewColor(String oldColor) {
-		return new PromptNewColor(oldColor).display();
 	}
 
 	/**
@@ -330,13 +331,50 @@ public class ProfileController {
 		profile.update();
 	}
 
+	/**
+	 * Checks if the color of the course being added is in use in any of its terms.
+	 *
+	 * @param added
+	 *            the course being added
+	 * @return true, if in use
+	 */
+	private boolean colorInUse(Course added) {
+
+		boolean colorInUse = false;
+
+		for (Term t : added.terms) {
+			/*
+			 * Error Condition: One of the terms this course is being added to has a course
+			 * with the same color.
+			 */
+			if (t.courseColors.get(added.color) != null) {
+				new Alert(AlertType.ERROR,
+						"One of the terms this course is being added to has a course with the same color.")
+								.showAndWait();
+				colorInUse = true;
+				break;
+			}
+		}
+
+		return colorInUse;
+	}
+
+	/**
+	 * Prompts the user to choose a new color for the course being added.
+	 *
+	 * @param oldColor
+	 *            the old color
+	 * @return the new color
+	 */
+	private String promptNewColor(String oldColor) {
+		return new PromptNewColor(oldColor).display();
+	}
+
 	/* Meeting Operations */
 
 	/**
 	 * Adds the meeting.
 	 *
-	 * @param selected
-	 *            the selected course
 	 * @param added
 	 *            the meeting being added
 	 * @return true, if successful
@@ -382,7 +420,7 @@ public class ProfileController {
 	 * @param deleted
 	 *            the meeting being deleted
 	 */
-	private void deleteMeeting(Meeting deleted) {
+	protected void deleteMeeting(Meeting deleted) {
 
 		deleted.set.getMeetings().remove(deleted);
 		this.profile.currentlySelectedTerm.dayMeetings.del(deleted.date, deleted);

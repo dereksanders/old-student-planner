@@ -34,6 +34,9 @@ import model.MeetingSet;
 
 /**
  * The Class AddMeetingOnSchedule.
+ * 
+ * This is the window that appears when the user clicks on an unoccupied time
+ * slot in the CourseSchedule.
  */
 public class AddMeetingOnSchedule {
 
@@ -43,23 +46,12 @@ public class AddMeetingOnSchedule {
 	private ComboBox<Time> endTime;
 	private Label error;
 
-	/**
-	 * Instantiates a new adds the meeting on schedule.
-	 *
-	 * @param cell
-	 *            the cell
-	 * @param pc
-	 *            the pc
-	 */
 	public AddMeetingOnSchedule(LocalDateTime cell, CourseScheduleController pc) {
 		this.selected = cell;
 		this.pc = pc;
 		display();
 	}
 
-	/**
-	 * Display.
-	 */
 	private void display() {
 
 		/* Window set-up */
@@ -234,22 +226,6 @@ public class AddMeetingOnSchedule {
 		window.showAndWait();
 	}
 
-	/**
-	 * Confirm changes.
-	 *
-	 * @param course
-	 *            the course
-	 * @param type
-	 *            the type
-	 * @param day
-	 *            the day
-	 * @param start
-	 *            the start
-	 * @param end
-	 *            the end
-	 * @param loc
-	 *            the loc
-	 */
 	private void confirm(Course course, LocalDate startDate, String type, Time start, Time end, String loc,
 			LocalDate endDate, String repeat) {
 

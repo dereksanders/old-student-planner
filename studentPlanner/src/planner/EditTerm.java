@@ -56,7 +56,7 @@ public class EditTerm {
 		window.setTitle("Edit Term");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
-		ObservableList<Term> termChoices = FXCollections.observableArrayList(pc.profile.terms);
+		ObservableList<Term> termChoices = FXCollections.observableArrayList(this.pc.profile.terms);
 		ChoiceBox<Term> chooseTerm = new ChoiceBox<>(termChoices);
 		Style.setChoiceBoxStyle(chooseTerm);
 
@@ -80,6 +80,18 @@ public class EditTerm {
 		endBox.getChildren().addAll(endLabel, end);
 		VBox options = new VBox(20);
 		HBox dates = new HBox(20);
+
+		HBox choices = new HBox(20);
+
+		Button deleteTerm = new Button("Delete Term");
+		Style.setButtonStyle(deleteTerm);
+
+		deleteTerm.setOnAction(e -> {
+
+			this.pc.deleteTerm(currentlySelected);
+			window.close();
+		});
+
 		Button confirmChanges = new Button("Confirm Changes");
 		Style.setButtonStyle(confirmChanges);
 
@@ -93,8 +105,10 @@ public class EditTerm {
 			}
 		});
 
+		choices.getChildren().addAll(deleteTerm, confirmChanges);
+
 		dates.getChildren().addAll(startBox, endBox);
-		options.getChildren().addAll(chooseTerm, dates, confirmChanges, error);
+		options.getChildren().addAll(chooseTerm, dates, choices, error);
 		Style.addPadding(options);
 		chooseTerm.setValue(pc.profile.currentlySelectedTerm);
 		Scene scene = new Scene(options, 500, 200);
@@ -109,6 +123,7 @@ public class EditTerm {
 	 *            the term
 	 */
 	private void updateTermSelected(Term term) {
+
 		currentlySelected = term;
 		name.setText(currentlySelected.name);
 		start.setValue(currentlySelected.start);

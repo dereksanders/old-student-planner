@@ -133,7 +133,7 @@ public class ProfileController {
 	 */
 	public void editTerm(Term original, Term edited) {
 
-		if (!existingTermOverlaps(edited)) {
+		if (!existingTermOverlaps(original, edited)) {
 
 			original.name = edited.name;
 			original.start = edited.start;
@@ -218,8 +218,35 @@ public class ProfileController {
 
 		for (Term t : this.profile.terms) {
 
+			System.out.println(t);
+
 			if (!(t.end.isBefore(added.start) || t.start.isAfter(added.end))) {
 				overlapExists = true;
+			}
+		}
+
+		return overlapExists;
+	}
+
+	/**
+	 * Checks if an existing term (other than the original) overlaps with the start
+	 * and end dates of the term being edited.
+	 *
+	 * @param added
+	 *            the term being added
+	 * @return true, if an existing term overlaps
+	 */
+	private boolean existingTermOverlaps(Term original, Term edited) {
+
+		boolean overlapExists = false;
+
+		for (Term t : this.profile.terms) {
+
+			if (!t.equals(original)) {
+
+				if (!(t.end.isBefore(edited.start) || t.start.isAfter(edited.end))) {
+					overlapExists = true;
+				}
 			}
 		}
 

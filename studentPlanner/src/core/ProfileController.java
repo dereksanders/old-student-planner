@@ -218,8 +218,6 @@ public class ProfileController {
 
 		for (Term t : this.profile.terms) {
 
-			System.out.println(t);
-
 			if (!(t.end.isBefore(added.start) || t.start.isAfter(added.end))) {
 				overlapExists = true;
 			}

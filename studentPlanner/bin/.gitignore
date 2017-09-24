@@ -1,7 +1,3 @@
-/core/
-/courseSchedule/
-/model/
-/planner/
-/termCalendar/
-/tests/
 /utility/
+/courseSchedule/
+/core/

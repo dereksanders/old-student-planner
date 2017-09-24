@@ -13,7 +13,6 @@ import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
-import model.CourseMeeting;
 import model.Meeting;
 import model.MeetingSet;
 import model.Profile;

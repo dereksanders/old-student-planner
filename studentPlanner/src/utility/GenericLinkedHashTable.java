@@ -1,11 +1,8 @@
 package utility;
 
 import java.io.Serializable;
-import java.time.LocalDate;
 import java.util.Collections;
 import java.util.PriorityQueue;
-
-import model.Meeting;
 
 /**
  * The Class GenericLinkedHashTable.

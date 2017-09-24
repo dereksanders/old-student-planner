@@ -19,6 +19,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -285,11 +286,30 @@ public class EditSet {
 		decisions.getChildren().addAll(cancel, delete, confirm);
 		decisions.setMinHeight(40);
 
+		VBox startDateOptions = new VBox(20);
+		startDateOptions.getChildren().addAll(startDateLabel, startDate);
+
+		VBox endDateOptions = new VBox(20);
+		endDateOptions.getChildren().addAll(endDateLabel, endDate, toEndOfTerm);
+
+		HBox dates = new HBox(20);
+		dates.getChildren().addAll(startDateOptions, endDateOptions);
+
+		VBox body = new VBox();
+		ScrollPane scroll = new ScrollPane();
+
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, courseAndTypeSelection, titleField, chooseColor, startDateLabel, startDate,
-				toEndOfTerm, endDateLabel, endDate, hour, selectTimes, rep, chooseRepeat, locField, decisions, error);
-		Style.addPadding(options);
-		Scene scene = new Scene(options);
+		options.getChildren().addAll(header, courseAndTypeSelection, titleField, chooseColor, dates, hour, selectTimes,
+				rep, chooseRepeat, locField, decisions, error);
+
+		scroll.setContent(options);
+		Style.addPadding(scroll);
+
+		body.getChildren().add(scroll);
+		body.setPrefHeight(773);
+		body.setPrefWidth(476);
+
+		Scene scene = new Scene(body);
 		window.setScene(scene);
 		window.showAndWait();
 	}

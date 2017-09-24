@@ -22,6 +22,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -339,11 +340,21 @@ public class AddMeetingOnSchedule {
 		VBox titleDecision = new VBox(20);
 		titleDecision.getChildren().addAll(titleField);
 
+		VBox body = new VBox();
+		ScrollPane scroll = new ScrollPane();
+
 		VBox options = new VBox(20);
 		options.getChildren().addAll(header, courseAndType, titleField, chooseColor, dateDecision, hour, selectTimes,
 				locField, rep, chooseRepeat, decisions);
-		Style.addPadding(options);
-		Scene scene = new Scene(options);
+
+		scroll.setContent(options);
+		Style.addPadding(scroll);
+
+		body.getChildren().add(scroll);
+		body.setPrefHeight(732);
+		body.setPrefWidth(476);
+
+		Scene scene = new Scene(body);
 		window.setScene(scene);
 		window.showAndWait();
 	}

@@ -17,6 +17,7 @@ import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
@@ -217,11 +218,21 @@ public class EditInstance {
 		decisions.getChildren().addAll(cancel, delete, confirm);
 		decisions.setMinHeight(40);
 
+		VBox body = new VBox();
+		ScrollPane scroll = new ScrollPane();
+
 		VBox options = new VBox(20);
 		options.getChildren().addAll(header, courseAndTypeSelection, titleField, chooseColor, startDateLabel, startDate,
 				hour, selectTimes, locField, decisions, error);
-		Style.addPadding(options);
-		Scene scene = new Scene(options);
+
+		scroll.setContent(options);
+		Style.addPadding(scroll);
+
+		body.getChildren().add(scroll);
+		body.setPrefHeight(638);
+		body.setPrefWidth(380);
+
+		Scene scene = new Scene(body);
 		window.setScene(scene);
 		window.showAndWait();
 	}

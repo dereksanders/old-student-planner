@@ -11,6 +11,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.CourseMeeting;
 import model.Meeting;
 
 /**
@@ -63,8 +64,14 @@ public class EditInstanceOrSet {
 
 		for (Meeting m : this.selected.set.getMeetings()) {
 
-			Label current = new Label(
-					this.selected.course + " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
+			Label current = new Label();
+
+			if (m instanceof CourseMeeting) {
+				current.setText(((CourseMeeting) this.selected).course + " " + m.meetingType + ": " + m.start + " - "
+						+ m.end + " (" + m.date + ")");
+			} else {
+				current.setText(m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
+			}
 
 			if (m.equals(selected)) {
 				current.setStyle(

@@ -13,6 +13,7 @@ import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Course;
 import model.CourseEvent;
+import model.CourseMeeting;
 import model.Meeting;
 import model.MeetingSet;
 import model.Profile;
@@ -59,6 +60,15 @@ public class ProfileController {
 
 		this.profile.currentlySelectedTerm = term;
 		profile.update();
+	}
+
+	public boolean currentlySelectedTermCoursesExist() {
+
+		if (this.profile.currentlySelectedTerm.courses.size() > 0) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
@@ -442,13 +452,13 @@ public class ProfileController {
 	/**
 	 * Deletes the meeting.
 	 *
-	 * @param deleted
+	 * @param conflict
 	 *            the meeting being deleted
 	 */
-	protected void deleteMeeting(Meeting deleted) {
+	protected void deleteMeeting(Meeting conflict) {
 
-		deleted.set.getMeetings().remove(deleted);
-		this.profile.currentlySelectedTerm.dayMeetings.del(deleted.date, deleted);
+		conflict.set.getMeetings().remove(conflict);
+		this.profile.currentlySelectedTerm.dayMeetings.del(conflict.date, conflict);
 	}
 
 	/**

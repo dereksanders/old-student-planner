@@ -102,7 +102,12 @@ public class CourseScheduleController extends ProfileController {
 			}
 		}
 
-		added.getCourse().meetingSets.add(added);
+		if (added.getCourse() != null) {
+			added.getCourse().meetingSets.add(added);
+		} else {
+			t.nonCourseMeetingSets.add(added);
+		}
+
 		t.updateParams();
 		this.profile.update();
 	}
@@ -110,15 +115,15 @@ public class CourseScheduleController extends ProfileController {
 	/**
 	 * Deletes the meeting from its meeting set.
 	 * 
-	 * @param deleted
+	 * @param selected
 	 *            the meeting being deleted
 	 */
-	public void deleteMeetingFromSet(Meeting deleted) {
+	public void deleteMeetingFromSet(Meeting selected) {
 
-		if (deleted.set.getMeetings().size() == 1) {
-			deleteMeetingSet(deleted.set);
+		if (selected.set.getMeetings().size() == 1) {
+			deleteMeetingSet(selected.set);
 		} else {
-			deleteMeeting(deleted);
+			deleteMeeting(selected);
 			this.profile.update();
 		}
 	}
@@ -137,7 +142,9 @@ public class CourseScheduleController extends ProfileController {
 			t.dayMeetings.del(m.date, m);
 		}
 
-		deleted.getCourse().meetingSets.remove(deleted);
+		if (deleted.getCourse() != null) {
+			deleted.getCourse().meetingSets.remove(deleted);
+		}
 
 		t.updateParams();
 		this.profile.update();

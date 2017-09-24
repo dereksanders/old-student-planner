@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
+
 import utility.GenericHashTable;
 import utility.GenericLinkedHashTable;
 import utility.Pretty;
@@ -27,6 +28,7 @@ public class Term implements Comparable<Term>, Serializable {
 
 	public ArrayList<Course> courses;
 	public GenericHashTable<String, Course> courseColors;
+	public ArrayList<MeetingSet> nonCourseMeetingSets;
 	public GenericLinkedHashTable<LocalDate, Meeting> dayMeetings;
 
 	/* Course Schedule params */
@@ -52,6 +54,7 @@ public class Term implements Comparable<Term>, Serializable {
 		this.courseColors = new GenericHashTable<>(100);
 
 		this.dayMeetings = new GenericLinkedHashTable<>(300, true);
+		this.nonCourseMeetingSets = new ArrayList<>();
 
 		/* Default course schedule params */
 		this.minStart = LocalTime.of(8, 30);
@@ -86,6 +89,13 @@ public class Term implements Comparable<Term>, Serializable {
 		this.maxEnd = LocalTime.of(0, 0);
 		this.maxDay = 5;
 
+		for (MeetingSet ms : this.nonCourseMeetingSets) {
+			for (Meeting m : ms.getMeetings()) {
+				changesMade = true;
+				addParams(m);
+			}
+		}
+
 		for (Course c : this.courses) {
 			for (MeetingSet ms : c.meetingSets) {
 				for (Meeting m : ms.getMeetings()) {
@@ -102,19 +112,19 @@ public class Term implements Comparable<Term>, Serializable {
 	 * Checks the meeting's start, end, and day against the term's minStart, maxEnd,
 	 * and maxDay.
 	 *
-	 * @param meeting
+	 * @param m
 	 *            the meeting
 	 */
-	private void addParams(Meeting meeting) {
+	private void addParams(Meeting m) {
 
-		if (this.minStart.compareTo(meeting.start) > 0) {
-			this.minStart = meeting.start;
+		if (this.minStart.compareTo(m.start) > 0) {
+			this.minStart = m.start;
 		}
-		if (this.maxEnd.compareTo(meeting.end) < 0) {
-			this.maxEnd = meeting.end;
+		if (this.maxEnd.compareTo(m.end) < 0) {
+			this.maxEnd = m.end;
 		}
-		if (this.maxDay < meeting.date.getDayOfWeek().getValue()) {
-			this.maxDay = meeting.date.getDayOfWeek().getValue();
+		if (this.maxDay < m.date.getDayOfWeek().getValue()) {
+			this.maxDay = m.date.getDayOfWeek().getValue();
 		}
 	}
 

@@ -30,6 +30,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import model.Course;
+import model.CourseMeeting;
 import model.Meeting;
 import model.Profile;
 import model.Term;
@@ -212,9 +213,9 @@ public class CourseSchedule extends View implements Observer {
 					HBox meetingListing = new HBox(5);
 
 					Rectangle meetingIcon = new Rectangle(20, 20);
-					meetingIcon.setFill(Color.web(m.course.color));
+					meetingIcon.setFill(Color.web(m.color));
 
-					Label meetingDesc = new Label(m.course + " " + m.meetingType + ": " + m.start + " - " + m.end);
+					Label meetingDesc = new Label(m.name + " " + m.meetingType + ": " + m.start + " - " + m.end);
 
 					meetingListing.getChildren().addAll(meetingIcon, meetingDesc);
 					todaysMeetingsList.getChildren().add(meetingListing);
@@ -306,8 +307,8 @@ public class CourseSchedule extends View implements Observer {
 				meetingButtons[i][j] = new Button();
 				meetingButtons[i][j].setMinWidth(96);
 				meetingButtons[i][j].setMaxWidth(96);
-				meetingButtons[i][j].setMinHeight(40);
-				meetingButtons[i][j].setMaxHeight(40);
+				meetingButtons[i][j].setMinHeight(45);
+				meetingButtons[i][j].setMaxHeight(45);
 
 				LocalDateTime cell = LocalDateTime.of(firstOfWeek.plusDays(i),
 						LocalTime.of((j + timesOffset) / 2, ((j + timesOffset) % 2) * 30));
@@ -335,10 +336,15 @@ public class CourseSchedule extends View implements Observer {
 				scheduleGrid.add(meetingButtons[i][j], i + 1, j + 1);
 
 				meetingButtons[i][j].setOnAction(e -> {
+
 					if (this.controller.profile.currentlySelectedTerm != null) {
+
 						if (controller.timeIsOccupied(cell)) {
+
 							new EditInstanceOrSet(cell, controller);
+
 						} else {
+
 							new AddMeetingOnSchedule(cell, controller);
 						}
 					}
@@ -368,25 +374,29 @@ public class CourseSchedule extends View implements Observer {
 		}
 	}
 
-	private void addToSchedule(Meeting meeting, Term term) {
+	private void addToSchedule(Meeting m, Term term) {
 
-		Course course = meeting.course;
+		Course course = null;
 
-		int mDay = meeting.date.getDayOfWeek().getValue();
+		if (m instanceof CourseMeeting) {
+			course = ((CourseMeeting) m).course;
+		}
+
+		int mDay = m.date.getDayOfWeek().getValue();
 
 		/*
 		 * Get the distance from the first time in the Course Schedule to the start time
 		 * of the meeting.
 		 */
 		int timeDist = Time.getDistance(new Time(term.minStart.getHour(), term.minStart.getMinute()),
-				new Time(meeting.start.getHour(), meeting.start.getMinute()), 30);
+				new Time(m.start.getHour(), m.start.getMinute()), 30);
 
 		/*
 		 * Convert LocalDateTime meeting start & end to Time objects for easier
 		 * comparison.
 		 */
-		Time meetingStart = new Time(meeting.start.getHour(), meeting.start.getMinute());
-		Time meetingEnd = new Time(meeting.end.getHour(), meeting.end.getMinute());
+		Time meetingStart = new Time(m.start.getHour(), m.start.getMinute());
+		Time meetingEnd = new Time(m.end.getHour(), m.end.getMinute());
 
 		/* Determine how long the meeting is. */
 		int length = meetingEnd.compareTo(meetingStart);
@@ -404,13 +414,13 @@ public class CourseSchedule extends View implements Observer {
 			 */
 			if (i == 0) {
 
-				mButton.setText(course.toString() + "\n" + meeting.meetingType);
+				mButton.setText(m.name + "\n" + m.meetingType);
 				mButton.setStyle(mButton.getStyle() + "-fx-font-size: 9.0pt;");
 
 				/*
 				 * Decide if text is white or black based on brightness of background colour.
 				 */
-				if (Color.web(course.color).getBrightness() < 0.7) {
+				if (Color.web(m.color).getBrightness() < 0.7) {
 					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #fff;");
 				} else {
 					mButton.setStyle(mButton.getStyle() + "-fx-text-fill: #000;");
@@ -442,10 +452,17 @@ public class CourseSchedule extends View implements Observer {
 
 			/* Background styling for meeting cells. */
 			mButton.setStyle(
-					mButton.getStyle() + "-fx-background-color: #" + course.color + "; -fx-background-radius: 0.0;");
+					mButton.getStyle() + "-fx-background-color: #" + m.color + "; -fx-background-radius: 0.0;");
 
 			/* Define tooltip when meeting is hovered over. */
-			Tooltip tp = new Tooltip(course.name + "\n" + meeting.location);
+			Tooltip tp = new Tooltip();
+
+			if (m instanceof CourseMeeting) {
+				tp.setText(course.name + "\n" + m.location);
+			} else {
+				tp.setText(m.location);
+			}
+
 			tp.setStyle("-fx-background-color: #2e2e2e;" + "-fx-text-fill: #fff;" + "-fx-font-size: 10.0pt;");
 			mButton.setTooltip(tp);
 

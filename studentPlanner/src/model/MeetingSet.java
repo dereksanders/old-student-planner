@@ -44,7 +44,19 @@ public class MeetingSet implements Serializable {
 	}
 
 	public Course getCourse() {
-		return this.meetings.get(0).course;
+
+		if (this.meetings.size() > 0) {
+
+			if (this.meetings.get(0) instanceof CourseMeeting) {
+				return ((CourseMeeting) this.meetings.get(0)).course;
+			} else {
+				return null;
+			}
+
+		} else {
+
+			return null;
+		}
 	}
 
 	@Override

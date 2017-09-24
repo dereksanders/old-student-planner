@@ -133,4 +133,38 @@ public class Style {
 		}
 		return hex2;
 	}
+
+	public static Color randomColor() {
+
+		int lowerInt = 0;
+		int upperInt = 9;
+
+		int lowerAlpha = 0;
+		int upperAlpha = 5;
+
+		int hexLength = 6;
+
+		StringBuilder color = new StringBuilder(8);
+		color.append("0x");
+
+		for (int i = 0; i < hexLength; i++) {
+
+			if (Math.random() < 0.5) {
+
+				// choose an int
+				int randInt = (int) (((upperInt - lowerInt) * Math.random()) + lowerInt);
+
+				color.append(randInt);
+
+			} else {
+
+				// choose a letter - 97 is ASCII value for 'a'
+				int randAlpha = ((int) (((upperAlpha - lowerAlpha) * Math.random()) + lowerAlpha)) + 97;
+
+				color.append((char) randAlpha);
+			}
+		}
+
+		return Color.web(color.toString());
+	}
 }

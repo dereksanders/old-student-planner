@@ -13,6 +13,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import model.CourseMeeting;
 import model.Meeting;
 
 public class HandleConflict {
@@ -21,8 +22,8 @@ public class HandleConflict {
 	private ArrayList<Meeting> conflicts;
 	private boolean confirm;
 
-	public HandleConflict(Meeting m, ArrayList<Meeting> conflicts, ProfileController pc) {
-		this.m = m;
+	public HandleConflict(Meeting added, ArrayList<Meeting> conflicts, ProfileController pc) {
+		this.m = added;
 		this.conflicts = conflicts;
 	}
 
@@ -53,8 +54,15 @@ public class HandleConflict {
 
 		for (Meeting m : conflicts) {
 
-			oldListing.getChildren().add(
-					new Label(m.course + " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
+			if (m instanceof CourseMeeting) {
+
+				oldListing.getChildren().add(new Label(((CourseMeeting) m).course + " " + m.meetingType + ": " + m.start
+						+ " - " + m.end + " (" + m.date + ")"));
+			} else {
+
+				oldListing.getChildren()
+						.add(new Label(m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")"));
+			}
 		}
 
 		info.getChildren().addAll(newListing, oldListing);

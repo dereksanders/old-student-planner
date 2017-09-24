@@ -7,9 +7,6 @@ import java.util.ArrayList;
 
 import utility.Pretty;
 
-/**
- * The Class Meeting.
- */
 public class Meeting implements Comparable<Meeting>, Serializable {
 
 	/**
@@ -17,16 +14,17 @@ public class Meeting implements Comparable<Meeting>, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static String[] TYPES = { "Lecture", "Tutorial", "Lab", "Seminar" };
+	public static String[] TYPES = { "Club", "Work", "Recreation", "Other" };
 
+	public String name;
 	public String meetingType;
 	public LocalDate date;
 	public LocalTime start;
 	public LocalTime end;
 	public String location;
-	public Course course;
 	public MeetingSet set;
 	public String repeat;
+	public String color;
 
 	/**
 	 * Instantiates a new meeting.
@@ -42,8 +40,10 @@ public class Meeting implements Comparable<Meeting>, Serializable {
 	 * @param location
 	 *            the location
 	 */
-	public Meeting(Course course, String meetingType, LocalDate date, LocalTime start, LocalTime end, String location) {
-		this.course = course;
+	public Meeting(String name, String color, String meetingType, LocalDate date, LocalTime start, LocalTime end,
+			String location) {
+		this.name = name;
+		this.color = color;
 		this.meetingType = meetingType;
 		this.date = date;
 		this.start = start;
@@ -51,30 +51,19 @@ public class Meeting implements Comparable<Meeting>, Serializable {
 		this.location = location;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see java.lang.Object#toString()
-	 */
-	@Override
-	public String toString() {
-		return Pretty.prettyShortDate(this.date) + ", " + this.start + " - " + this.end + " in " + this.location + " ("
-				+ meetingType + ")";
-	}
-
 	/**
 	 * Tests for conflicts with the meetings provided and returns the conflicts.
 	 *
-	 * @param meetings
+	 * @param possibleConflicts
 	 *            the meetings
 	 * @return the conflicts
 	 */
-	public ArrayList<Meeting> conflictsWith(ArrayList<Meeting> meetings) {
+	public ArrayList<Meeting> conflictsWith(ArrayList<Meeting> possibleConflicts) {
 
 		ArrayList<Meeting> conflicts = new ArrayList<>();
-		conflicts.addAll(meetings);
+		conflicts.addAll(possibleConflicts);
 
-		for (Meeting m : meetings) {
+		for (Meeting m : possibleConflicts) {
 
 			if (!this.date.equals(m.date)) {
 				conflicts.remove(m);
@@ -100,7 +89,7 @@ public class Meeting implements Comparable<Meeting>, Serializable {
 
 		if (o instanceof Meeting) {
 			if (this.date.equals(((Meeting) o).date) && this.start.equals(((Meeting) o).start)
-					&& this.end.equals(((Meeting) o).end) && this.course.equals(((Meeting) o).course)) {
+					&& this.end.equals(((Meeting) o).end)) {
 				return true;
 			}
 		}
@@ -121,5 +110,16 @@ public class Meeting implements Comparable<Meeting>, Serializable {
 		} else {
 			return this.start.compareTo(o.start);
 		}
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see java.lang.Object#toString()
+	 */
+	@Override
+	public String toString() {
+		return Pretty.prettyShortDate(this.date) + ", " + this.start + " - " + this.end + " in " + this.location + " ("
+				+ meetingType + ")";
 	}
 }

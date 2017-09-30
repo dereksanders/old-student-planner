@@ -17,7 +17,7 @@ public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
 	public LocalDateTime start;
 	public LocalDateTime end;
 	/* Colour for personal calendar events */
-	public String colour = "ff7d00";
+	public String color = "ff7d00";
 	public double weight = 0;
 
 	/**
@@ -55,7 +55,7 @@ public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
 	public boolean equals(Object o) {
 		if (o instanceof CalendarEvent) {
 			return (this.name.equals(((CalendarEvent) o).name) && this.start.equals(((CalendarEvent) o).start)
-					&& this.colour.equals(((CalendarEvent) o).colour));
+					&& this.color.equals(((CalendarEvent) o).color));
 		}
 		return false;
 	}

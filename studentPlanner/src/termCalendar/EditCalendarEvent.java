@@ -118,7 +118,7 @@ public class EditCalendarEvent {
 		Button delete = new Button("Delete Event");
 		Style.setButtonStyle(delete);
 		delete.setOnAction(e -> {
-			controller.deleteEvent(controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.colour),
+			controller.deleteEvent(controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.color),
 					currentlySelected, date);
 			window.close();
 		});
@@ -147,11 +147,11 @@ public class EditCalendarEvent {
 	private void confirmChanges(LocalDate date) {
 		try {
 			if (currentlySelected instanceof CourseEvent) {
-				CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.colour,
+				CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 						Double.parseDouble(weight.getText()));
-				Course eventCourse = controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.colour);
+				Course eventCourse = controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.color);
 				controller.deleteEvent(eventCourse, currentlySelected, date);
 				controller.addEvent(eventCourse, edited, date);
 			} else {

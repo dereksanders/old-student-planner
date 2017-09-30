@@ -26,7 +26,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.*;
+import javafx.scene.shape.Rectangle;
 import model.CalendarEvent;
 import model.CourseEvent;
 import model.Profile;
@@ -211,9 +211,9 @@ public class TermCalendar extends View implements Observer {
 						PriorityQueue<CalendarEvent> ce = controller.profile.dateEvents.get(LocalDate.of(
 								term.start.plusMonths(i).getYear(), term.start.plusMonths(i).getMonthValue(), date));
 						if (ce != null && !ce.isEmpty()) {
-							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().colour + ";"
+							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().color + ";"
 									+ "-fx-background-radius: 0.0;");
-							if ((Color.web((ce.peek()).colour).getBrightness() < 0.7)) {
+							if ((Color.web((ce.peek()).color).getBrightness() < 0.7)) {
 								add.setStyle(add.getStyle() + "-fx-text-fill: #fff;");
 							} else {
 								add.setStyle(add.getStyle() + "-fx-text-fill: #000");
@@ -325,7 +325,7 @@ public class TermCalendar extends View implements Observer {
 					HBox eventListing = new HBox(5);
 
 					Rectangle eventIcon = new Rectangle(20, 20);
-					eventIcon.setFill(Color.web(e.colour));
+					eventIcon.setFill(Color.web(e.color));
 
 					Label eventDesc = new Label();
 

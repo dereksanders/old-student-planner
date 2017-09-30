@@ -313,6 +313,18 @@ public class ProfileController {
 					original.terms.get(i).courseColors.del(originalColor, original);
 					original.terms.get(i).courseColors.put(original.color, original);
 
+					/* Change the color of all of the course's meetings. */
+					for (MeetingSet ms : original.meetingSets) {
+						for (Meeting m : ms.getMeetings()) {
+							m.color = original.color;
+						}
+					}
+
+					/* Change the color of all of the course's events. */
+					for (CourseEvent e : original.events) {
+						e.color = original.color;
+					}
+
 				} else {
 					/*
 					 * Error Condition: Edited color is already in use by a course in one of the

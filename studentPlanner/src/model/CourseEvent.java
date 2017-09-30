@@ -34,7 +34,7 @@ public class CourseEvent extends CalendarEvent {
 
 		super(name, start, end);
 
-		this.colour = colour;
+		this.color = colour;
 		this.weight = weight;
 	}
 

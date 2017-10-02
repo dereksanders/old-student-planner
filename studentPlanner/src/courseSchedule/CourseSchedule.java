@@ -7,8 +7,9 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import core.Style;
 import core.Clock;
+import core.Listing;
+import core.Style;
 import core.Time;
 import core.View;
 import javafx.beans.value.ChangeListener;
@@ -28,7 +29,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import model.Course;
 import model.CourseMeeting;
 import model.Meeting;
@@ -161,8 +161,6 @@ public class CourseSchedule extends View implements Observer {
 
 		this.legend.getChildren().clear();
 
-		VBox allCourses = new VBox(10);
-
 		if (this.controller.profile.currentlySelectedTerm != null) {
 
 			if (this.controller.profile.currentlySelectedTerm.courses.size() > 0) {
@@ -178,17 +176,9 @@ public class CourseSchedule extends View implements Observer {
 
 			for (Course c : this.controller.profile.currentlySelectedTerm.courses) {
 
-				HBox courseListing = new HBox(5);
-				Rectangle courseIcon = new Rectangle(20, 20);
-				courseIcon.setFill(Color.web(c.color));
-				Label courseDesc = new Label(c.toString());
-				courseListing.getChildren().addAll(courseIcon, courseDesc);
-
-				allCourses.getChildren().add(courseListing);
+				legend.getChildren().add(new Listing(Color.web(c.color), c.toString()).show());
 			}
 		}
-
-		this.legend.getChildren().add(allCourses);
 	}
 
 	private void setTodaysMeetingList() {
@@ -210,15 +200,7 @@ public class CourseSchedule extends View implements Observer {
 
 				for (Meeting m : td) {
 
-					HBox meetingListing = new HBox(5);
-
-					Rectangle meetingIcon = new Rectangle(20, 20);
-					meetingIcon.setFill(Color.web(m.color));
-
-					Label meetingDesc = new Label(m.name + " " + m.meetingType + ": " + m.start + " - " + m.end);
-
-					meetingListing.getChildren().addAll(meetingIcon, meetingDesc);
-					todaysMeetingsList.getChildren().add(meetingListing);
+					todaysMeetingsList.getChildren().add(new Listing(Color.web(m.color), m.toString()).show());
 				}
 			}
 		}

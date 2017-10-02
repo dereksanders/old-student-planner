@@ -6,6 +6,7 @@ import java.util.Observer;
 import java.util.PriorityQueue;
 
 import core.Clock;
+import core.Listing;
 import core.Style;
 import core.View;
 import javafx.beans.property.BooleanProperty;
@@ -26,9 +27,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import model.CalendarEvent;
-import model.CourseEvent;
 import model.Profile;
 import model.Term;
 import utility.Pretty;
@@ -322,26 +321,7 @@ public class TermCalendar extends View implements Observer {
 
 				for (CalendarEvent e : controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i))) {
 
-					HBox eventListing = new HBox(5);
-
-					Rectangle eventIcon = new Rectangle(20, 20);
-					eventIcon.setFill(Color.web(e.color));
-
-					Label eventDesc = new Label();
-
-					if (e instanceof CourseEvent) {
-						if (e.start.equals(e.end)) {
-							eventDesc.setText(e.name + " (Due: " + e.start.toLocalTime() + ")");
-						} else {
-							eventDesc
-									.setText(e.name + " (" + e.start.toLocalTime() + " - " + e.end.toLocalTime() + ")");
-						}
-					} else {
-						eventDesc.setText(e.toString());
-					}
-
-					eventListing.getChildren().addAll(eventIcon, eventDesc);
-					this.upcomingEvents.getChildren().add(eventListing);
+					this.upcomingEvents.getChildren().add(new Listing(Color.web(e.color), e.toString()).show());
 				}
 			}
 		}

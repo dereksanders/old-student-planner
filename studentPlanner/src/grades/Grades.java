@@ -3,6 +3,7 @@ package grades;
 import java.util.Observable;
 import java.util.Observer;
 
+import core.Listing;
 import core.Style;
 import core.View;
 import javafx.beans.value.ChangeListener;
@@ -23,7 +24,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import model.Course;
 import model.CourseEvent;
 import model.Profile;
@@ -170,19 +170,10 @@ public class Grades extends View implements Observer {
 
 			Course sel = selected.courses.get(i);
 
-			HBox courseListing = new HBox(5);
-
-			Rectangle courseIcon = new Rectangle(20, 20);
-			courseIcon.setFill(Color.web(sel.color));
-
-			Label courseDesc = new Label(sel.toString());
-
-			courseListing.getChildren().addAll(courseIcon, courseDesc);
-
 			Label gradeSoFarDesc = new Label(sel.gradeSoFar + "%");
 			Label cumulativeGradeDesc = new Label(sel.cumulativeGrade + "%");
 
-			courseGrid.add(courseListing, 0, i + 1);
+			courseGrid.add(new Listing(Color.web(sel.color), sel.toString()).show(), 0, i + 1);
 			courseGrid.add(gradeSoFarDesc, 1, i + 1);
 			GridPane.setValignment(gradeSoFarDesc, VPos.TOP);
 			courseGrid.add(cumulativeGradeDesc, 2, i + 1);

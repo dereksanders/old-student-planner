@@ -28,6 +28,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.CalendarEvent;
+import model.CourseEvent;
 import model.Profile;
 import model.Term;
 import utility.Pretty;
@@ -251,8 +252,17 @@ public class TermCalendar extends View implements Observer {
 				area.getChildren().add(curBox);
 			}
 		}
+
 		termCalendar.setContent(area);
-		termCalendar.setStyle("-fx-padding: 10");
+		termCalendar.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+		if (numMonths > 4) {
+			termCalendar.setMinWidth(617);
+		} else {
+			termCalendar.setMinWidth(602);
+		}
+		termCalendar.setStyle(termCalendar.getStyle() + "-fx-padding: 10;");
+
 		updateUpcomingEvents();
 		return termCalendar;
 	}
@@ -321,7 +331,15 @@ public class TermCalendar extends View implements Observer {
 
 				for (CalendarEvent e : controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i))) {
 
-					this.upcomingEvents.getChildren().add(new Listing(Color.web(e.color), e.toString()).show());
+					if (e instanceof CourseEvent) {
+
+						this.upcomingEvents.getChildren().add(new Listing(Color.web(e.color),
+								((CourseEvent) e).course.toString() + " " + e.toString()).show());
+
+					} else {
+
+						this.upcomingEvents.getChildren().add(new Listing(Color.web(e.color), e.toString()).show());
+					}
 				}
 			}
 		}
@@ -338,7 +356,15 @@ public class TermCalendar extends View implements Observer {
 			if (((Profile) arg0).currentlySelectedTerm != null) {
 				selectedTermNotNull.set(true);
 				termViewBox.getChildren().clear();
-				termViewBox.getChildren().add(drawCalendar(((Profile) arg0).currentlySelectedTerm));
+
+				ScrollPane calendarScroll = drawCalendar(((Profile) arg0).currentlySelectedTerm);
+				// Style.addPadding(calendarScroll);
+				calendarScroll.setFitToWidth(true);
+
+				VBox calendar = new VBox();
+				calendar.getChildren().add(calendarScroll);
+
+				termViewBox.getChildren().add(calendar);
 				termViewBox.getChildren().add(upcomingLayout);
 			} else {
 				selectedTermNotNull.set(false);

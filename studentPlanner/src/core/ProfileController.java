@@ -498,8 +498,10 @@ public class ProfileController {
 
 		profile.dateEvents.put(date, added);
 
-		if (course != null) {
+		if (course != null && added instanceof CourseEvent) {
+
 			course.events.add((CourseEvent) added);
+			((CourseEvent) added).course = course;
 		}
 
 		profile.update();

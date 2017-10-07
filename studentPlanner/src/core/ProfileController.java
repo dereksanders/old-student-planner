@@ -303,44 +303,29 @@ public class ProfileController {
 		original.color = edited.color;
 
 		/* Check if the course's color was changed. */
-
 		if (!originalColor.equals(original.color)) {
 
-			for (int i = 0; i < original.terms.size(); i++) {
+			// If the new color is taken, keep prompting the user for another - the user
+			// should also be able to choose the original color again.
+			while (!originalColor.equals(original.color) && colorInUse(original)) {
+				original.color = promptNewColor(original.color);
+			}
 
-				if (original.terms.get(i).courseColors.get(original.color) == null) {
+			for (Term t : original.terms) {
+				t.courseColors.del(originalColor, original);
+				t.courseColors.put(original.color, original);
+			}
 
-					original.terms.get(i).courseColors.del(originalColor, original);
-					original.terms.get(i).courseColors.put(original.color, original);
-
-					/* Change the color of all of the course's meetings. */
-					for (MeetingSet ms : original.meetingSets) {
-						for (Meeting m : ms.getMeetings()) {
-							m.color = original.color;
-						}
-					}
-
-					/* Change the color of all of the course's events. */
-					for (CourseEvent e : original.events) {
-						e.color = original.color;
-					}
-
-				} else {
-					/*
-					 * Error Condition: Edited color is already in use by a course in one of the
-					 * course's terms. Need to revert changes to courseColors if any have been made
-					 * and reject changes. TODO: Better solution could be adding a listener to the
-					 * color picker to inform the user when this is the case.
-					 */
-					for (int j = 0; j < i; j++) {
-						original.terms.get(j).courseColors.del(original.color, original);
-						original.terms.get(j).courseColors.put(originalColor, original);
-					}
-					original.color = originalColor;
-					new Alert(AlertType.ERROR, "Edited color is already in use. Color change has been reverted.")
-							.showAndWait();
-					break;
+			/* Change the color of all of the course's meetings. */
+			for (MeetingSet ms : original.meetingSets) {
+				for (Meeting m : ms.getMeetings()) {
+					m.color = original.color;
 				}
+			}
+
+			/* Change the color of all of the course's events. */
+			for (CourseEvent e : original.events) {
+				e.color = original.color;
 			}
 		}
 

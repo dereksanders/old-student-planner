@@ -4,6 +4,7 @@ import core.Driver;
 import core.Style;
 import javafx.scene.Scene;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -28,6 +29,8 @@ public class PromptNewColor {
 
 		VBox elements = new VBox(10);
 
+		Label instructions = new Label("Please select a new color:");
+
 		ColorPicker cp = new ColorPicker();
 		cp.setValue(Color.web(this.color));
 		cp.setOnAction(e -> {
@@ -35,7 +38,8 @@ public class PromptNewColor {
 			window.close();
 		});
 
-		elements.getChildren().add(cp);
+		elements.getChildren().addAll(instructions, cp);
+		Style.addPadding(elements);
 		Scene scene = new Scene(elements);
 		window.setScene(scene);
 		window.showAndWait();

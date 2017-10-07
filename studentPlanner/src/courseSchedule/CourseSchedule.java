@@ -141,6 +141,10 @@ public class CourseSchedule extends View implements Observer {
 		HBox headerLayout = new HBox(20);
 		headerLayout.getChildren().addAll(title, showCurrentWeek, selectWeek);
 
+		// Add bottom padding.
+		int padding[] = { 0, 0, 5, 0 };
+		Style.addPadding(headerLayout, padding);
+
 		HBox optionsLayout = new HBox(20);
 		optionsLayout.getChildren().addAll(todaysMeetingsList);
 
@@ -151,6 +155,7 @@ public class CourseSchedule extends View implements Observer {
 		csbp.setBottom(optionsLayout);
 		csbp.setRight(legend);
 		BorderPane.setAlignment(legend, Pos.BOTTOM_LEFT);
+		BorderPane.setAlignment(scheduleScroll, Pos.BOTTOM_LEFT);
 
 		csbp.setStyle("-fx-background-color: #fff; -fx-padding: 10;");
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import core.Main;
 import core.ProfileController;
 import core.Style;
 import core.View;
@@ -12,17 +13,33 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import model.Profile;
 
 /**
  * The Class Planner.
  */
 public class Planner extends View implements Observer {
+
+	public enum VIEW_INDEX {
+		COURSE_SCHEDULE(0), TERM_CALENDAR(1), GRADES(2), GRADES_PLOT(3);
+
+		private int val;
+
+		private VIEW_INDEX(int val) {
+			this.val = val;
+		}
+	};
 
 	private volatile static Planner uniqueInstance;
 	private static int initialWidth = 940;
@@ -104,7 +121,84 @@ public class Planner extends View implements Observer {
 				viewPane.setCenter(views.get(newIndex.intValue()).mainLayout);
 			}
 		});
-		bp.setTop(chooseView);
+
+		VBox menu = new VBox(5);
+		menu.setBorder(new Border(Style.fullBorderStroke));
+		menu.setStyle(menu.getStyle()
+				+ "-fx-background-color: #eee; -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
+
+		int iconWidth = 120;
+		int iconHeight = 120;
+
+		VBox cs = new VBox(0);
+		Label csTitle = new Label("Course Schedule");
+		Style.setSmallTitleStyle(csTitle);
+
+		ImageView courseScheduleIcon = new ImageView();
+		courseScheduleIcon.setFitWidth(iconWidth);
+		courseScheduleIcon.setFitHeight(iconHeight);
+		courseScheduleIcon.setImage(new Image(Main.class.getResourceAsStream("courseSchedule.png")));
+
+		cs.setOnMouseClicked(e -> {
+			viewPane.setCenter(views.get(VIEW_INDEX.COURSE_SCHEDULE.val).mainLayout);
+		});
+
+		cs.getChildren().addAll(courseScheduleIcon, csTitle);
+		cs.setAlignment(Pos.CENTER);
+
+		VBox tc = new VBox(0);
+		Label tcTitle = new Label("Term Calendar");
+		Style.setSmallTitleStyle(tcTitle);
+
+		ImageView termCalendarIcon = new ImageView();
+		termCalendarIcon.setFitWidth(iconWidth);
+		termCalendarIcon.setFitHeight(iconHeight);
+		termCalendarIcon.setImage(new Image(Main.class.getResourceAsStream("termCalendar.png")));
+
+		tc.setOnMouseClicked(e -> {
+			viewPane.setCenter(views.get(VIEW_INDEX.TERM_CALENDAR.val).mainLayout);
+		});
+
+		tc.getChildren().addAll(termCalendarIcon, tcTitle);
+		tc.setAlignment(Pos.CENTER);
+
+		VBox g = new VBox(0);
+		Label gTitle = new Label("Grades");
+		Style.setSmallTitleStyle(gTitle);
+
+		ImageView gradesIcon = new ImageView();
+		gradesIcon.setFitWidth(iconWidth);
+		gradesIcon.setFitHeight(iconHeight);
+		gradesIcon.setImage(new Image(Main.class.getResourceAsStream("grades.png")));
+
+		g.setOnMouseClicked(e -> {
+			viewPane.setCenter(views.get(VIEW_INDEX.GRADES.val).mainLayout);
+		});
+
+		g.getChildren().addAll(gradesIcon, gTitle);
+		g.setAlignment(Pos.CENTER);
+
+		VBox gp = new VBox(0);
+		Label gpTitle = new Label("Grades Plot");
+		Style.setSmallTitleStyle(gpTitle);
+
+		ImageView gradesPlotIcon = new ImageView();
+		gradesPlotIcon.setFitWidth(iconWidth);
+		gradesPlotIcon.setFitHeight(iconHeight);
+		gradesPlotIcon.setImage(new Image(Main.class.getResourceAsStream("gradesPlot.png")));
+
+		gp.setOnMouseClicked(e -> {
+			viewPane.setCenter(views.get(VIEW_INDEX.GRADES_PLOT.val).mainLayout);
+		});
+
+		gp.getChildren().addAll(gradesPlotIcon, gpTitle);
+		gp.setAlignment(Pos.CENTER);
+
+		menu.getChildren().addAll(cs, tc, g, gp);
+
+		bp.setLeft(menu);
+
+		// bp.setTop(chooseView);
 		bp.setCenter(viewPane);
 		bp.setBottom(this.options);
 		return bp;

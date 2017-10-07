@@ -80,6 +80,10 @@ public class Style {
 		title.setStyle("-fx-font-size: 15.0pt;" + "-fx-text-fill: #00a300;" + "-fx-font-weight: bold;");
 	}
 
+	public static void setSmallTitleStyle(Label title) {
+		title.setStyle("-fx-font-size: 13.0pt;" + "-fx-text-fill: #00a300;" + "-fx-font-weight: bold;");
+	}
+
 	@SuppressWarnings("rawtypes")
 	public static void setChoiceBoxStyle(ChoiceBox box) {
 		box.setStyle(
@@ -94,6 +98,17 @@ public class Style {
 
 	public static void addPadding(Node n) {
 		n.setStyle(n.getStyle() + "-fx-padding: 10;");
+	}
+
+	public static void addPadding(Node n, int[] vals) {
+
+		if (vals.length < 4) {
+			System.out.println("Not enough arguments.");
+			return;
+		}
+
+		// TOP, RIGHT, BOTTOM, LEFT
+		n.setStyle(n.getStyle() + "-fx-padding: " + vals[0] + " " + vals[1] + " " + vals[2] + " " + vals[3] + ";");
 	}
 
 	/**

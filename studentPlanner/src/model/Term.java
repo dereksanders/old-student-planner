@@ -67,6 +67,8 @@ public class Term implements Comparable<Term>, Serializable {
 	 */
 	public void updateParams() {
 
+		System.out.println("Updating params..");
+
 		if (resetParams()) {
 			this.minStart = this.minStart.minusMinutes(30);
 			this.maxEnd = this.maxEnd.plusMinutes(30);
@@ -92,6 +94,7 @@ public class Term implements Comparable<Term>, Serializable {
 		for (MeetingSet ms : this.nonCourseMeetingSets) {
 			for (Meeting m : ms.getMeetings()) {
 				changesMade = true;
+				System.out.println("Adding params..");
 				addParams(m);
 			}
 		}
@@ -116,6 +119,9 @@ public class Term implements Comparable<Term>, Serializable {
 	 *            the meeting
 	 */
 	private void addParams(Meeting m) {
+
+		System.out.println("Meeting: " + m.start + ", " + m.end + ", " + m.date.getDayOfWeek().getValue());
+		System.out.println("Term: " + this.minStart + ", " + this.maxEnd + ", " + this.maxDay);
 
 		if (this.minStart.compareTo(m.start) > 0) {
 			this.minStart = m.start;

@@ -144,6 +144,8 @@ public class CourseScheduleController extends ProfileController {
 
 		if (deleted.getCourse() != null) {
 			deleted.getCourse().meetingSets.remove(deleted);
+		} else {
+			t.nonCourseMeetingSets.remove(deleted);
 		}
 
 		t.updateParams();

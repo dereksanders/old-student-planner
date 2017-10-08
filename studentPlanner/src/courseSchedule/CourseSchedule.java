@@ -3,6 +3,7 @@ package courseSchedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
@@ -196,14 +197,18 @@ public class CourseSchedule extends View implements Observer {
 			PriorityQueue<Meeting> td = controller.profile.currentlySelectedTerm.dayMeetings
 					.get(Clock.now.toLocalDate());
 
-			if (td != null && td.size() > 0) {
+			if (td != null && !td.isEmpty()) {
 
 				Label todaysMeetingsTitle = new Label("Today's Meetings");
 				Style.setTitleStyle(todaysMeetingsTitle);
 
 				todaysMeetingsList.getChildren().add(todaysMeetingsTitle);
 
-				for (Meeting m : td) {
+				ArrayList<Meeting> meetings = new ArrayList<>();
+				meetings.addAll(td);
+				meetings.sort(null);
+
+				for (Meeting m : meetings) {
 
 					todaysMeetingsList.getChildren().add(new Listing(Color.web(m.color), m.toString()).show());
 				}

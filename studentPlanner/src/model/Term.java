@@ -53,7 +53,7 @@ public class Term implements Comparable<Term>, Serializable {
 		this.courses = new ArrayList<>();
 		this.courseColors = new GenericHashTable<>(100);
 
-		this.dayMeetings = new GenericLinkedHashTable<>(300, true);
+		this.dayMeetings = new GenericLinkedHashTable<>(300, false);
 		this.nonCourseMeetingSets = new ArrayList<>();
 
 		/* Default course schedule params */

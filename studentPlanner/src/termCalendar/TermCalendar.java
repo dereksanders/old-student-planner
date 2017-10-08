@@ -1,6 +1,8 @@
 package termCalendar;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
@@ -117,6 +119,7 @@ public class TermCalendar extends View implements Observer {
 		header.getChildren().add(termCal);
 		tcbp.setTop(header);
 		tcbp.setCenter(termViewBox);
+		tcbp.setRight(upcomingLayout);
 
 		tcbp.setStyle("-fx-padding: 10;");
 
@@ -261,6 +264,7 @@ public class TermCalendar extends View implements Observer {
 		} else {
 			termCalendar.setMinWidth(602);
 		}
+
 		termCalendar.setStyle(termCalendar.getStyle() + "-fx-padding: 10;");
 
 		updateUpcomingEvents();
@@ -311,8 +315,9 @@ public class TermCalendar extends View implements Observer {
 
 		for (int i = 0; i <= controller.profile.showWithinThreshold; i++) {
 
-			if (controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i)) != null
-					&& !controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i)).isEmpty()) {
+			PriorityQueue<CalendarEvent> de = controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i));
+
+			if (de != null && !de.isEmpty()) {
 
 				Label dateOfEvents = new Label("");
 
@@ -329,7 +334,11 @@ public class TermCalendar extends View implements Observer {
 
 				this.upcomingEvents.getChildren().add(dateOfEvents);
 
-				for (CalendarEvent e : controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i))) {
+				ArrayList<CalendarEvent> events = new ArrayList<>();
+				events.addAll(de);
+				events.sort(Collections.reverseOrder());
+
+				for (CalendarEvent e : events) {
 
 					if (e instanceof CourseEvent) {
 
@@ -354,19 +363,20 @@ public class TermCalendar extends View implements Observer {
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Profile) {
 			if (((Profile) arg0).currentlySelectedTerm != null) {
+
 				selectedTermNotNull.set(true);
 				termViewBox.getChildren().clear();
 
 				ScrollPane calendarScroll = drawCalendar(((Profile) arg0).currentlySelectedTerm);
-				// Style.addPadding(calendarScroll);
 				calendarScroll.setFitToWidth(true);
 
 				VBox calendar = new VBox();
 				calendar.getChildren().add(calendarScroll);
 
 				termViewBox.getChildren().add(calendar);
-				termViewBox.getChildren().add(upcomingLayout);
+
 			} else {
+
 				selectedTermNotNull.set(false);
 			}
 		}

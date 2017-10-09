@@ -106,6 +106,18 @@ public class CourseScheduleController extends ProfileController {
 			added.getCourse().meetingSets.add(added);
 		} else {
 			t.nonCourseMeetingSets.add(added);
+
+			if (this.profile.recentlyUsedColors.contains(added.getColor())) {
+
+				this.profile.recentlyUsedColors.remove(added.getColor());
+			}
+
+			this.profile.recentlyUsedColors.add(0, added.getColor());
+
+			if (this.profile.recentlyUsedColors.size() > 5) {
+
+				this.profile.recentlyUsedColors.remove(5);
+			}
 		}
 
 		t.updateParams();

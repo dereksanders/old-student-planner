@@ -43,6 +43,18 @@ public class MeetingSet implements Serializable {
 		return this.meetings;
 	}
 
+	public String getColor() {
+
+		if (this.meetings.size() > 0) {
+
+			return this.meetings.get(0).color;
+
+		} else {
+
+			return null;
+		}
+	}
+
 	public Course getCourse() {
 
 		if (this.meetings.size() > 0) {

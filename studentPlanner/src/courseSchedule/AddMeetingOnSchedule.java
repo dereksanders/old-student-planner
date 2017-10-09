@@ -28,6 +28,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
@@ -101,6 +102,24 @@ public class AddMeetingOnSchedule {
 		chooseColor.setValue(Style.randomColor());
 		chooseColor.setMinHeight(35);
 
+		HBox recentColors = new HBox(5);
+		Label recent = new Label("Recent Colors:");
+		recentColors.getChildren().add(recent);
+
+		for (int i = 0; i < this.pc.profile.recentlyUsedColors.size(); i++) {
+
+			Rectangle r = new Rectangle(30, 30);
+			r.setFill(Color.web(this.pc.profile.recentlyUsedColors.get(i)));
+
+			final int index = i;
+
+			r.setOnMouseClicked(e -> {
+				chooseColor.setValue(Color.web(this.pc.profile.recentlyUsedColors.get(index)));
+			});
+
+			recentColors.getChildren().add(r);
+		}
+
 		isCourseMeeting.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
@@ -111,6 +130,7 @@ public class AddMeetingOnSchedule {
 					courseLabel.setVisible(true);
 					chooseCourse.setVisible(true);
 					chooseColor.setVisible(false);
+					recentColors.setVisible(false);
 					meetingType.setItems(FXCollections.observableArrayList(CourseMeeting.TYPES));
 					meetingType.setValue(FXCollections.observableArrayList(CourseMeeting.TYPES).get(0));
 
@@ -120,6 +140,7 @@ public class AddMeetingOnSchedule {
 					courseLabel.setVisible(false);
 					chooseCourse.setVisible(false);
 					chooseColor.setVisible(true);
+					recentColors.setVisible(true);
 					meetingType.setItems(FXCollections.observableArrayList(Meeting.TYPES));
 					meetingType.setValue(FXCollections.observableArrayList(Meeting.TYPES).get(0));
 				}
@@ -129,6 +150,7 @@ public class AddMeetingOnSchedule {
 		if (this.pc.currentlySelectedTermCoursesExist()) {
 			chooseCourse.setValue(pc.profile.currentlySelectedTerm.courses.get(0));
 			chooseColor.setVisible(false);
+			recentColors.setVisible(false);
 		} else {
 			chooseCourse.setVisible(false);
 			isCourseMeeting.setSelected(false);
@@ -176,16 +198,16 @@ public class AddMeetingOnSchedule {
 
 		DatePicker endDate = new DatePicker();
 		endDate.setValue(pc.profile.currentlySelectedTerm.end);
-		// endDate.setVisible(false);
+		endDate.setDisable(true);
 
 		toEndOfTerm.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
 				if (newVal) {
-					// endDate.setVisible(false);
+					endDate.setDisable(true);
 					endDate.setValue(pc.profile.currentlySelectedTerm.end);
 				} else {
-					endDate.setVisible(true);
+					endDate.setDisable(false);
 				}
 			}
 		});
@@ -340,6 +362,9 @@ public class AddMeetingOnSchedule {
 		HBox courseAndType = new HBox(20);
 		courseAndType.getChildren().addAll(courseDecision, typeDecision);
 
+		HBox colorDecision = new HBox(20);
+		colorDecision.getChildren().addAll(chooseColor, recentColors);
+
 		locField.setPromptText("Enter Meeting Location");
 
 		VBox titleDecision = new VBox(20);
@@ -349,7 +374,7 @@ public class AddMeetingOnSchedule {
 		ScrollPane scroll = new ScrollPane();
 
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, courseAndType, titleField, chooseColor, dateDecision, hour, selectTimes,
+		options.getChildren().addAll(header, courseAndType, titleField, colorDecision, dateDecision, hour, selectTimes,
 				locField, rep, chooseRepeat, decisions);
 
 		scroll.setContent(options);

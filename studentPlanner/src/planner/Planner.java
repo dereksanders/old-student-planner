@@ -42,7 +42,7 @@ public class Planner extends View implements Observer {
 	};
 
 	private volatile static Planner uniqueInstance;
-	private static int initialWidth = 1100;
+	private static int initialWidth = 1050;
 	private static int initialHeight = 800;
 
 	public ProfileController pc;

@@ -25,6 +25,7 @@ import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.Course;
@@ -135,10 +136,29 @@ public class EditSet {
 		chooseColor.setValue(Color.web(selected.color));
 		chooseColor.setMinHeight(35);
 
+		HBox recentColors = new HBox(5);
+		Label recent = new Label("Recent Colors:");
+		recentColors.getChildren().add(recent);
+
+		for (int i = 0; i < this.pc.profile.recentlyUsedColors.size(); i++) {
+
+			Rectangle r = new Rectangle(30, 30);
+			r.setFill(Color.web(this.pc.profile.recentlyUsedColors.get(i)));
+
+			final int index = i;
+
+			r.setOnMouseClicked(e -> {
+				chooseColor.setValue(Color.web(this.pc.profile.recentlyUsedColors.get(index)));
+			});
+
+			recentColors.getChildren().add(r);
+		}
+
 		if (selected instanceof CourseMeeting) {
 			chooseCourse.setValue(((CourseMeeting) selected).course);
 			titleField.setVisible(false);
 			chooseColor.setVisible(false);
+			recentColors.setVisible(false);
 		} else {
 			chooseCourse.setVisible(false);
 			course.setVisible(false);
@@ -314,9 +334,12 @@ public class EditSet {
 		VBox body = new VBox();
 		ScrollPane scroll = new ScrollPane();
 
+		HBox colorDecision = new HBox(20);
+		colorDecision.getChildren().addAll(chooseColor, recentColors);
+
 		VBox options = new VBox(20);
-		options.getChildren().addAll(header, courseAndTypeSelection, titleField, chooseColor, dates, hour, selectTimes,
-				rep, chooseRepeat, locField, decisions, error);
+		options.getChildren().addAll(header, courseAndTypeSelection, titleField, colorDecision, dates, hour,
+				selectTimes, rep, chooseRepeat, locField, decisions, error);
 
 		scroll.setContent(options);
 		Style.addPadding(scroll);

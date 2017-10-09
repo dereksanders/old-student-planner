@@ -184,6 +184,22 @@ public class EditSet {
 				MeetingSet.BIWEEKLY_REPEAT, MeetingSet.MONTHLY_REPEAT, MeetingSet.NO_REPEAT);
 		ChoiceBox<String> chooseRepeat = new ChoiceBox<>(repeatOptions);
 		Style.setChoiceBoxStyle(chooseRepeat);
+
+		chooseRepeat.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
+				if (repeatOptions.get(current.intValue()).equals(MeetingSet.NO_REPEAT)) {
+					toEndOfTerm.setVisible(false);
+					endDateLabel.setVisible(false);
+					endDate.setVisible(false);
+				} else {
+					toEndOfTerm.setVisible(true);
+					endDateLabel.setVisible(true);
+					endDate.setVisible(true);
+				}
+			}
+		});
+
 		chooseRepeat.setValue(pastSelectedSet.repeat);
 
 		HBox selectTimes = new HBox();

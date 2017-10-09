@@ -260,6 +260,11 @@ public class AddMeetingOnSchedule {
 				if (repeatOptions.get(current.intValue()).equals(MeetingSet.NO_REPEAT)) {
 					toEndOfTerm.setVisible(false);
 					endDateLabel.setVisible(false);
+					endDate.setVisible(false);
+				} else {
+					toEndOfTerm.setVisible(true);
+					endDateLabel.setVisible(true);
+					endDate.setVisible(true);
 				}
 			}
 		});

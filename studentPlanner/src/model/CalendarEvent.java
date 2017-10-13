@@ -43,7 +43,15 @@ public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
 	 */
 	@Override
 	public String toString() {
-		return this.name + " (" + this.start.toLocalTime() + " - " + this.end.toLocalTime() + ")";
+		String desc = name;
+
+		if (this.start.equals(this.end)) {
+			desc += " (" + this.start.toLocalTime() + ")";
+		} else {
+			desc += " (" + this.start.toLocalTime() + " - " + this.end.toLocalTime() + ")";
+		}
+
+		return desc;
 	}
 
 	/*

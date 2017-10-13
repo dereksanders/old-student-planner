@@ -101,12 +101,16 @@ public class EditCalendarEvent {
 		startTime.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
-				selectTimes.getChildren().remove(endTime);
-				ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
-				newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
-				endTime = new ComboBox<>(newEndTimes);
-				Style.setComboBoxStyle(endTime);
-				selectTimes.getChildren().add(endTime);
+
+				if (currentlySelected != null && !currentlySelected.start.equals(currentlySelected.end)) {
+
+					selectTimes.getChildren().remove(endTime);
+					ObservableList<Time> newEndTimes = FXCollections.observableArrayList();
+					newEndTimes.addAll(times.subList(current.intValue() + 1, times.size()));
+					endTime = new ComboBox<>(newEndTimes);
+					Style.setComboBoxStyle(endTime);
+					selectTimes.getChildren().add(endTime);
+				}
 			}
 		});
 		startTime.setValue(times.get(17));
@@ -145,23 +149,63 @@ public class EditCalendarEvent {
 	 *            the date
 	 */
 	private void confirmChanges(LocalDate date) {
+
 		try {
-			if (currentlySelected instanceof CourseEvent) {
-				CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
-						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-						Double.parseDouble(weight.getText()));
-				Course eventCourse = controller.profile.currentlySelectedTerm.courseColors.get(currentlySelected.color);
-				controller.deleteEvent(eventCourse, currentlySelected, date);
-				controller.addEvent(eventCourse, edited, date);
+
+			if (currentlySelected.start.equals(currentlySelected.end)) {
+
+				if (currentlySelected instanceof CourseEvent) {
+
+					CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
+							LocalDateTime.of(date,
+									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+							LocalDateTime.of(date,
+									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+							Double.parseDouble(weight.getText()));
+					Course eventCourse = controller.profile.currentlySelectedTerm.courseColors
+							.get(currentlySelected.color);
+					controller.deleteEvent(eventCourse, currentlySelected, date);
+					controller.addEvent(eventCourse, edited, date);
+
+				} else {
+
+					CalendarEvent edited = new CalendarEvent(name.getText(),
+							LocalDateTime.of(date,
+									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+							LocalDateTime.of(date,
+									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)));
+					controller.deleteEvent(null, currentlySelected, date);
+					controller.addEvent(null, edited, date);
+
+				}
+
 			} else {
-				CalendarEvent edited = new CalendarEvent(name.getText(),
-						LocalDateTime.of(date, LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-						LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)));
-				controller.deleteEvent(null, currentlySelected, date);
-				controller.addEvent(null, edited, date);
+
+				if (currentlySelected instanceof CourseEvent) {
+
+					CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
+							LocalDateTime.of(date,
+									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+							LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)),
+							Double.parseDouble(weight.getText()));
+					Course eventCourse = controller.profile.currentlySelectedTerm.courseColors
+							.get(currentlySelected.color);
+					controller.deleteEvent(eventCourse, currentlySelected, date);
+					controller.addEvent(eventCourse, edited, date);
+
+				} else {
+
+					CalendarEvent edited = new CalendarEvent(name.getText(),
+							LocalDateTime.of(date,
+									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
+							LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)));
+					controller.deleteEvent(null, currentlySelected, date);
+					controller.addEvent(null, edited, date);
+				}
 			}
+
 		} catch (NumberFormatException e) {
+
 			error.setText("Weight must be a valid decimal number.");
 		}
 	}
@@ -174,7 +218,7 @@ public class EditCalendarEvent {
 	 */
 	private void updateCurrentlySelected(CalendarEvent e) {
 		currentlySelected = e;
-		if (currentlySelected instanceof CourseEvent) {
+		if (e.start.equals(e.end)) {
 			current.setText(currentlySelected.name);
 			time.setText("Due Time: ");
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
@@ -182,7 +226,7 @@ public class EditCalendarEvent {
 			endTime.setVisible(false);
 			weight.setVisible(true);
 		} else {
-			current.setText("Personal Event");
+			current.setText(currentlySelected.name);
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
 			endTime.setVisible(true);
 			endTime.setValue(new Time(currentlySelected.end.getHour(), currentlySelected.end.getMinute()));

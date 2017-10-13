@@ -12,6 +12,8 @@ public class CourseEvent extends CalendarEvent {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public static String[] TYPES = { "Assignment", "Test", "Other" };
+
 	public double grade = 0;
 	public boolean gradeEntered = false;
 	public Course course;
@@ -36,15 +38,5 @@ public class CourseEvent extends CalendarEvent {
 
 		this.color = colour;
 		this.weight = weight;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see model.CalendarEvent#toString()
-	 */
-	@Override
-	public String toString() {
-		return name;
 	}
 }

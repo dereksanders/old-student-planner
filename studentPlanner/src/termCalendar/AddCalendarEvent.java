@@ -13,6 +13,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -63,7 +64,7 @@ public class AddCalendarEvent {
 
 		Label dateLabel = new Label(date.toString());
 		ObservableList<String> types = FXCollections.observableArrayList();
-		types.addAll("Test", "Assignment", "Personal");
+		types.addAll(CourseEvent.TYPES);
 
 		/* Times drop-down */
 		ObservableList<Time> times = FXCollections.observableArrayList();
@@ -91,6 +92,9 @@ public class AddCalendarEvent {
 		ChoiceBox<String> typeChoice = new ChoiceBox<>(types);
 		Style.setChoiceBoxStyle(typeChoice);
 
+		CheckBox personal = new CheckBox();
+		personal.setText("Personal Event");
+
 		TextField name = new TextField();
 		name.setPromptText(typeChoice.getValue() + " title");
 		TextField weight = new TextField();
@@ -105,6 +109,30 @@ public class AddCalendarEvent {
 		Style.setComboBoxStyle(endTimes);
 		selectTime.getChildren().addAll(startTimes, dash, endTimes);
 
+		dash.setVisible(false);
+		endTimes.setVisible(false);
+
+		CheckBox timeRange = new CheckBox();
+		timeRange.setText("Time Range");
+
+		timeRange.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
+				if (newVal) {
+					endTimes.setVisible(true);
+					dash.setVisible(true);
+
+					startTimes.getSelectionModel().selectNext();
+					updateEndTimes = true;
+					startTimes.getSelectionModel().selectPrevious();
+				} else {
+					endTimes.setVisible(false);
+					dash.setVisible(false);
+					updateEndTimes = false;
+				}
+			}
+		});
+
 		typeChoice.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
@@ -112,39 +140,40 @@ public class AddCalendarEvent {
 				name.setPromptText(types.get(current.intValue()) + " title");
 
 				if (types.get(current.intValue()).equals("Personal")) {
-					startTime.setText("Time:");
-					cChoice.setVisible(false);
-					weight.setVisible(false);
-					endTimes.setVisible(true);
-					dash.setVisible(true);
-
-					startTimes.getSelectionModel().selectNext();
-					updateEndTimes = true;
-					startTimes.getSelectionModel().selectPrevious();
 
 				} else if (types.get(current.intValue()).equals("Assignment")) {
 					cChoice.setVisible(true);
 					weight.setVisible(true);
 					startTime.setText("Due Time:");
-					endTimes.setVisible(false);
-					dash.setVisible(false);
-
-					updateEndTimes = false;
+					timeRange.setSelected(false);
 
 				} else if (types.get(current.intValue()).equals("Test")) {
 
 					cChoice.setVisible(true);
 					weight.setVisible(true);
 					startTime.setText("Time:");
-					endTimes.setVisible(true);
-					dash.setVisible(true);
-
-					startTimes.getSelectionModel().selectNext();
-					updateEndTimes = true;
-					startTimes.getSelectionModel().selectPrevious();
+					timeRange.setSelected(true);
 				}
 
 				weight.setPromptText(types.get(current.intValue()) + " weight %");
+			}
+		});
+
+		personal.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
+				if (newVal) {
+					name.setPromptText("Event name");
+					startTime.setText("Time:");
+					cChoice.setVisible(false);
+					typeChoice.setVisible(false);
+					weight.setVisible(false);
+				} else {
+					cChoice.setVisible(true);
+					typeChoice.setVisible(true);
+					typeChoice.setValue(types.get(0));
+					weight.setVisible(true);
+				}
 			}
 		});
 
@@ -174,50 +203,74 @@ public class AddCalendarEvent {
 
 		addEvent.setOnAction(e -> {
 			boolean success = false;
-			if (typeChoice.getValue().equals("Assignment")) {
-				try {
-					/* Add course event */
-					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
+			if (timeRange.isSelected()) {
+
+				if (personal.isSelected()) {
+
+					CalendarEvent add = new CalendarEvent(name.getText(),
 							LocalDateTime.of(date,
 									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-							LocalDateTime.of(date,
-									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-							Double.parseDouble(weight.getText()));
-					controller.addEvent(cChoice.getValue(), add, date);
+							LocalDateTime.of(date, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
+					controller.addEvent(null, add, date);
 					success = true;
-				} catch (NumberFormatException er) {
-					error.setText("Weight must be a valid decimal number.");
+
+				} else {
+
+					try {
+						/* Add course event */
+						CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
+								LocalDateTime.of(date,
+										LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+								LocalDateTime.of(date,
+										LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)),
+								Double.parseDouble(weight.getText()));
+						controller.addEvent(cChoice.getValue(), add, date);
+						success = true;
+					} catch (NumberFormatException er) {
+						error.setText("Weight must be a valid decimal number.");
+					}
 				}
 
-			} else if (typeChoice.getValue().equals("Test")) {
-				try {
-					/* Add course event */
-					CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
+			} else {
+
+				if (personal.isSelected()) {
+
+					CalendarEvent add = new CalendarEvent(name.getText(),
 							LocalDateTime.of(date,
 									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-							LocalDateTime.of(date, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)),
-							Double.parseDouble(weight.getText()));
-					controller.addEvent(cChoice.getValue(), add, date);
+							LocalDateTime.of(date,
+									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)));
+					controller.addEvent(null, add, date);
 					success = true;
-				} catch (NumberFormatException er) {
-					error.setText("Weight must be a valid decimal number.");
-				}
 
-			} else if (typeChoice.getValue().equals("Personal")) {
-				/* Add calendar event */
-				CalendarEvent add = new CalendarEvent(name.getText(),
-						LocalDateTime.of(date, LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
-						LocalDateTime.of(date, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
-				controller.addEvent(null, add, date);
-				success = true;
+				} else {
+
+					try {
+						/* Add course event */
+						CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
+								LocalDateTime.of(date,
+										LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+								LocalDateTime.of(date,
+										LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
+								Double.parseDouble(weight.getText()));
+						controller.addEvent(cChoice.getValue(), add, date);
+						success = true;
+					} catch (NumberFormatException er) {
+						error.setText("Weight must be a valid decimal number.");
+					}
+				}
 			}
 			if (success) {
 				window.close();
 			}
 		});
+
+		HBox courseAndType = new HBox(10);
+		courseAndType.getChildren().addAll(cChoice, typeChoice);
+
 		VBox options = new VBox(20);
-		options.getChildren().addAll(dateLabel, cChoice, typeChoice, name, startTime, selectTime, weight, addEvent,
-				error);
+		options.getChildren().addAll(dateLabel, courseAndType, personal, name, startTime, selectTime, timeRange, weight,
+				addEvent, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);

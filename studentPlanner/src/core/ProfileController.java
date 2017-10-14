@@ -166,6 +166,13 @@ public class ProfileController {
 	public void deleteTerm(Term deleted) {
 
 		this.profile.terms.remove(deleted);
+
+		if (this.profile.terms.isEmpty()) {
+			setCurrentlySelectedDate(Clock.now.toLocalDate());
+		} else {
+			setCurrentlySelectedDate(this.profile.terms.get(0).start);
+		}
+
 		this.profile.update();
 	}
 

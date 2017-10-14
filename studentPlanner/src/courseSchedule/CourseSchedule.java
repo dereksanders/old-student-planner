@@ -169,6 +169,9 @@ public class CourseSchedule extends View implements Observer {
 
 		if (this.controller.profile.currentlySelectedTerm != null) {
 
+			this.legend.setVisible(true);
+			this.legend.setManaged(true);
+
 			if (this.controller.profile.currentlySelectedTerm.courses.size() > 0) {
 				Label legendTitle = new Label("Legend");
 				Style.setTitleStyle(legendTitle);
@@ -184,6 +187,11 @@ public class CourseSchedule extends View implements Observer {
 
 				legend.getChildren().add(new Listing(Color.web(c.color), c.toString()).show());
 			}
+
+		} else {
+
+			this.legend.setVisible(false);
+			this.legend.setManaged(false);
 		}
 	}
 

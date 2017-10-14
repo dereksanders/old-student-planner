@@ -15,52 +15,54 @@ import javafx.scene.paint.Color;
 
 public class Style {
 
+	static Color borderColor = Color.DARKGREY;
+
 	/* All styles of border strokes that are used in the application */
-	public static BorderStroke fullBorderStroke = new BorderStroke(Color.BLACK, BorderStrokeStyle.SOLID,
+	public static BorderStroke fullBorderStroke = new BorderStroke(borderColor, BorderStrokeStyle.SOLID,
 			CornerRadii.EMPTY, BorderStroke.THIN);
 
-	public static BorderStroke noRightBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
+	public static BorderStroke noRightBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK,
+	public static BorderStroke noLeftBorderStroke = new BorderStroke(borderColor, borderColor, borderColor, borderColor,
 			BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
 			CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noTopLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID,
+	public static BorderStroke noTopLeftBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noTopBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK, Color.BLACK,
+	public static BorderStroke noTopBorderStroke = new BorderStroke(borderColor, borderColor, borderColor, borderColor,
 			BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID,
 			CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noTopRightBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
+	public static BorderStroke noTopRightBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noTopRightLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
+	public static BorderStroke noTopRightLeftBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.NONE, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noTopBottomBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+	public static BorderStroke noTopBottomBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
 			BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noTopBottomLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+	public static BorderStroke noTopBottomLeftBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noBottomBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+	public static BorderStroke noBottomBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
 			BorderStrokeStyle.SOLID, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noBottomLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
+	public static BorderStroke noBottomLeftBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.SOLID, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static BorderStroke noRightLeftBorderStroke = new BorderStroke(Color.BLACK, Color.BLACK, Color.BLACK,
-			Color.BLACK, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
+	public static BorderStroke noRightLeftBorderStroke = new BorderStroke(borderColor, borderColor, borderColor,
+			borderColor, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
 	public static Color appGrey = Color.web("0xdddddd");

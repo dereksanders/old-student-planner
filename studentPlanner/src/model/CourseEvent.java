@@ -32,11 +32,10 @@ public class CourseEvent extends CalendarEvent {
 	 * @param weight
 	 *            the weight
 	 */
-	public CourseEvent(String name, String colour, LocalDateTime start, LocalDateTime end, double weight) {
+	public CourseEvent(String name, String color, LocalDateTime start, LocalDateTime end, double weight) {
 
-		super(name, start, end);
+		super(name, color, start, end);
 
-		this.color = colour;
 		this.weight = weight;
 	}
 }

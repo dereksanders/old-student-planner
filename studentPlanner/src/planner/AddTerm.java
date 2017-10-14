@@ -5,6 +5,8 @@ import java.time.LocalDate;
 import core.Driver;
 import core.ProfileController;
 import core.Style;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.DatePicker;
@@ -60,6 +62,16 @@ public class AddTerm {
 		Button add = new Button("Add Term");
 		Style.setButtonStyle(add);
 		Label error = new Label();
+
+		startDate.valueProperty().addListener(new ChangeListener<LocalDate>() {
+			@Override
+			public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldDate, LocalDate newDate) {
+
+				if (endDate.getValue() == null || endDate.getValue().isBefore(newDate)) {
+					endDate.setValue(newDate);
+				}
+			}
+		});
 
 		add.setOnAction(e -> {
 			if (startDate.getValue() == null || endDate.getValue() == null) {

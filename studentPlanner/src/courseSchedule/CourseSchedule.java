@@ -143,8 +143,8 @@ public class CourseSchedule extends View implements Observer {
 		headerLayout.getChildren().addAll(title, showCurrentWeek, selectWeek);
 
 		// Add bottom padding.
-		int padding[] = { 0, 0, 5, 0 };
-		Style.addPadding(headerLayout, padding);
+		// int padding[] = { 0, 0, 5, 0 };
+		// Style.addPadding(headerLayout, padding);
 
 		HBox optionsLayout = new HBox(20);
 		optionsLayout.getChildren().addAll(todaysMeetingsList);
@@ -311,6 +311,7 @@ public class CourseSchedule extends View implements Observer {
 				if (Clock.now.isAfter(cell)) {
 					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #"
 							+ Style.colorToHex(Style.appGrey) + ";");
+
 				} else {
 					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #fff;");
 				}

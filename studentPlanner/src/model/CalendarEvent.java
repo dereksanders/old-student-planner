@@ -14,10 +14,9 @@ public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public String name;
+	public String color;
 	public LocalDateTime start;
 	public LocalDateTime end;
-	/* Colour for personal calendar events */
-	public String color = "ff7d00";
 	public double weight = 0;
 
 	/**
@@ -30,8 +29,9 @@ public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
 	 * @param end
 	 *            the end
 	 */
-	public CalendarEvent(String name, LocalDateTime start, LocalDateTime end) {
+	public CalendarEvent(String name, String color, LocalDateTime start, LocalDateTime end) {
 		this.name = name;
+		this.color = color;
 		this.start = start;
 		this.end = end;
 	}

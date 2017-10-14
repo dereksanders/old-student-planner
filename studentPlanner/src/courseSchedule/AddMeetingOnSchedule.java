@@ -339,35 +339,35 @@ public class AddMeetingOnSchedule {
 			window.close();
 		});
 
-		HBox decisions = new HBox(20);
+		HBox decisions = new HBox(10);
 		decisions.getChildren().addAll(cancel, confirm);
 
 		decisions.setMinHeight(40);
 
-		VBox courseDecision = new VBox(20);
+		VBox courseDecision = new VBox(10);
 		courseDecision.getChildren().addAll(courseLabel, chooseCourse, isCourseMeeting);
 
-		VBox typeDecision = new VBox(20);
+		VBox typeDecision = new VBox(10);
 		typeDecision.getChildren().addAll(typeLabel, meetingType, other);
 
-		VBox startDecision = new VBox(20);
+		VBox startDecision = new VBox(10);
 		startDecision.getChildren().addAll(startDateLabel, startDate);
 
-		VBox endDecision = new VBox(20);
+		VBox endDecision = new VBox(10);
 		endDecision.getChildren().addAll(endDateLabel, endDate, toEndOfTerm);
 
-		HBox dateDecision = new HBox(20);
+		HBox dateDecision = new HBox(10);
 		dateDecision.getChildren().addAll(startDecision, endDecision);
 
-		HBox courseAndType = new HBox(20);
+		HBox courseAndType = new HBox(10);
 		courseAndType.getChildren().addAll(courseDecision, typeDecision);
 
-		HBox colorDecision = new HBox(20);
+		HBox colorDecision = new HBox(10);
 		colorDecision.getChildren().addAll(chooseColor, recentColors);
 
 		locField.setPromptText("Enter Meeting Location");
 
-		VBox titleDecision = new VBox(20);
+		VBox titleDecision = new VBox(10);
 		titleDecision.getChildren().addAll(titleField);
 
 		VBox body = new VBox();

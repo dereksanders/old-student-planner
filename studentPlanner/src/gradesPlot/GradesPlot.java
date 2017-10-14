@@ -17,7 +17,7 @@ public class GradesPlot extends View implements Observer {
 	private Observable observable;
 	private GradesPlotController controller;
 
-	private static LineChart<String, Number> lineChart;
+	private static LineChart<String, Number> termGrades;
 
 	public GradesPlot(GradesPlotController controller) {
 
@@ -40,33 +40,33 @@ public class GradesPlot extends View implements Observer {
 		NumberAxis yAxis = new NumberAxis();
 		yAxis.setLabel("Grade %");
 
-		lineChart = new LineChart<String, Number>(xAxis, yAxis);
-		lineChart.setTitle("Grade Monitoring");
+		termGrades = new LineChart<String, Number>(xAxis, yAxis);
+		termGrades.setTitle("Term Averages");
 
 		XYChart.Series<String, Number> series = new XYChart.Series<>();
 		series.setName("My grades");
-		lineChart.setLegendVisible(false);
+		termGrades.setLegendVisible(false);
 
 		for (Term t : controller.profile.terms) {
 			series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
 		}
 
-		lineChart.getData().add(series);
-		gpbp.setCenter(lineChart);
+		termGrades.getData().add(series);
+		gpbp.setCenter(termGrades);
 		return gpbp;
 	}
 
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Profile) {
-			XYChart.Series<String, Number> series = new XYChart.Series<>();
+			XYChart.Series<String, Number> grades = new XYChart.Series<>();
 
 			for (Term t : controller.profile.terms) {
-				series.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
+				grades.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
 			}
 
-			lineChart.getData().clear();
-			lineChart.getData().add(series);
+			termGrades.getData().clear();
+			termGrades.getData().add(grades);
 		}
 	}
 

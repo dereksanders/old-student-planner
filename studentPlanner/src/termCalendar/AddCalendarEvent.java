@@ -15,12 +15,15 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.CalendarEvent;
@@ -95,6 +98,32 @@ public class AddCalendarEvent {
 		CheckBox personal = new CheckBox();
 		personal.setText("Personal Event");
 
+		personal.setSelected(false);
+
+		ColorPicker chooseColor = new ColorPicker();
+		chooseColor.setValue(Style.randomColor());
+
+		HBox recentColors = new HBox(5);
+		Label recent = new Label("Recent Colors:");
+		recentColors.getChildren().add(recent);
+
+		chooseColor.setVisible(false);
+		recentColors.setVisible(false);
+
+		for (int i = 0; i < this.controller.profile.recentlyUsedColors.size(); i++) {
+
+			Rectangle r = new Rectangle(30, 30);
+			r.setFill(Color.web(this.controller.profile.recentlyUsedColors.get(i)));
+
+			final int index = i;
+
+			r.setOnMouseClicked(e -> {
+				chooseColor.setValue(Color.web(this.controller.profile.recentlyUsedColors.get(index)));
+			});
+
+			recentColors.getChildren().add(r);
+		}
+
 		TextField name = new TextField();
 		name.setPromptText(typeChoice.getValue() + " title");
 		TextField weight = new TextField();
@@ -164,12 +193,17 @@ public class AddCalendarEvent {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
 				if (newVal) {
 					name.setPromptText("Event name");
+					chooseColor.setVisible(true);
+					recentColors.setVisible(true);
 					startTime.setText("Time:");
 					cChoice.setVisible(false);
 					typeChoice.setVisible(false);
 					weight.setVisible(false);
+
 				} else {
 					cChoice.setVisible(true);
+					chooseColor.setVisible(false);
+					recentColors.setVisible(false);
 					typeChoice.setVisible(true);
 					typeChoice.setValue(types.get(0));
 					weight.setVisible(true);
@@ -207,7 +241,7 @@ public class AddCalendarEvent {
 
 				if (personal.isSelected()) {
 
-					CalendarEvent add = new CalendarEvent(name.getText(),
+					CalendarEvent add = new CalendarEvent(name.getText(), Style.colorToHex(chooseColor.getValue()),
 							LocalDateTime.of(date,
 									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 							LocalDateTime.of(date, LocalTime.of(endTimes.getValue().hour, endTimes.getValue().minute)));
@@ -235,7 +269,7 @@ public class AddCalendarEvent {
 
 				if (personal.isSelected()) {
 
-					CalendarEvent add = new CalendarEvent(name.getText(),
+					CalendarEvent add = new CalendarEvent(name.getText(), Style.colorToHex(chooseColor.getValue()),
 							LocalDateTime.of(date,
 									LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 							LocalDateTime.of(date,
@@ -268,9 +302,12 @@ public class AddCalendarEvent {
 		HBox courseAndType = new HBox(10);
 		courseAndType.getChildren().addAll(cChoice, typeChoice);
 
+		HBox colorDecision = new HBox(10);
+		colorDecision.getChildren().addAll(chooseColor, recentColors);
+
 		VBox options = new VBox(20);
-		options.getChildren().addAll(dateLabel, courseAndType, personal, name, startTime, selectTime, timeRange, weight,
-				addEvent, error);
+		options.getChildren().addAll(dateLabel, courseAndType, personal, chooseColor, recentColors, name, startTime,
+				selectTime, timeRange, weight, addEvent, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);

@@ -502,6 +502,20 @@ public class ProfileController {
 
 			course.events.add((CourseEvent) added);
 			((CourseEvent) added).course = course;
+
+		} else {
+
+			if (this.profile.recentlyUsedColors.contains(added.color)) {
+
+				this.profile.recentlyUsedColors.remove(added.color);
+			}
+
+			this.profile.recentlyUsedColors.add(0, added.color);
+
+			if (this.profile.recentlyUsedColors.size() > 5) {
+
+				this.profile.recentlyUsedColors.remove(5);
+			}
 		}
 
 		profile.update();

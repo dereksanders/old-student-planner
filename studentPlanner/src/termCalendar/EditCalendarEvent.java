@@ -14,12 +14,15 @@ import javafx.collections.ObservableList;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
+import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import model.CalendarEvent;
@@ -33,6 +36,8 @@ public class EditCalendarEvent {
 
 	private CalendarEvent currentlySelected;
 	private TextField name;
+	private ColorPicker chooseColor;
+	private HBox recentColors;
 	private Label time;
 	private ComboBox<Time> startTime;
 	private Label dash;
@@ -90,6 +95,27 @@ public class EditCalendarEvent {
 		current = new Label();
 		name = new TextField();
 		name.setPromptText("Event Name");
+
+		chooseColor = new ColorPicker();
+
+		recentColors = new HBox(5);
+		Label recent = new Label("Recent Colors:");
+		recentColors.getChildren().add(recent);
+
+		for (int i = 0; i < this.controller.profile.recentlyUsedColors.size(); i++) {
+
+			Rectangle r = new Rectangle(30, 30);
+			r.setFill(Color.web(this.controller.profile.recentlyUsedColors.get(i)));
+
+			final int index = i;
+
+			r.setOnMouseClicked(e -> {
+				chooseColor.setValue(Color.web(this.controller.profile.recentlyUsedColors.get(index)));
+			});
+
+			recentColors.getChildren().add(r);
+		}
+
 		time = new Label("Time: ");
 		HBox selectTimes = new HBox(20);
 		startTime = new ComboBox<>(times);
@@ -134,8 +160,12 @@ public class EditCalendarEvent {
 			window.close();
 		});
 
+		HBox colorDecision = new HBox(10);
+		colorDecision.getChildren().addAll(chooseColor, recentColors);
+
 		VBox options = new VBox(20);
-		options.getChildren().addAll(chooseEvent, current, name, time, selectTimes, weight, delete, confirm, error);
+		options.getChildren().addAll(chooseEvent, current, name, colorDecision, time, selectTimes, weight, delete,
+				confirm, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
@@ -169,7 +199,7 @@ public class EditCalendarEvent {
 
 				} else {
 
-					CalendarEvent edited = new CalendarEvent(name.getText(),
+					CalendarEvent edited = new CalendarEvent(name.getText(), Style.colorToHex(chooseColor.getValue()),
 							LocalDateTime.of(date,
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 							LocalDateTime.of(date,
@@ -195,7 +225,7 @@ public class EditCalendarEvent {
 
 				} else {
 
-					CalendarEvent edited = new CalendarEvent(name.getText(),
+					CalendarEvent edited = new CalendarEvent(name.getText(), Style.colorToHex(chooseColor.getValue()),
 							LocalDateTime.of(date,
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 							LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)));
@@ -234,5 +264,14 @@ public class EditCalendarEvent {
 		}
 		name.setText(currentlySelected.name);
 		weight.setText("" + currentlySelected.weight);
+
+		if (e instanceof CourseEvent) {
+			chooseColor.setVisible(false);
+			recentColors.setVisible(false);
+		} else {
+			chooseColor.setVisible(true);
+			recentColors.setVisible(true);
+			chooseColor.setValue(Color.web(e.color));
+		}
 	}
 }

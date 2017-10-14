@@ -89,6 +89,7 @@ public class AddMeetingOnSchedule {
 
 		TextField titleField = new TextField();
 		titleField.setVisible(false);
+		titleField.setManaged(false);
 
 		CheckBox isCourseMeeting = new CheckBox();
 		isCourseMeeting.setText("This meeting is for a course.");
@@ -127,20 +128,40 @@ public class AddMeetingOnSchedule {
 				if (newVal.booleanValue()) {
 
 					titleField.setVisible(false);
+					titleField.setManaged(false);
+
 					courseLabel.setVisible(true);
+					courseLabel.setManaged(true);
+
 					chooseCourse.setVisible(true);
+					chooseCourse.setManaged(true);
+
 					chooseColor.setVisible(false);
+					chooseColor.setManaged(false);
+
 					recentColors.setVisible(false);
+					recentColors.setManaged(false);
+
 					meetingType.setItems(FXCollections.observableArrayList(CourseMeeting.TYPES));
 					meetingType.setValue(FXCollections.observableArrayList(CourseMeeting.TYPES).get(0));
 
 				} else {
 
 					titleField.setVisible(true);
+					titleField.setManaged(true);
+
 					courseLabel.setVisible(false);
+					courseLabel.setManaged(false);
+
 					chooseCourse.setVisible(false);
+					chooseCourse.setManaged(false);
+
 					chooseColor.setVisible(true);
+					chooseColor.setManaged(true);
+
 					recentColors.setVisible(true);
+					recentColors.setManaged(true);
+
 					meetingType.setItems(FXCollections.observableArrayList(Meeting.TYPES));
 					meetingType.setValue(FXCollections.observableArrayList(Meeting.TYPES).get(0));
 				}
@@ -149,21 +170,32 @@ public class AddMeetingOnSchedule {
 
 		if (this.pc.currentlySelectedTermCoursesExist()) {
 			chooseCourse.setValue(pc.profile.currentlySelectedTerm.courses.get(0));
+
 			chooseColor.setVisible(false);
+			chooseColor.setManaged(false);
+
 			recentColors.setVisible(false);
+			recentColors.setManaged(false);
+
 		} else {
+
 			chooseCourse.setVisible(false);
+			chooseCourse.setManaged(false);
+
 			isCourseMeeting.setSelected(false);
 			isCourseMeeting.setVisible(false);
+			isCourseMeeting.setManaged(false);
+
 			titleField.setVisible(true);
+			titleField.setManaged(true);
 		}
 
 		TextField other = new TextField();
 		other.setPromptText("Specify Meeting Type");
 		other.setVisible(false);
+		other.setManaged(false);
 
 		meetingType.valueProperty().addListener(new ChangeListener<String>() {
-
 			@Override
 			public void changed(ObservableValue<? extends String> observable, String oldType, String newType) {
 
@@ -171,9 +203,11 @@ public class AddMeetingOnSchedule {
 
 					if (newType.equals("Other")) {
 						other.setVisible(true);
+						other.setManaged(true);
 						titleField.setPromptText("Enter Meeting Name");
 					} else {
 						other.setVisible(false);
+						other.setManaged(false);
 						titleField.setPromptText("Enter " + newType + " Name");
 					}
 				}
@@ -213,7 +247,6 @@ public class AddMeetingOnSchedule {
 		});
 
 		endDate.valueProperty().addListener(new ChangeListener<LocalDate>() {
-
 			@Override
 			public void changed(ObservableValue<? extends LocalDate> observable, LocalDate oldValue,
 					LocalDate newValue) {
@@ -281,12 +314,22 @@ public class AddMeetingOnSchedule {
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
 				if (repeatOptions.get(current.intValue()).equals(MeetingSet.NO_REPEAT)) {
 					toEndOfTerm.setVisible(false);
+					toEndOfTerm.setManaged(false);
+
 					endDateLabel.setVisible(false);
+					endDateLabel.setManaged(false);
+
 					endDate.setVisible(false);
+					endDate.setManaged(false);
 				} else {
 					toEndOfTerm.setVisible(true);
+					toEndOfTerm.setManaged(true);
+
 					endDateLabel.setVisible(true);
+					endDateLabel.setManaged(true);
+
 					endDate.setVisible(true);
+					endDate.setManaged(true);
 				}
 			}
 		});

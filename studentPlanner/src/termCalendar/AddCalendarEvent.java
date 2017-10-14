@@ -87,6 +87,8 @@ public class AddCalendarEvent {
 
 		if (courses.size() == 0) {
 			cChoice.setVisible(false);
+			cChoice.setManaged(false);
+
 			types.removeAll("Test", "Assignment");
 		} else {
 			cChoice.setValue(courses.get(0));
@@ -102,13 +104,18 @@ public class AddCalendarEvent {
 
 		ColorPicker chooseColor = new ColorPicker();
 		chooseColor.setValue(Style.randomColor());
+		chooseColor.setMinHeight(35);
 
 		HBox recentColors = new HBox(5);
+
 		Label recent = new Label("Recent Colors:");
 		recentColors.getChildren().add(recent);
 
 		chooseColor.setVisible(false);
+		chooseColor.setManaged(false);
+
 		recentColors.setVisible(false);
+		recentColors.setManaged(false);
 
 		for (int i = 0; i < this.controller.profile.recentlyUsedColors.size(); i++) {
 
@@ -139,7 +146,10 @@ public class AddCalendarEvent {
 		selectTime.getChildren().addAll(startTimes, dash, endTimes);
 
 		dash.setVisible(false);
+		dash.setManaged(false);
+
 		endTimes.setVisible(false);
+		endTimes.setManaged(false);
 
 		CheckBox timeRange = new CheckBox();
 		timeRange.setText("Time Range");
@@ -149,14 +159,21 @@ public class AddCalendarEvent {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
 				if (newVal) {
 					endTimes.setVisible(true);
+					endTimes.setManaged(true);
+
 					dash.setVisible(true);
+					dash.setManaged(true);
 
 					startTimes.getSelectionModel().selectNext();
 					updateEndTimes = true;
 					startTimes.getSelectionModel().selectPrevious();
 				} else {
 					endTimes.setVisible(false);
+					endTimes.setManaged(false);
+
 					dash.setVisible(false);
+					dash.setManaged(false);
+
 					updateEndTimes = false;
 				}
 			}
@@ -171,15 +188,24 @@ public class AddCalendarEvent {
 				if (types.get(current.intValue()).equals("Personal")) {
 
 				} else if (types.get(current.intValue()).equals("Assignment")) {
+
 					cChoice.setVisible(true);
+					cChoice.setManaged(true);
+
 					weight.setVisible(true);
+					weight.setManaged(true);
+
 					startTime.setText("Due Time:");
 					timeRange.setSelected(false);
 
 				} else if (types.get(current.intValue()).equals("Test")) {
 
 					cChoice.setVisible(true);
+					cChoice.setManaged(true);
+
 					weight.setVisible(true);
+					weight.setManaged(true);
+
 					startTime.setText("Time:");
 					timeRange.setSelected(true);
 				}
@@ -194,19 +220,37 @@ public class AddCalendarEvent {
 				if (newVal) {
 					name.setPromptText("Event name");
 					chooseColor.setVisible(true);
+					chooseColor.setManaged(true);
+
 					recentColors.setVisible(true);
+					recentColors.setManaged(true);
+
 					startTime.setText("Time:");
 					cChoice.setVisible(false);
+					cChoice.setManaged(false);
+
 					typeChoice.setVisible(false);
+					typeChoice.setManaged(false);
+
 					weight.setVisible(false);
+					weight.setManaged(false);
 
 				} else {
 					cChoice.setVisible(true);
+					cChoice.setManaged(true);
+
 					chooseColor.setVisible(false);
+					chooseColor.setManaged(false);
+
 					recentColors.setVisible(false);
+					recentColors.setManaged(false);
+
 					typeChoice.setVisible(true);
+					typeChoice.setManaged(true);
+
 					typeChoice.setValue(types.get(0));
 					weight.setVisible(true);
+					weight.setManaged(true);
 				}
 			}
 		});
@@ -308,6 +352,9 @@ public class AddCalendarEvent {
 		VBox options = new VBox(15);
 		options.getChildren().addAll(dateLabel, courseAndType, personal, chooseColor, recentColors, name, startTime,
 				selectTime, timeRange, weight, addEvent, error);
+
+		options.setMinWidth(300);
+
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);

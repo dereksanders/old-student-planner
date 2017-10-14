@@ -38,6 +38,7 @@ public class EditCalendarEvent {
 	private CalendarEvent currentlySelected;
 	private TextField name;
 	private DatePicker chooseDate;
+	private HBox colorDecision;
 	private ColorPicker chooseColor;
 	private HBox recentColors;
 	private Label time;
@@ -108,6 +109,9 @@ public class EditCalendarEvent {
 		Label recent = new Label("Recent Colors:");
 		recentColors.getChildren().add(recent);
 
+		colorDecision = new HBox(10);
+		colorDecision.getChildren().addAll(chooseColor, recentColors);
+
 		for (int i = 0; i < this.controller.profile.recentlyUsedColors.size(); i++) {
 
 			Rectangle r = new Rectangle(30, 30);
@@ -148,7 +152,7 @@ public class EditCalendarEvent {
 		startTime.setValue(times.get(17));
 		weightTitle = new Label("Weight:");
 		weight = new TextField();
-		weight.setPromptText("Enter Event Weight");
+		weight.setPromptText("Enter weight %");
 		error = new Label();
 		chooseEvent.setValue(events.get(0));
 
@@ -166,9 +170,6 @@ public class EditCalendarEvent {
 			confirmChanges(date);
 			window.close();
 		});
-
-		HBox colorDecision = new HBox(10);
-		colorDecision.getChildren().addAll(chooseColor, recentColors);
 
 		HBox decisions = new HBox(10);
 		decisions.getChildren().addAll(delete, confirm);
@@ -264,29 +265,51 @@ public class EditCalendarEvent {
 			current.setText(currentlySelected.name);
 			time.setText("Due Time: ");
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
+
 			dash.setVisible(false);
+			dash.setManaged(false);
+
 			endTime.setVisible(false);
+			endTime.setManaged(false);
+
 		} else {
 			current.setText(currentlySelected.name);
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
+
 			endTime.setVisible(true);
+			endTime.setManaged(true);
+
 			endTime.setValue(new Time(currentlySelected.end.getHour(), currentlySelected.end.getMinute()));
+
 			weight.setVisible(false);
+			weight.setManaged(false);
 		}
 		name.setText(currentlySelected.name);
 		weight.setText("" + currentlySelected.weight);
 
 		if (e instanceof CourseEvent) {
-			chooseColor.setVisible(false);
-			recentColors.setVisible(false);
+
+			colorDecision.setVisible(false);
+			colorDecision.setManaged(false);
+
 			weightTitle.setVisible(true);
+			weightTitle.setManaged(true);
+
 			weight.setVisible(true);
+			weight.setManaged(true);
+
 		} else {
-			chooseColor.setVisible(true);
-			recentColors.setVisible(true);
+
+			colorDecision.setVisible(true);
+			colorDecision.setManaged(true);
+
 			chooseColor.setValue(Color.web(e.color));
+
 			weightTitle.setVisible(false);
+			weightTitle.setManaged(false);
+
 			weight.setVisible(false);
+			weight.setManaged(false);
 		}
 
 		chooseDate.setValue(date);

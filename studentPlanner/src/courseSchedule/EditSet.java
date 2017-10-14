@@ -108,6 +108,7 @@ public class EditSet {
 
 		if (types.contains(selected.meetingType)) {
 			other.setVisible(false);
+			other.setManaged(false);
 		}
 
 		Label typeLabel = new Label("Type:");
@@ -123,9 +124,11 @@ public class EditSet {
 
 					if (newType.equals("Other")) {
 						other.setVisible(true);
+						other.setManaged(true);
 						titleField.setPromptText("Enter Meeting Name");
 					} else {
 						other.setVisible(false);
+						other.setManaged(false);
 						titleField.setPromptText("Enter " + newType + " Name");
 					}
 				}
@@ -156,12 +159,20 @@ public class EditSet {
 
 		if (selected instanceof CourseMeeting) {
 			chooseCourse.setValue(((CourseMeeting) selected).course);
+
 			titleField.setVisible(false);
+			titleField.setManaged(false);
+
 			chooseColor.setVisible(false);
+			chooseColor.setManaged(false);
+
 			recentColors.setVisible(false);
+			recentColors.setManaged(false);
+
 		} else {
-			chooseCourse.setVisible(false);
-			course.setVisible(false);
+
+			courseSelection.setVisible(false);
+			courseSelection.setManaged(false);
 		}
 
 		titleField.setText(selected.name);
@@ -192,9 +203,12 @@ public class EditSet {
 			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldVal, Boolean newVal) {
 				if (newVal) {
 					endDate.setVisible(false);
+					endDate.setManaged(false);
+
 					endDate.setValue(pc.profile.currentlySelectedTerm.end);
 				} else {
 					endDate.setVisible(true);
+					endDate.setManaged(true);
 				}
 			}
 		});
@@ -210,12 +224,24 @@ public class EditSet {
 			public void changed(ObservableValue<? extends Number> observable, Number old, Number current) {
 				if (repeatOptions.get(current.intValue()).equals(MeetingSet.NO_REPEAT)) {
 					toEndOfTerm.setVisible(false);
+					toEndOfTerm.setManaged(false);
+
 					endDateLabel.setVisible(false);
+					endDateLabel.setManaged(false);
+
 					endDate.setVisible(false);
+					endDate.setManaged(false);
+
 				} else {
+
 					toEndOfTerm.setVisible(true);
+					toEndOfTerm.setManaged(true);
+
 					endDateLabel.setVisible(true);
+					endDateLabel.setManaged(true);
+
 					endDate.setVisible(true);
+					endDate.setManaged(true);
 				}
 			}
 		});

@@ -84,11 +84,14 @@ public class EditInstance {
 
 		if (types.contains(selected.meetingType)) {
 			other.setVisible(false);
+			other.setManaged(false);
 		}
 
 		Label typeLabel = new Label("Type:");
 		ChoiceBox<String> meetingType = new ChoiceBox<>(types);
 		Style.setChoiceBoxStyle(meetingType);
+
+		HBox courseAndTypeSelection = new HBox(20);
 
 		meetingType.valueProperty().addListener(new ChangeListener<String>() {
 
@@ -99,9 +102,11 @@ public class EditInstance {
 
 					if (newType.equals("Other")) {
 						other.setVisible(true);
+						other.setManaged(true);
 						titleField.setPromptText("Enter Meeting Name");
 					} else {
 						other.setVisible(false);
+						other.setManaged(false);
 						titleField.setPromptText("Enter " + newType + " Name");
 					}
 				}
@@ -132,12 +137,20 @@ public class EditInstance {
 
 		if (selected instanceof CourseMeeting) {
 			chooseCourse.setValue(((CourseMeeting) selected).course);
+
 			titleField.setVisible(false);
+			titleField.setManaged(false);
+
 			chooseColor.setVisible(false);
+			chooseColor.setManaged(false);
+
 			recentColors.setVisible(false);
+			recentColors.setManaged(false);
+
 		} else {
-			chooseCourse.setVisible(false);
-			course.setVisible(false);
+
+			courseSelection.setVisible(false);
+			courseSelection.setManaged(false);
 		}
 
 		titleField.setText(selected.name);
@@ -150,6 +163,8 @@ public class EditInstance {
 
 		VBox typeSelection = new VBox(20);
 		typeSelection.getChildren().addAll(typeLabel, meetingType, other);
+
+		courseAndTypeSelection.getChildren().addAll(courseSelection, typeSelection);
 
 		Label startDateLabel = new Label("Date:");
 		DatePicker startDate = new DatePicker();
@@ -230,9 +245,6 @@ public class EditInstance {
 		cancel.setOnAction(e -> {
 			window.close();
 		});
-
-		HBox courseAndTypeSelection = new HBox(20);
-		courseAndTypeSelection.getChildren().addAll(courseSelection, typeSelection);
 
 		HBox decisions = new HBox(20);
 		decisions.getChildren().addAll(cancel, delete, confirm);

@@ -102,26 +102,31 @@ public class CourseScheduleController extends ProfileController {
 			}
 		}
 
-		if (added.getCourse() != null) {
-			added.getCourse().meetingSets.add(added);
-		} else {
-			t.nonCourseMeetingSets.add(added);
+		// If any of the meetings of the new MeetingSet were actually added - it's
+		// possible that they were all cancelled due to conflicts.
+		if (added.getMeetings().size() > 0) {
 
-			if (this.profile.recentlyUsedColors.contains(added.getColor())) {
+			if (added.getCourse() != null) {
+				added.getCourse().meetingSets.add(added);
+			} else {
+				t.nonCourseMeetingSets.add(added);
 
-				this.profile.recentlyUsedColors.remove(added.getColor());
+				if (this.profile.recentlyUsedColors.contains(added.getColor())) {
+
+					this.profile.recentlyUsedColors.remove(added.getColor());
+				}
+
+				this.profile.recentlyUsedColors.add(0, added.getColor());
+
+				if (this.profile.recentlyUsedColors.size() > 5) {
+
+					this.profile.recentlyUsedColors.remove(5);
+				}
 			}
 
-			this.profile.recentlyUsedColors.add(0, added.getColor());
-
-			if (this.profile.recentlyUsedColors.size() > 5) {
-
-				this.profile.recentlyUsedColors.remove(5);
-			}
+			t.updateParams();
+			this.profile.update();
 		}
-
-		t.updateParams();
-		this.profile.update();
 	}
 
 	/**

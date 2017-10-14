@@ -47,7 +47,14 @@ public class HandleConflict {
 		VBox oldListing = new VBox(5);
 		VBox newListing = new VBox(5);
 
-		Label newMeetingDesc = new Label(m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
+		Label newMeetingDesc = new Label();
+
+		if (m instanceof CourseMeeting) {
+			newMeetingDesc.setText(((CourseMeeting) m).course + " " + m.meetingType + ": " + m.start + " - " + m.end
+					+ " (" + m.date + ")");
+		} else {
+			newMeetingDesc.setText(m.name + " " + m.meetingType + ": " + m.start + " - " + m.end + " (" + m.date + ")");
+		}
 
 		newListing.getChildren().addAll(newTitle, newMeetingDesc);
 		oldListing.getChildren().add(oldTitle);

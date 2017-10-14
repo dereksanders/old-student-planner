@@ -305,7 +305,7 @@ public class AddCalendarEvent {
 		HBox colorDecision = new HBox(10);
 		colorDecision.getChildren().addAll(chooseColor, recentColors);
 
-		VBox options = new VBox(20);
+		VBox options = new VBox(15);
 		options.getChildren().addAll(dateLabel, courseAndType, personal, chooseColor, recentColors, name, startTime,
 				selectTime, timeRange, weight, addEvent, error);
 		Style.addPadding(options);

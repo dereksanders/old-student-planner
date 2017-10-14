@@ -16,6 +16,7 @@ import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.ColorPicker;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -36,12 +37,14 @@ public class EditCalendarEvent {
 
 	private CalendarEvent currentlySelected;
 	private TextField name;
+	private DatePicker chooseDate;
 	private ColorPicker chooseColor;
 	private HBox recentColors;
 	private Label time;
 	private ComboBox<Time> startTime;
 	private Label dash;
 	private ComboBox<Time> endTime;
+	private Label weightTitle;
 	private TextField weight;
 	private Label error;
 	private Label current;
@@ -96,6 +99,9 @@ public class EditCalendarEvent {
 		name = new TextField();
 		name.setPromptText("Event Name");
 
+		chooseDate = new DatePicker();
+		chooseDate.setValue(date);
+
 		chooseColor = new ColorPicker();
 
 		recentColors = new HBox(5);
@@ -140,6 +146,7 @@ public class EditCalendarEvent {
 			}
 		});
 		startTime.setValue(times.get(17));
+		weightTitle = new Label("Weight:");
 		weight = new TextField();
 		weight.setPromptText("Enter Event Weight");
 		error = new Label();
@@ -163,9 +170,12 @@ public class EditCalendarEvent {
 		HBox colorDecision = new HBox(10);
 		colorDecision.getChildren().addAll(chooseColor, recentColors);
 
-		VBox options = new VBox(20);
-		options.getChildren().addAll(chooseEvent, current, name, colorDecision, time, selectTimes, weight, delete,
-				confirm, error);
+		HBox decisions = new HBox(10);
+		decisions.getChildren().addAll(delete, confirm);
+
+		VBox options = new VBox(15);
+		options.getChildren().addAll(chooseEvent, name, chooseDate, colorDecision, time, selectTimes, weightTitle,
+				weight, decisions, error);
 		Style.addPadding(options);
 		Scene scene = new Scene(options);
 		window.setScene(scene);
@@ -187,25 +197,25 @@ public class EditCalendarEvent {
 				if (currentlySelected instanceof CourseEvent) {
 
 					CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
-							LocalDateTime.of(date,
+							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-							LocalDateTime.of(date,
+							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 							Double.parseDouble(weight.getText()));
 					Course eventCourse = controller.profile.currentlySelectedTerm.courseColors
 							.get(currentlySelected.color);
 					controller.deleteEvent(eventCourse, currentlySelected, date);
-					controller.addEvent(eventCourse, edited, date);
+					controller.addEvent(eventCourse, edited, chooseDate.getValue());
 
 				} else {
 
 					CalendarEvent edited = new CalendarEvent(name.getText(), Style.colorToHex(chooseColor.getValue()),
-							LocalDateTime.of(date,
+							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-							LocalDateTime.of(date,
+							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)));
 					controller.deleteEvent(null, currentlySelected, date);
-					controller.addEvent(null, edited, date);
+					controller.addEvent(null, edited, chooseDate.getValue());
 
 				}
 
@@ -214,23 +224,25 @@ public class EditCalendarEvent {
 				if (currentlySelected instanceof CourseEvent) {
 
 					CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
-							LocalDateTime.of(date,
+							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-							LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)),
+							LocalDateTime.of(chooseDate.getValue(),
+									LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)),
 							Double.parseDouble(weight.getText()));
 					Course eventCourse = controller.profile.currentlySelectedTerm.courseColors
 							.get(currentlySelected.color);
 					controller.deleteEvent(eventCourse, currentlySelected, date);
-					controller.addEvent(eventCourse, edited, date);
+					controller.addEvent(eventCourse, edited, chooseDate.getValue());
 
 				} else {
 
 					CalendarEvent edited = new CalendarEvent(name.getText(), Style.colorToHex(chooseColor.getValue()),
-							LocalDateTime.of(date,
+							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
-							LocalDateTime.of(date, LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)));
+							LocalDateTime.of(chooseDate.getValue(),
+									LocalTime.of(endTime.getValue().hour, endTime.getValue().minute)));
 					controller.deleteEvent(null, currentlySelected, date);
-					controller.addEvent(null, edited, date);
+					controller.addEvent(null, edited, chooseDate.getValue());
 				}
 			}
 
@@ -254,7 +266,6 @@ public class EditCalendarEvent {
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
 			dash.setVisible(false);
 			endTime.setVisible(false);
-			weight.setVisible(true);
 		} else {
 			current.setText(currentlySelected.name);
 			startTime.setValue(new Time(currentlySelected.start.getHour(), currentlySelected.start.getMinute()));
@@ -268,10 +279,16 @@ public class EditCalendarEvent {
 		if (e instanceof CourseEvent) {
 			chooseColor.setVisible(false);
 			recentColors.setVisible(false);
+			weightTitle.setVisible(true);
+			weight.setVisible(true);
 		} else {
 			chooseColor.setVisible(true);
 			recentColors.setVisible(true);
 			chooseColor.setValue(Color.web(e.color));
+			weightTitle.setVisible(false);
+			weight.setVisible(false);
 		}
+
+		chooseDate.setValue(date);
 	}
 }

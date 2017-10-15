@@ -70,8 +70,15 @@ public class Style {
 	public static Color appRed = Color.web("0xff6666");
 	public static Color appYellow = Color.web("0xffcc66");
 	public static Color appGreen = Color.web("0x669966");
+	public static Color appOrange = Color.web("0xffb466");
+	public static Color appPurple = Color.web("0x996699");
+	public static Color appTeal = Color.web("0x669999");
+	public static Color appPink = Color.web("0xffccff");
+	public static Color appBrown = Color.web("0xb34d1a");
+	public static Color appDarkGrey = Color.web("0x666666");
+
 	public static ObservableList<Color> selectableColors = FXCollections.observableArrayList(appBlue, appRed, appYellow,
-			appGreen);
+			appGreen, appOrange, appPurple, appTeal, appPink, appBrown, appDarkGrey);
 
 	public static void setButtonStyle(Button button) {
 		button.setStyle(
@@ -103,11 +110,6 @@ public class Style {
 	}
 
 	public static void addPadding(Node n, int[] vals) {
-
-		if (vals.length < 4) {
-			System.out.println("Not enough arguments.");
-			return;
-		}
 
 		// TOP, RIGHT, BOTTOM, LEFT
 		n.setStyle(n.getStyle() + "-fx-padding: " + vals[0] + " " + vals[1] + " " + vals[2] + " " + vals[3] + ";");

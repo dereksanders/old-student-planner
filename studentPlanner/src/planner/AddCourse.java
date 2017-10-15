@@ -2,9 +2,9 @@ package planner;
 
 import java.util.ArrayList;
 
-import core.Style;
 import core.Driver;
 import core.ProfileController;
+import core.Style;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -76,7 +76,6 @@ public class AddCourse {
 
 		/* List of terms to choose from. */
 		ObservableList<Term> profileTerms = FXCollections.observableArrayList(pc.profile.terms);
-		System.out.println(profileTerms.size());
 
 		ChoiceBox<Term> chooseStartTerm = new ChoiceBox<>(profileTerms);
 		Style.setChoiceBoxStyle(chooseStartTerm);

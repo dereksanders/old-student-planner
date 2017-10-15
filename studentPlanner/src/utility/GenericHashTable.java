@@ -93,7 +93,7 @@ public class GenericHashTable<G, H> implements Serializable {
 	 * @param val
 	 *            the val
 	 */
-	public void del(G key, H val) {
+	public void del(G key) {
 		int index = (int) (hash(key.toString()) % this.n);
 		if (index < 0) {
 			index *= -1;
@@ -111,8 +111,29 @@ public class GenericHashTable<G, H> implements Serializable {
 			}
 		}
 		this.vals[index] = null;
+		this.keys[index] = null;
 		this.occupied--;
 		this.load = ((double) this.occupied / (double) this.n);
+	}
+
+	public void update(G key, H val) {
+		int index = (int) (hash(key.toString()) % this.n);
+		if (index < 0) {
+			index *= -1;
+		}
+		int c = 1;
+		while (!this.keys[index].equals(key)) {
+			if (this.keys[index] == null) {
+				return;
+			} else {
+				index = (int) ((hash(key.toString()) + c * hash2(key.toString())) % this.n);
+				if (index < 0) {
+					index *= -1;
+				}
+				c++;
+			}
+		}
+		this.vals[index] = val;
 	}
 
 	/**

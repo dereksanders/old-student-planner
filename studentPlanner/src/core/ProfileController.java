@@ -319,7 +319,7 @@ public class ProfileController {
 			}
 
 			for (Term t : original.terms) {
-				t.courseColors.del(originalColor, original);
+				t.courseColors.del(originalColor);
 				t.courseColors.put(original.color, original);
 			}
 
@@ -348,7 +348,7 @@ public class ProfileController {
 	public void deleteCourse(Course deleted) {
 
 		for (Term t : deleted.terms) {
-			t.courseColors.del(deleted.color, deleted);
+			t.courseColors.del(deleted.color);
 			t.courses.remove(deleted);
 
 			for (MeetingSet ms : deleted.meetingSets) {

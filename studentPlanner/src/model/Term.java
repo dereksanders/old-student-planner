@@ -92,7 +92,6 @@ public class Term implements Comparable<Term>, Serializable {
 		for (MeetingSet ms : this.nonCourseMeetingSets) {
 			for (Meeting m : ms.getMeetings()) {
 				changesMade = true;
-				System.out.println("Adding params..");
 				addParams(m);
 			}
 		}

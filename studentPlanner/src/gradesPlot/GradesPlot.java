@@ -7,6 +7,7 @@ import java.util.Observer;
 import java.util.PriorityQueue;
 import java.util.Queue;
 
+import core.Listing;
 import core.Style;
 import core.View;
 import javafx.collections.FXCollections;
@@ -16,9 +17,12 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Label;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.Course;
 import model.Profile;
@@ -31,8 +35,13 @@ public class GradesPlot extends View implements Observer {
 	private Observable observable;
 	private GradesPlotController controller;
 
+	private static BorderPane termGradesPane;
 	private static LineChart<String, Number> termGrades;
+
+	private static BorderPane deptCoursesPane;
 	private static PieChart deptCourses;
+
+	private static BorderPane deptGradesPane;
 	private static BarChart<String, Number> deptGrades;
 
 	private static ArrayList<Course> allCoursesTaken;
@@ -52,6 +61,16 @@ public class GradesPlot extends View implements Observer {
 	private BorderPane initLayout() {
 
 		BorderPane gpbp = new BorderPane();
+
+		termGradesPane = new BorderPane();
+		Style.addPadding(termGradesPane);
+
+		deptCoursesPane = new BorderPane();
+		Style.addPadding(deptCoursesPane);
+
+		deptGradesPane = new BorderPane();
+		Style.addPadding(deptGradesPane);
+
 		TabPane selectGraph = new TabPane();
 
 		// Set up termGrades line chart.
@@ -77,7 +96,7 @@ public class GradesPlot extends View implements Observer {
 		Tab termGradesTab = new Tab();
 		termGradesTab.setText("Term Averages");
 		termGradesTab.setClosable(false);
-		termGradesTab.setContent(termGrades);
+		termGradesTab.setContent(termGradesPane);
 
 		// Set up deptCourses pie chart.
 		deptCourses = new PieChart();
@@ -86,7 +105,7 @@ public class GradesPlot extends View implements Observer {
 		Tab deptCoursesTab = new Tab();
 		deptCoursesTab.setText("Courses Taken by Dept.");
 		deptCoursesTab.setClosable(false);
-		deptCoursesTab.setContent(deptCourses);
+		deptCoursesTab.setContent(deptCoursesPane);
 
 		// Set up deptGrades bar chart.
 		CategoryAxis deptGradesXAxis = new CategoryAxis();
@@ -101,7 +120,7 @@ public class GradesPlot extends View implements Observer {
 		Tab deptGradesTab = new Tab();
 		deptGradesTab.setText("Department Averages");
 		deptGradesTab.setClosable(false);
-		deptGradesTab.setContent(deptGrades);
+		deptGradesTab.setContent(deptGradesPane);
 
 		selectGraph.getTabs().add(termGradesTab);
 		selectGraph.getTabs().add(deptGradesTab);
@@ -113,18 +132,40 @@ public class GradesPlot extends View implements Observer {
 
 	private void updateTermGrades() {
 
+		termGradesPane.getChildren().clear();
+
+		VBox legend = new VBox(10);
+		legend.setBorder(new Border(Style.fullBorderStroke));
+		Style.addPadding(legend);
+		Label legendTitle = new Label("Legend");
+		Style.setTitleStyle(legendTitle);
+		legend.getChildren().add(legendTitle);
+
 		termGrades.getData().clear();
 
 		XYChart.Series<String, Number> grades = new XYChart.Series<>();
 
 		for (Term t : controller.profile.terms) {
 			grades.getData().add(new XYChart.Data<>(t.name + " (" + t.end.getYear() + ")", t.avg));
+			legend.getChildren().add(new Label(t.name + " (" + t.end.getYear() + ")" + ": " + Math.round(t.avg) + "%"));
 		}
 
 		termGrades.getData().add(grades);
+
+		termGradesPane.setCenter(termGrades);
+		termGradesPane.setRight(legend);
 	}
 
 	private void updateDeptCourses() {
+
+		deptCoursesPane.getChildren().clear();
+
+		VBox legend = new VBox(10);
+		legend.setBorder(new Border(Style.fullBorderStroke));
+		Style.addPadding(legend);
+		Label legendTitle = new Label("Legend");
+		Style.setTitleStyle(legendTitle);
+		legend.getChildren().add(legendTitle);
 
 		deptCourses.getData().clear();
 
@@ -172,11 +213,24 @@ public class GradesPlot extends View implements Observer {
 			if (current != null) {
 
 				data.getNode().setStyle("-fx-pie-color: #" + Style.colorToHex(current) + ";");
+				legend.getChildren().add(new Listing(current, data.getName() + ": " + (int) data.getPieValue()).show());
 			}
 		}
+
+		deptCoursesPane.setCenter(deptCourses);
+		deptCoursesPane.setRight(legend);
 	}
 
 	private void updateDeptGrades() {
+
+		deptGradesPane.getChildren().clear();
+
+		VBox legend = new VBox(10);
+		legend.setBorder(new Border(Style.fullBorderStroke));
+		Style.addPadding(legend);
+		Label legendTitle = new Label("Legend");
+		Style.setTitleStyle(legendTitle);
+		legend.getChildren().add(legendTitle);
 
 		deptGrades.getData().clear();
 
@@ -231,10 +285,14 @@ public class GradesPlot extends View implements Observer {
 			if (current != null) {
 
 				data.getNode().setStyle("-fx-bar-fill: #" + Style.colorToHex(current) + ";");
+				legend.getChildren().add(new Listing(current, data.getXValue() + ": " + data.getYValue() + "%").show());
 			}
 		}
 
 		deptGrades.setLegendVisible(false);
+
+		deptGradesPane.setCenter(deptGrades);
+		deptGradesPane.setRight(legend);
 	}
 
 	@Override

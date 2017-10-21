@@ -32,7 +32,7 @@ import model.Profile;
 public class Planner extends View implements Observer {
 
 	public enum VIEW_INDEX {
-		COURSE_SCHEDULE(0), TERM_CALENDAR(1), GRADES(2), GRADES_PLOT(3);
+		DASHBOARD(0), COURSE_SCHEDULE(1), TERM_CALENDAR(2), GRADES(3), GRADES_PLOT(4);
 
 		private int val;
 
@@ -108,7 +108,7 @@ public class Planner extends View implements Observer {
 	 *
 	 * @return the border pane
 	 */
-	private BorderPane initLayout() {
+	public BorderPane initLayout() {
 		BorderPane bp = new BorderPane();
 		chooseView = new ChoiceBox<>(FXCollections.observableArrayList(this.views));
 		Style.setChoiceBoxStyle(chooseView);
@@ -127,8 +127,24 @@ public class Planner extends View implements Observer {
 		menu.setStyle(menu.getStyle()
 				+ "-fx-background-color: #eee; -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 
-		int iconWidth = 120;
-		int iconHeight = 120;
+		int iconWidth = 115;
+		int iconHeight = 115;
+
+		VBox db = new VBox(0);
+		Label dashboardTitle = new Label("Dashboard");
+		Style.setSmallTitleStyle(dashboardTitle);
+
+		ImageView dashboardIcon = new ImageView();
+		dashboardIcon.setFitWidth(iconWidth);
+		dashboardIcon.setFitHeight(iconHeight);
+		dashboardIcon.setImage(new Image(Main.class.getResourceAsStream("dashboard2.png")));
+
+		db.setOnMouseClicked(e -> {
+			viewPane.setCenter(views.get(VIEW_INDEX.DASHBOARD.val).mainLayout);
+		});
+
+		db.getChildren().addAll(dashboardIcon, dashboardTitle);
+		db.setAlignment(Pos.CENTER);
 
 		VBox cs = new VBox(0);
 		Label csTitle = new Label("Course Schedule");
@@ -194,7 +210,7 @@ public class Planner extends View implements Observer {
 		gp.getChildren().addAll(gradesPlotIcon, gpTitle);
 		gp.setAlignment(Pos.CENTER);
 
-		menu.getChildren().addAll(cs, tc, g, gp);
+		menu.getChildren().addAll(db, cs, tc, g, gp);
 
 		bp.setLeft(menu);
 

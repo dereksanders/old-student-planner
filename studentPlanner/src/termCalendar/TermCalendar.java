@@ -1,26 +1,17 @@
 package termCalendar;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import core.Clock;
-import core.Listing;
 import core.Style;
 import core.View;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Border;
@@ -30,10 +21,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.CalendarEvent;
-import model.CourseEvent;
 import model.Profile;
 import model.Term;
-import utility.Pretty;
 
 /**
  * The Class TermCalendar.
@@ -45,8 +34,7 @@ public class TermCalendar extends View implements Observer {
 	private TermCalendarController controller;
 
 	private HBox termViewBox = new HBox(50);
-	private VBox upcomingEvents = new VBox(10);
-	private VBox upcomingLayout = new VBox(15);
+	private UpcomingEvents upcomingEvents;
 
 	private BooleanProperty selectedTermNotNull = new SimpleBooleanProperty(false);
 
@@ -55,7 +43,7 @@ public class TermCalendar extends View implements Observer {
 	 *
 	 * @param planner
 	 *            the planner
-	 * @param observable
+	 * @param profile
 	 *            the observable
 	 * @param controller
 	 *            the controller
@@ -76,7 +64,7 @@ public class TermCalendar extends View implements Observer {
 	 *
 	 * @return the border pane
 	 */
-	private BorderPane initLayout() {
+	public BorderPane initLayout() {
 
 		BorderPane tcbp = new BorderPane();
 
@@ -88,38 +76,13 @@ public class TermCalendar extends View implements Observer {
 		Label termCal = new Label("Term Calendar");
 		Style.setTitleStyle(termCal);
 		HBox header = new HBox(50);
-		Label upcomingTitle = new Label("Upcoming");
-		Style.setTitleStyle(upcomingTitle);
-		HBox upcomingShow = new HBox();
-		Label showWithin = new Label("Show events within: ");
-
-		ObservableList<Integer> thresholds = FXCollections.observableArrayList();
-		for (int i = 1; i < 31; i++) {
-			thresholds.add(i);
-		}
-
-		ComboBox<Integer> upcomingThreshold = new ComboBox<>(thresholds);
-		Style.setComboBoxStyle(upcomingThreshold);
-		upcomingThreshold.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
-			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				controller.profile.showWithinThreshold = thresholds.get(newIndex.intValue());
-				updateUpcomingEvents();
-			}
-		});
-
-		upcomingThreshold.setValue(14);
-		Label showWithinDays = new Label(" days.");
-		upcomingShow.getChildren().addAll(showWithin, upcomingThreshold, showWithinDays);
-		upcomingLayout.getChildren().addAll(upcomingTitle, upcomingShow, upcomingEvents);
-		upcomingLayout
-				.setStyle("-fx-background-color: #fff; -fx-border-width: 1; -fx-border-color: #ccc; -fx-padding: 10;");
-		BorderPane.setAlignment(upcomingLayout, Pos.CENTER);
 
 		header.getChildren().add(termCal);
 		tcbp.setTop(header);
 		tcbp.setCenter(termViewBox);
-		tcbp.setRight(upcomingLayout);
+
+		this.upcomingEvents = new UpcomingEvents(new UpcomingEventsController(this.controller.profile));
+		tcbp.setRight(upcomingEvents.mainLayout);
 
 		tcbp.setStyle("-fx-padding: 10;");
 
@@ -267,7 +230,6 @@ public class TermCalendar extends View implements Observer {
 
 		termCalendar.setStyle(termCalendar.getStyle() + "-fx-padding: 10;");
 
-		updateUpcomingEvents();
 		return termCalendar;
 	}
 
@@ -307,51 +269,6 @@ public class TermCalendar extends View implements Observer {
 		}
 
 		return day;
-	}
-
-	private void updateUpcomingEvents() {
-
-		this.upcomingEvents.getChildren().clear();
-
-		for (int i = 0; i <= controller.profile.showWithinThreshold; i++) {
-
-			PriorityQueue<CalendarEvent> de = controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i));
-
-			if (de != null && !de.isEmpty()) {
-
-				Label dateOfEvents = new Label("");
-
-				// Events are today
-				if (i == 0) {
-					dateOfEvents.setText("Today:");
-				}
-				// Events are tomorrow
-				else if (i == 1) {
-					dateOfEvents.setText("Tomorrow:");
-				} else {
-					dateOfEvents.setText(Pretty.prettyDate(Clock.now.toLocalDate().plusDays(i)) + ":");
-				}
-
-				this.upcomingEvents.getChildren().add(dateOfEvents);
-
-				ArrayList<CalendarEvent> events = new ArrayList<>();
-				events.addAll(de);
-				events.sort(Collections.reverseOrder());
-
-				for (CalendarEvent e : events) {
-
-					if (e instanceof CourseEvent) {
-
-						this.upcomingEvents.getChildren().add(new Listing(Color.web(e.color),
-								((CourseEvent) e).course.toString() + " " + e.toString()).show());
-
-					} else {
-
-						this.upcomingEvents.getChildren().add(new Listing(Color.web(e.color), e.toString()).show());
-					}
-				}
-			}
-		}
 	}
 
 	/*

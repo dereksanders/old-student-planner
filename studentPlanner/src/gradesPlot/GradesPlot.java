@@ -58,7 +58,7 @@ public class GradesPlot extends View implements Observer {
 		this.mainLayout = initLayout();
 	}
 
-	private BorderPane initLayout() {
+	public BorderPane initLayout() {
 
 		BorderPane gpbp = new BorderPane();
 

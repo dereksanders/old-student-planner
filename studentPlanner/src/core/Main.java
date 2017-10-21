@@ -2,6 +2,8 @@ package core;
 
 import courseSchedule.CourseSchedule;
 import courseSchedule.CourseScheduleController;
+import dashboard.Dashboard;
+import dashboard.DashboardController;
 import grades.Grades;
 import grades.GradesController;
 import gradesPlot.GradesPlot;
@@ -33,6 +35,11 @@ public class Main extends Application {
 		final JFXPanel fxPanel = new JFXPanel();
 
 		driver = new Driver("res", "res//backup");
+
+		/* Dashboard */
+		DashboardController dashboardController = new DashboardController(driver.active);
+		Dashboard dashboard = new Dashboard(dashboardController);
+		driver.planner.addView(dashboard);
 
 		/* CourseSchedule */
 		CourseScheduleController scheduleController = new CourseScheduleController(driver.active);

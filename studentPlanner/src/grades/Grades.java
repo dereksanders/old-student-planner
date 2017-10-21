@@ -48,7 +48,7 @@ public class Grades extends View implements Observer {
 	/**
 	 * Instantiates a new grades.
 	 *
-	 * @param observable
+	 * @param profile
 	 *            the observable
 	 * @param controller
 	 *            the controller
@@ -69,7 +69,7 @@ public class Grades extends View implements Observer {
 	 *
 	 * @return the border pane
 	 */
-	private BorderPane initLayout() {
+	public BorderPane initLayout() {
 
 		BorderPane gbp = new BorderPane();
 

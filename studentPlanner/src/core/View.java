@@ -9,6 +9,8 @@ public abstract class View {
 
 	public BorderPane mainLayout;
 
+	public abstract BorderPane initLayout();
+
 	/**
 	 * Refreshes the view.
 	 */

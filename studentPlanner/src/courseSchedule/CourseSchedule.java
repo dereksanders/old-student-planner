@@ -3,7 +3,6 @@ package courseSchedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
@@ -47,7 +46,6 @@ public class CourseSchedule extends View implements Observer {
 	public CourseScheduleController controller;
 
 	/* GUI elements */
-	private VBox todaysMeetingsList = new VBox(5);
 	private ScrollPane scheduleScroll;
 	private GridPane scheduleGrid;
 	private VBox legend;
@@ -58,6 +56,8 @@ public class CourseSchedule extends View implements Observer {
 	private CheckBox showCurrentWeek;
 	public DatePicker selectWeek;
 
+	private TodaysMeetings todaysMeetings;
+
 	/* Dependent on selected Term's parameters */
 	private int daysInSchedule;
 	private int timesInSchedule;
@@ -66,7 +66,7 @@ public class CourseSchedule extends View implements Observer {
 	/**
 	 * Instantiates a new Course Schedule.
 	 *
-	 * @param observable
+	 * @param profile
 	 *            the observable
 	 * @param controller
 	 *            the controller
@@ -88,7 +88,7 @@ public class CourseSchedule extends View implements Observer {
 	 *
 	 * @return the border pane
 	 */
-	private BorderPane initLayout() {
+	public BorderPane initLayout() {
 
 		/* GridPane containing the entire Course Schedule view */
 		BorderPane csbp = new BorderPane();
@@ -107,8 +107,6 @@ public class CourseSchedule extends View implements Observer {
 
 		Label title = new Label("Weekly Schedule");
 		Style.setTitleStyle(title);
-
-		setTodaysMeetingList();
 
 		/* Select week */
 
@@ -142,18 +140,14 @@ public class CourseSchedule extends View implements Observer {
 		HBox headerLayout = new HBox(20);
 		headerLayout.getChildren().addAll(title, showCurrentWeek, selectWeek);
 
-		// Add bottom padding.
-		// int padding[] = { 0, 0, 5, 0 };
-		// Style.addPadding(headerLayout, padding);
-
-		HBox optionsLayout = new HBox(20);
-		optionsLayout.getChildren().addAll(todaysMeetingsList);
-
 		this.legend = new VBox(10);
 
 		csbp.setTop(headerLayout);
 		csbp.setCenter(scheduleScroll);
-		csbp.setBottom(optionsLayout);
+
+		this.todaysMeetings = new TodaysMeetings(new TodaysMeetingsController(this.controller.profile));
+		csbp.setBottom(todaysMeetings.mainLayout);
+
 		csbp.setRight(legend);
 		BorderPane.setAlignment(legend, Pos.BOTTOM_LEFT);
 		BorderPane.setAlignment(scheduleScroll, Pos.BOTTOM_LEFT);
@@ -192,35 +186,6 @@ public class CourseSchedule extends View implements Observer {
 
 			this.legend.setVisible(false);
 			this.legend.setManaged(false);
-		}
-	}
-
-	private void setTodaysMeetingList() {
-
-		todaysMeetingsList.getChildren().clear();
-
-		if (controller.profile.currentlySelectedTerm != null) {
-
-			/* Priority queue of today's meetings */
-			PriorityQueue<Meeting> td = controller.profile.currentlySelectedTerm.dayMeetings
-					.get(Clock.now.toLocalDate());
-
-			if (td != null && !td.isEmpty()) {
-
-				Label todaysMeetingsTitle = new Label("Today's Meetings");
-				Style.setTitleStyle(todaysMeetingsTitle);
-
-				todaysMeetingsList.getChildren().add(todaysMeetingsTitle);
-
-				ArrayList<Meeting> meetings = new ArrayList<>();
-				meetings.addAll(td);
-				meetings.sort(null);
-
-				for (Meeting m : meetings) {
-
-					todaysMeetingsList.getChildren().add(new Listing(Color.web(m.color), m.toString()).show());
-				}
-			}
 		}
 	}
 
@@ -481,7 +446,6 @@ public class CourseSchedule extends View implements Observer {
 		if (arg0 instanceof Profile) {
 
 			drawSchedule(((Profile) arg0).currentlySelectedTerm, ((Profile) arg0).currentlySelectedDate);
-			setTodaysMeetingList();
 			updateLegend();
 
 			/*

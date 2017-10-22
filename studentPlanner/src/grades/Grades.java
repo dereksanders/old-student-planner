@@ -118,9 +118,9 @@ public class Grades extends View implements Observer {
 			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
 				if (chooseCourse.getItems().size() > 0) {
 					if (newIndex.intValue() < 1) {
-						listGrades(coursesToDisplay.get(0));
+						listGrades(coursesToDisplay.get(0), null);
 					} else {
-						listGrades(coursesToDisplay.get(newIndex.intValue()));
+						listGrades(coursesToDisplay.get(newIndex.intValue()), null);
 					}
 				} else {
 					displayGrades.getChildren().clear();
@@ -204,7 +204,7 @@ public class Grades extends View implements Observer {
 	 * @param selected
 	 *            the selected
 	 */
-	private void listGrades(Course selected) {
+	private void listGrades(Course selected, CourseEvent prev) {
 
 		TextField grade = new TextField();
 		grade.setPromptText("Enter Grade %");
@@ -233,6 +233,12 @@ public class Grades extends View implements Observer {
 			}
 		});
 
+		if (prev != null) {
+			if (events.contains(prev)) {
+				chooseEvent.setValue(prev);
+			}
+		}
+
 		confirmChanges.setOnAction(e -> {
 
 			try {
@@ -245,7 +251,7 @@ public class Grades extends View implements Observer {
 			} catch (NumberFormatException e1) {
 			}
 
-			listGrades(selected);
+			listGrades(selected, chooseEvent.getValue());
 		});
 
 		selectedDisplay.getChildren().clear();
@@ -333,7 +339,7 @@ public class Grades extends View implements Observer {
 				if (currentlySelected.courses.size() > 0) {
 
 					chooseCourse.setValue(currentlySelected.courses.get(0));
-					listGrades(chooseCourse.getValue());
+					listGrades(chooseCourse.getValue(), null);
 				}
 			}
 		}

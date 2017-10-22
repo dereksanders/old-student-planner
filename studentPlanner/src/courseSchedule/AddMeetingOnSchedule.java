@@ -64,6 +64,9 @@ public class AddMeetingOnSchedule {
 		window.setTitle("Add Meeting");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 
+		VBox body = new VBox();
+		ScrollPane scroll = new ScrollPane();
+
 		ObservableList<String> days = FXCollections.observableArrayList();
 		days.addAll("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday");
 		ObservableList<String> types = FXCollections.observableArrayList();
@@ -413,9 +416,6 @@ public class AddMeetingOnSchedule {
 		VBox titleDecision = new VBox(10);
 		titleDecision.getChildren().addAll(titleField);
 
-		VBox body = new VBox();
-		ScrollPane scroll = new ScrollPane();
-
 		VBox options = new VBox(20);
 		options.getChildren().addAll(header, courseAndType, titleField, colorDecision, dateDecision, hour, selectTimes,
 				locField, rep, chooseRepeat, decisions);
@@ -424,8 +424,8 @@ public class AddMeetingOnSchedule {
 		Style.addPadding(scroll);
 
 		body.getChildren().add(scroll);
-		body.setPrefHeight(732);
 		body.setPrefWidth(476);
+		body.setPrefHeight(660);
 
 		Scene scene = new Scene(body);
 		window.setScene(scene);

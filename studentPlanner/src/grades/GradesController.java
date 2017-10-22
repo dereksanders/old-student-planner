@@ -15,11 +15,9 @@ public class GradesController extends ProfileController {
 	public void updateGrade(CourseEvent e, double grade) {
 		e.grade = grade;
 		e.gradeEntered = true;
-		this.profile.update();
 	}
 
 	public void updateWeight(CourseEvent e, double weight) {
 		e.weight = weight;
-		this.profile.update();
 	}
 }

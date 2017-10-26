@@ -174,8 +174,9 @@ public class TermCalendar extends View implements Observer {
 						Button add = new Button("" + date);
 						add.setMinWidth(40);
 						add.setMinHeight(40);
-						PriorityQueue<CalendarEvent> ce = controller.profile.dateEvents.get(LocalDate.of(
-								term.start.plusMonths(i).getYear(), term.start.plusMonths(i).getMonthValue(), date));
+						PriorityQueue<CalendarEvent> ce = controller.profile.currentlySelectedTerm.dateEvents
+								.get(LocalDate.of(term.start.plusMonths(i).getYear(),
+										term.start.plusMonths(i).getMonthValue(), date));
 						if (ce != null && !ce.isEmpty()) {
 							add.setStyle(add.getStyle() + "-fx-background-color: #" + ce.peek().color + ";"
 									+ "-fx-background-radius: 0.0;");

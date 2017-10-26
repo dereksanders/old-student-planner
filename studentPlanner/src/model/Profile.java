@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 
 import core.Main;
-import utility.GenericLinkedHashTable;
 import utility.IOManager;
 
 /**
@@ -27,7 +26,6 @@ public class Profile extends Observable implements Serializable {
 
 	public ArrayList<Term> terms;
 	public int showWithinThreshold = 14;
-	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
 
 	// Recently used colors for non-Course meetings.
 	public ArrayList<String> recentlyUsedColors;
@@ -42,7 +40,6 @@ public class Profile extends Observable implements Serializable {
 
 		this.name = name;
 		this.terms = new ArrayList<>();
-		this.dateEvents = new GenericLinkedHashTable<>(300, true);
 		this.recentlyUsedColors = new ArrayList<>();
 	}
 

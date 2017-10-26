@@ -363,7 +363,7 @@ public class ProfileController {
 		}
 
 		for (CalendarEvent e : deleted.events) {
-			this.profile.dateEvents.del(e.start.toLocalDate(), e);
+			this.profile.currentlySelectedTerm.dateEvents.del(e.start.toLocalDate(), e);
 		}
 
 		profile.update();
@@ -503,7 +503,7 @@ public class ProfileController {
 	 */
 	public void addEvent(Course course, CalendarEvent added, LocalDate date) {
 
-		profile.dateEvents.put(date, added);
+		this.profile.currentlySelectedTerm.dateEvents.put(date, added);
 
 		if (course != null && added instanceof CourseEvent) {
 
@@ -541,12 +541,12 @@ public class ProfileController {
 	 */
 	public void deleteEvent(Course course, CalendarEvent deleted, LocalDate date) {
 
-		profile.dateEvents.del(date, deleted);
+		this.profile.currentlySelectedTerm.dateEvents.del(date, deleted);
 
 		if (course != null) {
 			course.events.remove(deleted);
 		}
 
-		profile.update();
+		this.profile.update();
 	}
 }

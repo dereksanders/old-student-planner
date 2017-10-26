@@ -83,7 +83,7 @@ public class EditCalendarEvent {
 		window.setTitle("Edit Event");
 		window.getIcons().add(new Image(Driver.class.getResourceAsStream("icon.png")));
 		ObservableList<CalendarEvent> events = FXCollections.observableArrayList();
-		for (CalendarEvent e : controller.profile.dateEvents.get(date)) {
+		for (CalendarEvent e : controller.profile.currentlySelectedTerm.dateEvents.get(date)) {
 			events.add(e);
 		}
 

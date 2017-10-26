@@ -88,39 +88,43 @@ public class UpcomingEvents extends View implements Observer {
 
 		this.eventsWithinThreshold.getChildren().clear();
 
-		for (int i = 0; i <= controller.profile.showWithinThreshold; i++) {
+		if (controller.profile.currentlySelectedTerm != null) {
 
-			PriorityQueue<CalendarEvent> de = controller.profile.dateEvents.get(Clock.now.toLocalDate().plusDays(i));
+			for (int i = 0; i <= controller.profile.showWithinThreshold; i++) {
 
-			if (de != null && !de.isEmpty()) {
+				PriorityQueue<CalendarEvent> de = controller.profile.currentlySelectedTerm.dateEvents
+						.get(Clock.now.toLocalDate().plusDays(i));
 
-				Label dateOfEvents = new Label("");
+				if (de != null && !de.isEmpty()) {
 
-				if (i == 0) {
-					dateOfEvents.setText("Today:");
-				} else if (i == 1) {
-					dateOfEvents.setText("Tomorrow:");
-				} else {
-					dateOfEvents.setText(Pretty.prettyDate(Clock.now.toLocalDate().plusDays(i)) + ":");
-				}
+					Label dateOfEvents = new Label("");
 
-				this.eventsWithinThreshold.getChildren().add(dateOfEvents);
-
-				ArrayList<CalendarEvent> events = new ArrayList<>();
-				events.addAll(de);
-				events.sort(Collections.reverseOrder());
-
-				for (CalendarEvent e : events) {
-
-					if (e instanceof CourseEvent) {
-
-						this.eventsWithinThreshold.getChildren().add(new Listing(Color.web(e.color),
-								((CourseEvent) e).course.toString() + " " + e.toString()).show());
-
+					if (i == 0) {
+						dateOfEvents.setText("Today:");
+					} else if (i == 1) {
+						dateOfEvents.setText("Tomorrow:");
 					} else {
+						dateOfEvents.setText(Pretty.prettyDate(Clock.now.toLocalDate().plusDays(i)) + ":");
+					}
 
-						this.eventsWithinThreshold.getChildren()
-								.add(new Listing(Color.web(e.color), e.toString()).show());
+					this.eventsWithinThreshold.getChildren().add(dateOfEvents);
+
+					ArrayList<CalendarEvent> events = new ArrayList<>();
+					events.addAll(de);
+					events.sort(Collections.reverseOrder());
+
+					for (CalendarEvent e : events) {
+
+						if (e instanceof CourseEvent) {
+
+							this.eventsWithinThreshold.getChildren().add(new Listing(Color.web(e.color),
+									((CourseEvent) e).course.toString() + " " + e.toString()).show());
+
+						} else {
+
+							this.eventsWithinThreshold.getChildren()
+									.add(new Listing(Color.web(e.color), e.toString()).show());
+						}
 					}
 				}
 			}

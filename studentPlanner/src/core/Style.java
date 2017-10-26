@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
 
 public class Style {
 
-	static Color borderColor = Color.DARKGREY;
+	public static Color borderColor = Color.web("0xccc");
 
 	/* All styles of border strokes that are used in the application */
 	public static BorderStroke fullBorderStroke = new BorderStroke(borderColor, BorderStrokeStyle.SOLID,

@@ -170,11 +170,11 @@ public class CourseSchedule extends View implements Observer {
 				Label legendTitle = new Label("Legend");
 				Style.setTitleStyle(legendTitle);
 				this.legend.getChildren().add(legendTitle);
-				this.legend.setStyle(
-						"-fx-background-color: #fff; -fx-border-color: #ccc; -fx-border-width: 1px; -fx-padding: 5;");
+				this.legend.setStyle("-fx-background-color: #fff; -fx-border-color: #"
+						+ Style.colorToHex(Style.borderColor) + "; -fx-border-width: 1px; -fx-padding: 5;");
 			} else {
-				this.legend.setStyle(
-						"-fx-background-color: #fff; -fx-border-color: #ccc; -fx-border-width: 0px; -fx-padding: 5;");
+				this.legend.setStyle("-fx-background-color: #fff; -fx-border-color: #"
+						+ Style.colorToHex(Style.borderColor) + "; -fx-border-width: 0px; -fx-padding: 5;");
 			}
 
 			for (Course c : this.controller.profile.currentlySelectedTerm.courses) {

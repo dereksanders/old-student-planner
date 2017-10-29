@@ -25,6 +25,8 @@ public class Course implements Comparable<Course>, Serializable {
 	public double gradeSoFar;
 	public double cumulativeGrade;
 
+	public boolean completed;
+
 	/**
 	 * Instantiates a new course.
 	 *

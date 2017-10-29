@@ -40,6 +40,8 @@ public class AddCalendarEvent {
 	private ComboBox<Time> endTimes;
 	private boolean updateEndTimes = false;
 
+	private static String[] courseEventTypes = { "Assignment", "Test", "Other" };
+
 	/**
 	 * Instantiates a new adds the calendar event.
 	 *
@@ -67,7 +69,7 @@ public class AddCalendarEvent {
 
 		Label dateLabel = new Label(date.toString());
 		ObservableList<String> types = FXCollections.observableArrayList();
-		types.addAll(CourseEvent.TYPES);
+		types.addAll(courseEventTypes);
 
 		/* Times drop-down */
 		ObservableList<Time> times = FXCollections.observableArrayList();
@@ -295,8 +297,20 @@ public class AddCalendarEvent {
 				} else {
 
 					try {
+
 						/* Add course event */
-						CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
+
+						String type = typeChoice.getValue();
+						int typeVal;
+						if (type.equals("Assignment")) {
+							typeVal = CourseEvent.TYPES.ASSIGNMENT.val;
+						} else if (type.equals("Test")) {
+							typeVal = CourseEvent.TYPES.TEST.val;
+						} else {
+							typeVal = CourseEvent.TYPES.OTHER.val;
+						}
+
+						CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color, typeVal,
 								LocalDateTime.of(date,
 										LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 								LocalDateTime.of(date,
@@ -304,6 +318,7 @@ public class AddCalendarEvent {
 								Double.parseDouble(weight.getText()));
 						controller.addEvent(cChoice.getValue(), add, date);
 						success = true;
+
 					} catch (NumberFormatException er) {
 						error.setText("Weight must be a valid decimal number.");
 					}
@@ -324,8 +339,20 @@ public class AddCalendarEvent {
 				} else {
 
 					try {
+
 						/* Add course event */
-						CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color,
+
+						String type = typeChoice.getValue();
+						int typeVal;
+						if (type.equals("Assignment")) {
+							typeVal = CourseEvent.TYPES.ASSIGNMENT.val;
+						} else if (type.equals("Test")) {
+							typeVal = CourseEvent.TYPES.TEST.val;
+						} else {
+							typeVal = CourseEvent.TYPES.OTHER.val;
+						}
+
+						CourseEvent add = new CourseEvent(name.getText(), cChoice.getValue().color, typeVal,
 								LocalDateTime.of(date,
 										LocalTime.of(startTimes.getValue().hour, startTimes.getValue().minute)),
 								LocalDateTime.of(date,
@@ -333,6 +360,7 @@ public class AddCalendarEvent {
 								Double.parseDouble(weight.getText()));
 						controller.addEvent(cChoice.getValue(), add, date);
 						success = true;
+
 					} catch (NumberFormatException er) {
 						error.setText("Weight must be a valid decimal number.");
 					}

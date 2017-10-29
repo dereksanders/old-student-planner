@@ -12,11 +12,33 @@ public class CourseEvent extends CalendarEvent {
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public static String[] TYPES = { "Assignment", "Test", "Other" };
+	public enum STATES {
+		NOT_STARTED(0), IN_PROGRESS(1), SUBMITTED(2), GRADED(3);
+
+		public int val;
+
+		private STATES(int val) {
+			this.val = val;
+		}
+	};
+
+	// TODO: Implement this enum in place of the string array below.
+
+	public enum TYPES {
+		ASSIGNMENT(0), TEST(1), OTHER(2);
+
+		public int val;
+
+		private TYPES(int val) {
+			this.val = val;
+		}
+	}
 
 	public double grade = 0;
 	public boolean gradeEntered = false;
 	public Course course;
+	public int type;
+	public int state;
 
 	/**
 	 * Instantiates a new course event.
@@ -32,10 +54,12 @@ public class CourseEvent extends CalendarEvent {
 	 * @param weight
 	 *            the weight
 	 */
-	public CourseEvent(String name, String color, LocalDateTime start, LocalDateTime end, double weight) {
+	public CourseEvent(String name, String color, int type, LocalDateTime start, LocalDateTime end, double weight) {
 
 		super(name, color, start, end);
 
+		this.type = type;
 		this.weight = weight;
+		this.state = STATES.NOT_STARTED.val;
 	}
 }

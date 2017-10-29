@@ -61,6 +61,11 @@ public class ProfileController {
 		profile.update();
 	}
 
+	/**
+	 * Currently selected term courses exist.
+	 *
+	 * @return true, if successful
+	 */
 	public boolean currentlySelectedTermCoursesExist() {
 
 		if (this.profile.currentlySelectedTerm.courses.size() > 0) {
@@ -246,8 +251,10 @@ public class ProfileController {
 	 * Checks if an existing term (other than the original) overlaps with the start
 	 * and end dates of the term being edited.
 	 *
-	 * @param added
-	 *            the term being added
+	 * @param original
+	 *            the original
+	 * @param edited
+	 *            the edited
 	 * @return true, if an existing term overlaps
 	 */
 	private boolean existingTermOverlaps(Term original, Term edited) {
@@ -548,5 +555,28 @@ public class ProfileController {
 		}
 
 		this.profile.update();
+	}
+
+	/**
+	 * Mark courses complete that end on or before the endDate.
+	 *
+	 * @param endDate
+	 *            the end date
+	 */
+	public void markCoursesComplete(LocalDate endDate) {
+		for (Term t : this.profile.terms) {
+
+		}
+	}
+
+	/**
+	 * Mark events complete that end on or before the endDate.
+	 *
+	 * @param endDate
+	 *            the end date
+	 */
+	public void markEventsComplete(LocalDate endDate) {
+		// TODO Auto-generated method stub
+
 	}
 }

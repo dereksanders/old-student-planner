@@ -15,20 +15,18 @@ public class Driver {
 	public String saveDir;
 	public String backupDir;
 
-	protected Planner planner;
+	public Planner planner;
 	protected Profile active;
 	protected ProfileController pc;
 
 	public Driver(String saveDir, String backupDir) {
 
-		this.clock = new Clock();
-
 		this.saveDir = saveDir;
 		this.backupDir = backupDir;
 		this.active = initProfile();
-		this.planner = Planner.getInstance(this.active);
 		this.pc = new ProfileController(this.active);
-		this.planner.pc = this.pc;
+		this.clock = new Clock(this.pc);
+		this.planner = Planner.getInstance(this.active, this.pc);
 	}
 
 	private Profile initProfile() {

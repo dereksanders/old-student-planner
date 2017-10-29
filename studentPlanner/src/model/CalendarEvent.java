@@ -19,6 +19,8 @@ public class CalendarEvent implements Comparable<CalendarEvent>, Serializable {
 	public LocalDateTime end;
 	public double weight = 0;
 
+	public boolean completed;
+
 	/**
 	 * Instantiates a new calendar event.
 	 *

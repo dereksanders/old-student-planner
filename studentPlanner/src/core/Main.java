@@ -1,5 +1,7 @@
 package core;
 
+import java.time.LocalDate;
+
 import courseSchedule.CourseSchedule;
 import courseSchedule.CourseScheduleController;
 import dashboard.Dashboard;
@@ -61,7 +63,24 @@ public class Main extends Application {
 		GradesPlot gradesPlot = new GradesPlot(gradesPlotController);
 		driver.planner.addView(gradesPlot);
 
+		// This is unlikely to be null as by this point, the Clock should have had
+		// enough time to tick once.
+		if (Clock.now != null) {
+			LocalDate yesterday = Clock.now.toLocalDate().minusDays(1);
+			// This implies the existing profile has never reached setting the lastQuit (but
+			// has somehow saved). If that is the case, set lastQuit to yesterday.
+			if (driver.active.lastQuit == null) {
+				driver.active.lastQuit = yesterday;
+			}
+			if (driver.active.lastQuit.isBefore(Clock.now.toLocalDate())) {
+				driver.pc.markCoursesComplete(yesterday);
+				driver.pc.markEventsComplete(yesterday);
+			}
+		}
+
+		// Refresh all views.
 		driver.planner.refresh();
+
 		launch(args);
 	}
 
@@ -90,6 +109,7 @@ public class Main extends Application {
 	public void stop() throws Exception {
 		System.out.println("Saving and exiting..");
 		driver.active.save();
+		driver.active.lastQuit = Clock.now.toLocalDate();
 		System.exit(0);
 	}
 

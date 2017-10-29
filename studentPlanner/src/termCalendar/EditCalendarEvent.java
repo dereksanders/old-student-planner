@@ -198,6 +198,7 @@ public class EditCalendarEvent {
 				if (currentlySelected instanceof CourseEvent) {
 
 					CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
+							((CourseEvent) currentlySelected).type,
 							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 							LocalDateTime.of(chooseDate.getValue(),
@@ -225,6 +226,7 @@ public class EditCalendarEvent {
 				if (currentlySelected instanceof CourseEvent) {
 
 					CourseEvent edited = new CourseEvent(name.getText(), currentlySelected.color,
+							((CourseEvent) currentlySelected).type,
 							LocalDateTime.of(chooseDate.getValue(),
 									LocalTime.of(startTime.getValue().hour, startTime.getValue().minute)),
 							LocalDateTime.of(chooseDate.getValue(),

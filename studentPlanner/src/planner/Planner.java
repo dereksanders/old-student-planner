@@ -34,7 +34,7 @@ public class Planner extends View implements Observer {
 	public enum VIEW_INDEX {
 		DASHBOARD(0), COURSE_SCHEDULE(1), TERM_CALENDAR(2), GRADES(3), GRADES_PLOT(4);
 
-		private int val;
+		public int val;
 
 		private VIEW_INDEX(int val) {
 			this.val = val;
@@ -48,7 +48,7 @@ public class Planner extends View implements Observer {
 	public ProfileController pc;
 	public Observable observable;
 	/* Application Views */
-	private ArrayList<View> views;
+	public ArrayList<View> views;
 
 	/* GUI */
 	private Scene scene;
@@ -68,12 +68,15 @@ public class Planner extends View implements Observer {
 	/**
 	 * Instantiates a new planner.
 	 *
-	 * @param observable
+	 * @param profile
 	 *            the observable
 	 */
-	private Planner(Observable observable) {
-		this.observable = observable;
-		observable.addObserver(this);
+	private Planner(Observable profile, ProfileController pc) {
+
+		this.observable = profile;
+		profile.addObserver(this);
+
+		this.pc = pc;
 
 		this.views = new ArrayList<>();
 		this.viewPane = new BorderPane();
@@ -92,11 +95,11 @@ public class Planner extends View implements Observer {
 	 *            the observable
 	 * @return single instance of Planner
 	 */
-	public static Planner getInstance(Observable observable) {
+	public static Planner getInstance(Observable observable, ProfileController pc) {
 		if (uniqueInstance == null) {
 			synchronized (Planner.class) {
 				if (uniqueInstance == null) {
-					uniqueInstance = new Planner(observable);
+					uniqueInstance = new Planner(observable, pc);
 				}
 			}
 		}

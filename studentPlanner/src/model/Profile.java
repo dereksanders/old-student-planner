@@ -30,6 +30,8 @@ public class Profile extends Observable implements Serializable {
 	// Recently used colors for non-Course meetings.
 	public ArrayList<String> recentlyUsedColors;
 
+	public LocalDate lastQuit;
+
 	/**
 	 * Instantiates a new profile.
 	 *

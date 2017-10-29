@@ -84,6 +84,8 @@ public class UpcomingEvents extends View implements Observer {
 
 	private void setUpcomingEvents() {
 
+		boolean eventsExist = false;
+
 		this.chooseThreshold.setValue(controller.profile.showWithinThreshold);
 
 		this.eventsWithinThreshold.getChildren().clear();
@@ -96,6 +98,8 @@ public class UpcomingEvents extends View implements Observer {
 						.get(Clock.now.toLocalDate().plusDays(i));
 
 				if (de != null && !de.isEmpty()) {
+
+					eventsExist = true;
 
 					Label dateOfEvents = new Label("");
 
@@ -128,6 +132,11 @@ public class UpcomingEvents extends View implements Observer {
 					}
 				}
 			}
+		}
+
+		if (!eventsExist) {
+
+			this.eventsWithinThreshold.getChildren().add(new Label("No upcoming events!"));
 		}
 	}
 

@@ -50,6 +50,11 @@ public class TodaysMeetings extends View implements Observer {
 
 		todaysMeetings.getChildren().clear();
 
+		Label todaysMeetingsTitle = new Label("Today's Meetings");
+		Style.setTitleStyle(todaysMeetingsTitle);
+
+		todaysMeetings.getChildren().add(todaysMeetingsTitle);
+
 		if (controller.profile.currentlySelectedTerm != null) {
 
 			/* Priority queue of today's meetings */
@@ -57,11 +62,6 @@ public class TodaysMeetings extends View implements Observer {
 					.get(Clock.now.toLocalDate());
 
 			if (td != null && !td.isEmpty()) {
-
-				Label todaysMeetingsTitle = new Label("Today's Meetings");
-				Style.setTitleStyle(todaysMeetingsTitle);
-
-				todaysMeetings.getChildren().add(todaysMeetingsTitle);
 
 				ArrayList<Meeting> meetings = new ArrayList<>();
 				meetings.addAll(td);
@@ -71,7 +71,17 @@ public class TodaysMeetings extends View implements Observer {
 
 					todaysMeetings.getChildren().add(new Listing(Color.web(m.color), m.toString()).show());
 				}
+
+			} else {
+
+				Label empty = new Label("No meetings today!");
+				todaysMeetings.getChildren().add(empty);
 			}
+
+		} else {
+
+			Label empty = new Label("No meetings exist. Start by adding a Term.");
+			todaysMeetings.getChildren().add(empty);
 		}
 	}
 

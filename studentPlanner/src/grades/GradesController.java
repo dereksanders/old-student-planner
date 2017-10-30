@@ -16,8 +16,9 @@ public class GradesController extends ProfileController {
 	}
 
 	public void updateGrade(CourseEvent e, double grade) {
+
 		e.grade = grade;
-		e.gradeEntered = true;
+		e.state = CourseEvent.STATES.GRADED.val;
 
 		e.course.calcGrades();
 

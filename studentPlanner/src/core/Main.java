@@ -66,15 +66,27 @@ public class Main extends Application {
 		// This is unlikely to be null as by this point, the Clock should have had
 		// enough time to tick once.
 		if (Clock.now != null) {
+
 			LocalDate yesterday = Clock.now.toLocalDate().minusDays(1);
+
 			// This implies the existing profile has never reached setting the lastQuit (but
 			// has somehow saved). If that is the case, set lastQuit to yesterday.
 			if (driver.active.lastQuit == null) {
+
 				driver.active.lastQuit = yesterday;
 			}
+
 			if (driver.active.lastQuit.isBefore(Clock.now.toLocalDate())) {
+
 				driver.pc.markCoursesComplete(yesterday);
-				driver.pc.markEventsComplete(yesterday);
+			}
+
+			driver.pc.markEventsComplete(Clock.now);
+
+			// There was no term in progress at lastQuit, but there should be now.
+			if (driver.active.termInProgress == null && driver.active.lastQuit.isBefore(Clock.now.toLocalDate())) {
+
+				driver.pc.updateTermInProgress();
 			}
 		}
 

@@ -21,6 +21,9 @@ public class Profile extends Observable implements Serializable {
 	public String name;
 	public Term currentlySelectedTerm;
 
+	// TODO
+	public Term termInProgress;
+
 	/* Gets initialized in Driver#start to current date. */
 	public LocalDate currentlySelectedDate;
 

@@ -13,6 +13,16 @@ public class Course implements Comparable<Course>, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public enum STATES {
+		NOT_STARTED(0), IN_PROGRESS(1), COMPLETED(2), GRADED(3);
+
+		public int val;
+
+		private STATES(int val) {
+			this.val = val;
+		}
+	};
+
 	public String name;
 	public String departmentID;
 	public int code;
@@ -21,11 +31,10 @@ public class Course implements Comparable<Course>, Serializable {
 	public ArrayList<CourseEvent> events;
 	public String color;
 
+	public int state;
 	public double percentDone;
 	public double gradeSoFar;
 	public double cumulativeGrade;
-
-	public boolean completed;
 
 	/**
 	 * Instantiates a new course.
@@ -67,7 +76,8 @@ public class Course implements Comparable<Course>, Serializable {
 
 		for (CourseEvent e : this.events) {
 
-			if (e.gradeEntered) {
+			if (e.state == CourseEvent.STATES.GRADED.val) {
+
 				this.percentDone += e.weight;
 				this.cumulativeGrade += e.grade * (e.weight / 100);
 				this.gradeSoFar += e.grade * e.weight;
@@ -75,6 +85,7 @@ public class Course implements Comparable<Course>, Serializable {
 		}
 
 		if (this.percentDone != 0) {
+
 			this.gradeSoFar = this.gradeSoFar / this.percentDone;
 		}
 	}

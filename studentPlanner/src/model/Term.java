@@ -19,10 +19,21 @@ public class Term implements Comparable<Term>, Serializable {
 	 */
 	private static final long serialVersionUID = 1L;
 
+	public enum STATES {
+		NOT_STARTED(0), IN_PROGRESS(1), COMPLETED(2), GRADED(3);
+
+		public int val;
+
+		private STATES(int val) {
+			this.val = val;
+		}
+	};
+
 	public String name;
 	public LocalDate start;
 	public LocalDate end;
 
+	public int state;
 	public double avg;
 	public double avgSoFar;
 

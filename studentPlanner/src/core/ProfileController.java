@@ -106,6 +106,14 @@ public class ProfileController {
 
 				this.profile.terms.add(added);
 
+				if (this.profile.termInProgress == null) {
+
+					if (findTerm(Clock.now.toLocalDate()).equals(added)) {
+
+						this.profile.termInProgress = added;
+					}
+				}
+
 				if (this.profile.terms.size() == 1) {
 
 					LocalDate selected = this.profile.currentlySelectedDate;
@@ -147,11 +155,18 @@ public class ProfileController {
 	 */
 	public void editTerm(Term original, Term edited) {
 
+		boolean editingTermInProgress = false;
+
 		if (!existingTermOverlaps(original, edited)) {
+
+			if (this.profile.termInProgress.equals(original)) {
+				editingTermInProgress = true;
+			}
 
 			original.name = edited.name;
 			original.start = edited.start;
 			original.end = edited.end;
+
 			this.profile.update();
 
 		} else {
@@ -159,6 +174,21 @@ public class ProfileController {
 			new Alert(AlertType.ERROR,
 					"An existing term conflicts with your changes. Please enter non-overlapping start and end dates for terms.")
 							.showAndWait();
+		}
+
+		if (this.profile.termInProgress == null) {
+
+			if (findTerm(Clock.now.toLocalDate()).equals(original)) {
+
+				this.profile.termInProgress = original;
+			}
+
+		} else if (editingTermInProgress) {
+
+			if (!findTerm(Clock.now.toLocalDate()).equals(original)) {
+
+				this.profile.termInProgress = null;
+			}
 		}
 	}
 
@@ -170,12 +200,27 @@ public class ProfileController {
 	 */
 	public void deleteTerm(Term deleted) {
 
+		boolean deletingTermInProgress = false;
+
+		if (this.profile.termInProgress.equals(deleted)) {
+			deletingTermInProgress = true;
+		}
+
 		this.profile.terms.remove(deleted);
 
 		if (this.profile.terms.isEmpty()) {
+
 			setCurrentlySelectedDate(Clock.now.toLocalDate());
+
 		} else {
+
+			// TODO: Consider if this is right
 			setCurrentlySelectedDate(this.profile.terms.get(0).start);
+		}
+
+		if (deletingTermInProgress) {
+
+			this.profile.termInProgress = null;
 		}
 
 		this.profile.update();
@@ -517,8 +562,19 @@ public class ProfileController {
 			course.events.add((CourseEvent) added);
 			((CourseEvent) added).course = course;
 
+			// If the user is adding an event that finished in the past, mark it submitted.
+			if (added.end.isBefore(Clock.now)) {
+
+				((CourseEvent) added).state = CourseEvent.STATES.SUBMITTED.val;
+
+			} else {
+
+				((CourseEvent) added).state = CourseEvent.STATES.NOT_STARTED.val;
+			}
+
 		} else {
 
+			// Update recentlyUsedColors when adding a non-course event.
 			if (this.profile.recentlyUsedColors.contains(added.color)) {
 
 				this.profile.recentlyUsedColors.remove(added.color);
@@ -564,8 +620,20 @@ public class ProfileController {
 	 *            the end date
 	 */
 	public void markCoursesComplete(LocalDate endDate) {
+
 		for (Term t : this.profile.terms) {
 
+			if (t.state != Term.STATES.COMPLETED.val && t.state != Term.STATES.GRADED.val
+					&& (t.end.isEqual(endDate) || t.end.isBefore(endDate))) {
+
+				for (Course c : t.courses) {
+					if (c.state != Course.STATES.COMPLETED.val && c.state != Course.STATES.GRADED.val) {
+						c.state = Course.STATES.COMPLETED.val;
+					}
+				}
+
+				t.state = Term.STATES.COMPLETED.val;
+			}
 		}
 	}
 
@@ -575,8 +643,32 @@ public class ProfileController {
 	 * @param endDate
 	 *            the end date
 	 */
-	public void markEventsComplete(LocalDate endDate) {
-		// TODO Auto-generated method stub
+	public void markEventsComplete(LocalDateTime endDateTime) {
 
+		if (this.profile.termInProgress != null) {
+
+			for (Course c : this.profile.termInProgress.courses) {
+
+				for (CourseEvent e : c.events) {
+
+					if (e.state != CourseEvent.STATES.SUBMITTED.val && e.state != CourseEvent.STATES.GRADED.val
+							&& e.end.isBefore(endDateTime)) {
+
+						e.state = CourseEvent.STATES.SUBMITTED.val;
+					}
+				}
+			}
+
+			if (this.profile.termInProgress.end.isBefore(endDateTime.toLocalDate())) {
+
+				updateTermInProgress();
+			}
+
+		}
+	}
+
+	public void updateTermInProgress() {
+
+		this.profile.termInProgress = findTerm(Clock.now.toLocalDate());
 	}
 }

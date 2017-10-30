@@ -20,10 +20,11 @@ public class Clock {
 
 				// The first time this task runs, Clock.now will be null.
 				if (Clock.now != null) {
+
 					if (Clock.now.toLocalDate().isBefore(LocalDate.now())) {
-						// Date has incremented, mark courses and events complete as necessary.
+
+						// Date has incremented, mark courses complete as necessary.
 						Clock.pc.markCoursesComplete(Clock.now.toLocalDate());
-						Clock.pc.markEventsComplete(Clock.now.toLocalDate());
 					}
 				}
 
@@ -31,7 +32,23 @@ public class Clock {
 			}
 		};
 
+		TimerTask updateEvents = new TimerTask() {
+
+			@Override
+			public void run() {
+
+				// Check every tick if an event's end time has passed.
+				Clock.pc.markEventsComplete(Clock.now);
+			}
+		};
+
 		Timer timer = new Timer("update");
-		timer.scheduleAtFixedRate(update, 0, 10000);
+		Timer events = new Timer("events");
+
+		// Tick every second.
+		timer.scheduleAtFixedRate(update, 0, 1000);
+
+		// Tick every minute.
+		events.scheduleAtFixedRate(updateEvents, 1000, 60000);
 	}
 }

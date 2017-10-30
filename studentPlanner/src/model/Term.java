@@ -187,14 +187,22 @@ public class Term implements Comparable<Term>, Serializable {
 		this.avg = 0;
 		this.avgSoFar = 0;
 
+		int numCoursesEnding = 0;
+
 		for (Course c : this.courses) {
-			this.avg += c.cumulativeGrade;
-			this.avgSoFar += c.gradeSoFar;
+
+			if (c.getLastTerm().equals(this)) {
+
+				System.out.println(c + "'s last term is " + this);
+				this.avg += c.cumulativeGrade;
+				this.avgSoFar += c.gradeSoFar;
+				numCoursesEnding++;
+			}
 		}
 
-		if (this.courses.size() > 0) {
-			this.avg = this.avg / this.courses.size();
-			this.avgSoFar = this.avgSoFar / this.courses.size();
+		if (numCoursesEnding > 0) {
+			this.avg = this.avg / numCoursesEnding;
+			this.avgSoFar = this.avgSoFar / numCoursesEnding;
 		}
 	}
 }

@@ -56,6 +56,34 @@ public class Course implements Comparable<Course>, Serializable {
 		this.color = colour;
 	}
 
+	/**
+	 * Calc grades.
+	 */
+	public void calcGrades() {
+
+		this.percentDone = 0;
+		this.cumulativeGrade = 0;
+		this.gradeSoFar = 0;
+
+		for (CourseEvent e : this.events) {
+
+			if (e.gradeEntered) {
+				this.percentDone += e.weight;
+				this.cumulativeGrade += e.grade * (e.weight / 100);
+				this.gradeSoFar += e.grade * e.weight;
+			}
+		}
+
+		if (this.percentDone != 0) {
+			this.gradeSoFar = this.gradeSoFar / this.percentDone;
+		}
+	}
+
+	public Term getLastTerm() {
+
+		return this.terms.get(this.terms.size() - 1);
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -111,29 +139,6 @@ public class Course implements Comparable<Course>, Serializable {
 			return -1;
 		} else {
 			return 1;
-		}
-	}
-
-	/**
-	 * Calc grades.
-	 */
-	public void calcGrades() {
-
-		this.percentDone = 0;
-		this.cumulativeGrade = 0;
-		this.gradeSoFar = 0;
-
-		for (CourseEvent e : this.events) {
-
-			if (e.gradeEntered) {
-				this.percentDone += e.weight;
-				this.cumulativeGrade += e.grade * (e.weight / 100);
-				this.gradeSoFar += e.grade * e.weight;
-			}
-		}
-
-		if (this.percentDone != 0) {
-			this.gradeSoFar = this.gradeSoFar / this.percentDone;
 		}
 	}
 }

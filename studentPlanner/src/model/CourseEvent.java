@@ -23,7 +23,6 @@ public class CourseEvent extends CalendarEvent {
 	};
 
 	// TODO: Implement this enum in place of the string array below.
-
 	public enum TYPES {
 		ASSIGNMENT(0), TEST(1), OTHER(2);
 
@@ -35,7 +34,10 @@ public class CourseEvent extends CalendarEvent {
 	}
 
 	public double grade = 0;
+
+	// TODO: Remove this when state field is implemented.
 	public boolean gradeEntered = false;
+
 	public Course course;
 	public int type;
 	public int state;

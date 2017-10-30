@@ -181,8 +181,6 @@ public class Grades extends View implements Observer {
 			courseGrid.getRowConstraints().add(new RowConstraints(30));
 		}
 
-		selected.calcGrades();
-
 		HBox gradeSoFarBox = new HBox();
 		Label gradeSoFarTitle = new Label("Average so far: ");
 		gradeSoFarTitle.setStyle("-fx-font-weight: bold;");
@@ -294,8 +292,6 @@ public class Grades extends View implements Observer {
 			eventGrid.add(worthDesc, 2, i + 1);
 			eventGrid.getRowConstraints().add(new RowConstraints(30));
 		}
-
-		selected.calcGrades();
 
 		HBox gradeSoFarBox = new HBox();
 		Label gradeSoFarTitle = new Label("Grade so far: ");

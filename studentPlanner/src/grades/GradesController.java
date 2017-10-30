@@ -4,6 +4,7 @@ import core.Main;
 import core.ProfileController;
 import model.CourseEvent;
 import model.Profile;
+import model.Term;
 import planner.Planner;
 
 public class GradesController extends ProfileController {
@@ -19,9 +20,13 @@ public class GradesController extends ProfileController {
 		e.gradeEntered = true;
 
 		e.course.calcGrades();
-		this.profile.currentlySelectedTerm.calcGrades();
 
-		// Refresh all views except for Grades.
+		for (Term t : e.course.terms) {
+			t.calcGrades();
+		}
+
+		// Refresh all views except for Grades so that the selected course and event do
+		// not reset.
 		for (int i = 0; i < Main.driver.planner.views.size(); i++) {
 
 			if (i != Planner.VIEW_INDEX.GRADES.val) {

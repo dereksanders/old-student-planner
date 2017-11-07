@@ -65,42 +65,50 @@ public class Style {
 			borderColor, BorderStrokeStyle.SOLID, BorderStrokeStyle.NONE, BorderStrokeStyle.SOLID,
 			BorderStrokeStyle.NONE, CornerRadii.EMPTY, BorderStroke.THIN, Insets.EMPTY);
 
-	public static Color appGrey = Color.web("0xdddddd");
-	public static Color appBlue = Color.web("0x6680e6");
+	public static Color appGrey = Color.web("0xeee");
+	public static Color appBlue = Color.web("0x3f4be0");
 	public static Color appRed = Color.web("0xff6666");
-	public static Color appYellow = Color.web("0xffcc66");
-	public static Color appGreen = Color.web("0x669966");
+	public static Color appYellow = Color.web("0xffff6e");
+	public static Color appGreen = Color.web("0x0dbe0d");
 	public static Color appOrange = Color.web("0xffb466");
 	public static Color appPurple = Color.web("0x996699");
 	public static Color appTeal = Color.web("0x669999");
 	public static Color appPink = Color.web("0xffccff");
 	public static Color appBrown = Color.web("0xb34d1a");
-	public static Color appDarkGrey = Color.web("0x666666");
+	public static Color appDarkGrey = Color.web("0x202225");
+	public static Color appWhite = Color.web("0xfff");
+	public static Color appBlack = Color.web("0x000");
 
 	public static ObservableList<Color> selectableColors = FXCollections.observableArrayList(appBlue, appRed, appYellow,
 			appGreen, appOrange, appPurple, appTeal, appPink, appBrown, appDarkGrey);
 
 	public static void setButtonStyle(Button button) {
-		button.setStyle(
-				"-fx-background-color: linear-gradient(#26ce26, #1b9b1b); -fx-text-fill: #fff; -fx-background-radius: 0;");
+		button.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + "; -fx-text-fill: #"
+				+ Style.colorToHex(Style.appWhite) + "; -fx-background-radius: 0;");
 	}
 
 	public static void setTitleStyle(Label title) {
-		title.setStyle("-fx-font-size: 15.0pt;" + "-fx-text-fill: #00a300;" + "-fx-font-weight: bold;");
+		title.setStyle("-fx-font-size: 15.0pt;" + "-fx-text-fill: #" + Style.colorToHex(Style.appBlack) + ";");
 	}
 
 	public static void setSmallTitleStyle(Label title) {
-		title.setStyle("-fx-font-size: 13.0pt;" + "-fx-text-fill: #00a300;" + "-fx-font-weight: bold;");
+		title.setStyle("-fx-font-size: 13.0pt;" + "-fx-text-fill: #" + Style.colorToHex(Style.appBlack) + ";");
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setChoiceBoxStyle(ChoiceBox box) {
+		// box.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) +
+		// "; -fx-text-fill: #000;"
+		// + "-fx-background-radius: 0");
 		box.setStyle(
 				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}
 
 	@SuppressWarnings("rawtypes")
 	public static void setComboBoxStyle(ComboBox box) {
+		// box.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) +
+		// "; -fx-text-fill: #000;"
+		// + "-fx-background-radius: 0");
 		box.setStyle(
 				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}

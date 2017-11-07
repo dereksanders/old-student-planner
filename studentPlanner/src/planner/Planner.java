@@ -4,23 +4,20 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import core.Main;
 import core.ProfileController;
 import core.Style;
 import core.View;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.Border;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
@@ -41,22 +38,25 @@ public class Planner extends View implements Observer {
 		}
 	};
 
+	public static String menuColor = Style.colorToHex(Style.appGrey);
+	public static String hoverColor = Style.colorToHex(Style.appGreen);
+
 	private volatile static Planner uniqueInstance;
 	private static int initialWidth = 1050;
-	private static int initialHeight = 800;
+	private static int initialHeight = 850;
 
 	public ProfileController pc;
 	public Observable observable;
 	/* Application Views */
 	public ArrayList<View> views;
+	public VBox activeViewBox;
 
 	/* GUI */
 	private Scene scene;
 	private HBox options;
-	private BorderPane viewPane;
+	public BorderPane viewPane;
 
 	/* controlPane elements */
-	private ChoiceBox<View> chooseView;
 	private Button addTerm;
 	private Button editTerm;
 	private Button addCourse;
@@ -82,7 +82,7 @@ public class Planner extends View implements Observer {
 		this.viewPane = new BorderPane();
 
 		this.options = initOptions();
-		this.options.setStyle("-fx-padding: 10; -fx-background-color: #ddd");
+		this.options.setStyle("-fx-padding: 10; -fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 		this.mainLayout = initLayout();
 		this.mainLayout.setStyle("-fx-background-color: #fff;");
 		this.scene = new Scene(this.mainLayout, initialWidth, initialHeight);
@@ -113,111 +113,174 @@ public class Planner extends View implements Observer {
 	 */
 	public BorderPane initLayout() {
 		BorderPane bp = new BorderPane();
-		chooseView = new ChoiceBox<>(FXCollections.observableArrayList(this.views));
-		Style.setChoiceBoxStyle(chooseView);
-		chooseView.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+
+		VBox menu = new VBox(0);
+		menu.setStyle(menu.getStyle() + "-fx-background-color: #" + menuColor + ";");
+
+		VBox db = new VBox(0);
+		db.setPadding(new Insets(10, 20, 10, 20));
+		Label dashboardTitle = new Label("Home");
+		Style.setSmallTitleStyle(dashboardTitle);
+		dashboardTitle.setStyle(dashboardTitle.getStyle());
+
+		db.setOnMouseClicked(e -> {
+			refresh();
+			viewPane.setCenter(views.get(VIEW_INDEX.DASHBOARD.val).mainLayout);
+			this.activeViewBox = db;
+		});
+
+		db.getChildren().addAll(dashboardTitle);
+		db.setAlignment(Pos.CENTER);
+
+		db.setOnMouseEntered(new EventHandler<MouseEvent>() {
 			@Override
-			public void changed(ObservableValue<? extends Number> observable, Number oldIndex, Number newIndex) {
-				if (newIndex.intValue() == -1) {
-					newIndex = new Integer(0);
-				}
-				viewPane.setCenter(views.get(newIndex.intValue()).mainLayout);
+			public void handle(MouseEvent mouseEvent) {
+				db.setStyle("-fx-background-color: #" + hoverColor + ";");
+				db.getChildren().get(0).setStyle(db.getChildren().get(0).getStyle() + "-fx-text-fill: #fff;");
 			}
 		});
 
-		VBox menu = new VBox(5);
-		menu.setBorder(new Border(Style.fullBorderStroke));
-		menu.setStyle(menu.getStyle()
-				+ "-fx-background-color: #eee; -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
-
-		int iconWidth = 115;
-		int iconHeight = 115;
-
-		VBox db = new VBox(0);
-		Label dashboardTitle = new Label("Dashboard");
-		Style.setSmallTitleStyle(dashboardTitle);
-
-		ImageView dashboardIcon = new ImageView();
-		dashboardIcon.setFitWidth(iconWidth);
-		dashboardIcon.setFitHeight(iconHeight);
-		dashboardIcon.setImage(new Image(Main.class.getResourceAsStream("dashboard2.png")));
-
-		db.setOnMouseClicked(e -> {
-			viewPane.setCenter(views.get(VIEW_INDEX.DASHBOARD.val).mainLayout);
+		db.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				db.setStyle("-fx-background-color: #" + menuColor + ";");
+				db.getChildren().get(0).setStyle(db.getChildren().get(0).getStyle() + "-fx-text-fill: #000;");
+			}
 		});
 
-		db.getChildren().addAll(dashboardIcon, dashboardTitle);
-		db.setAlignment(Pos.CENTER);
-
 		VBox cs = new VBox(0);
+		cs.setPadding(new Insets(10, 20, 10, 20));
 		Label csTitle = new Label("Course Schedule");
 		Style.setSmallTitleStyle(csTitle);
 
-		ImageView courseScheduleIcon = new ImageView();
-		courseScheduleIcon.setFitWidth(iconWidth);
-		courseScheduleIcon.setFitHeight(iconHeight);
-		courseScheduleIcon.setImage(new Image(Main.class.getResourceAsStream("courseSchedule.png")));
-
 		cs.setOnMouseClicked(e -> {
+			refresh();
 			viewPane.setCenter(views.get(VIEW_INDEX.COURSE_SCHEDULE.val).mainLayout);
+			this.activeViewBox = cs;
 		});
 
-		cs.getChildren().addAll(courseScheduleIcon, csTitle);
+		cs.getChildren().addAll(csTitle);
 		cs.setAlignment(Pos.CENTER);
 
+		cs.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				cs.setStyle("-fx-background-color: #" + hoverColor + ";");
+				cs.getChildren().get(0).setStyle(cs.getChildren().get(0).getStyle() + "-fx-text-fill: #fff;");
+			}
+		});
+
+		cs.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				cs.setStyle("-fx-background-color: #" + menuColor + ";");
+				cs.getChildren().get(0).setStyle(cs.getChildren().get(0).getStyle() + "-fx-text-fill: #000;");
+			}
+		});
+
 		VBox tc = new VBox(0);
+		tc.setPadding(new Insets(10, 20, 10, 20));
 		Label tcTitle = new Label("Term Calendar");
 		Style.setSmallTitleStyle(tcTitle);
 
-		ImageView termCalendarIcon = new ImageView();
-		termCalendarIcon.setFitWidth(iconWidth);
-		termCalendarIcon.setFitHeight(iconHeight);
-		termCalendarIcon.setImage(new Image(Main.class.getResourceAsStream("termCalendar.png")));
-
 		tc.setOnMouseClicked(e -> {
+			refresh();
 			viewPane.setCenter(views.get(VIEW_INDEX.TERM_CALENDAR.val).mainLayout);
+			this.activeViewBox = tc;
 		});
 
-		tc.getChildren().addAll(termCalendarIcon, tcTitle);
+		tc.getChildren().addAll(tcTitle);
 		tc.setAlignment(Pos.CENTER);
 
+		tc.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				tc.setStyle("-fx-background-color: #" + hoverColor + ";");
+				tc.getChildren().get(0).setStyle(tc.getChildren().get(0).getStyle() + "-fx-text-fill: #fff;");
+			}
+		});
+
+		tc.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				tc.setStyle("-fx-background-color: #" + menuColor + ";");
+				tc.getChildren().get(0).setStyle(tc.getChildren().get(0).getStyle() + "-fx-text-fill: #000;");
+			}
+		});
+
 		VBox g = new VBox(0);
+		g.setPadding(new Insets(10, 20, 10, 20));
 		Label gTitle = new Label("Grades");
 		Style.setSmallTitleStyle(gTitle);
 
-		ImageView gradesIcon = new ImageView();
-		gradesIcon.setFitWidth(iconWidth);
-		gradesIcon.setFitHeight(iconHeight);
-		gradesIcon.setImage(new Image(Main.class.getResourceAsStream("grades.png")));
-
 		g.setOnMouseClicked(e -> {
+			refresh();
 			viewPane.setCenter(views.get(VIEW_INDEX.GRADES.val).mainLayout);
+			this.activeViewBox = g;
 		});
 
-		g.getChildren().addAll(gradesIcon, gTitle);
+		g.getChildren().addAll(gTitle);
 		g.setAlignment(Pos.CENTER);
 
+		g.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				g.setStyle("-fx-background-color: #" + hoverColor + ";");
+				g.getChildren().get(0).setStyle(g.getChildren().get(0).getStyle() + "-fx-text-fill: #fff;");
+			}
+		});
+
+		g.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				g.setStyle("-fx-background-color: #" + menuColor + ";");
+				g.getChildren().get(0).setStyle(g.getChildren().get(0).getStyle() + "-fx-text-fill: #000;");
+			}
+		});
+
 		VBox gp = new VBox(0);
+		gp.setPadding(new Insets(10, 20, 10, 20));
 		Label gpTitle = new Label("Grades Plot");
 		Style.setSmallTitleStyle(gpTitle);
 
-		ImageView gradesPlotIcon = new ImageView();
-		gradesPlotIcon.setFitWidth(iconWidth);
-		gradesPlotIcon.setFitHeight(iconHeight);
-		gradesPlotIcon.setImage(new Image(Main.class.getResourceAsStream("gradesPlot.png")));
-
 		gp.setOnMouseClicked(e -> {
+			refresh();
 			viewPane.setCenter(views.get(VIEW_INDEX.GRADES_PLOT.val).mainLayout);
+			this.activeViewBox = gp;
 		});
 
-		gp.getChildren().addAll(gradesPlotIcon, gpTitle);
+		gp.getChildren().addAll(gpTitle);
 		gp.setAlignment(Pos.CENTER);
+
+		gp.setOnMouseEntered(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				gp.setStyle("-fx-background-color: #" + hoverColor + ";");
+				gp.getChildren().get(0).setStyle(gp.getChildren().get(0).getStyle() + "-fx-text-fill: #fff;");
+			}
+		});
+
+		gp.setOnMouseExited(new EventHandler<MouseEvent>() {
+			@Override
+			public void handle(MouseEvent mouseEvent) {
+				gp.setStyle("-fx-background-color: #" + menuColor + ";");
+				gp.getChildren().get(0).setStyle(gp.getChildren().get(0).getStyle() + "-fx-text-fill: #000;");
+			}
+		});
 
 		menu.getChildren().addAll(db, cs, tc, g, gp);
 
-		bp.setLeft(menu);
+		final Menu file = new Menu("File");
+		final Menu edit = new Menu("Edit");
+		final Menu view = new Menu("View");
+		final Menu help = new Menu("Help");
 
-		// bp.setTop(chooseView);
+		MenuBar controls = new MenuBar();
+		controls.getMenus().addAll(file, edit, view, help);
+		controls.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
+
+		bp.setTop(controls);
+		bp.setLeft(menu);
 		bp.setCenter(viewPane);
 		bp.setBottom(this.options);
 		return bp;
@@ -276,10 +339,6 @@ public class Planner extends View implements Observer {
 	 */
 	public void addView(View view) {
 		this.views.add(view);
-		chooseView.setItems(FXCollections.observableArrayList(this.views));
-		if (chooseView.getValue() == null) {
-			chooseView.setValue(this.views.get(0));
-		}
 	}
 
 	/**
@@ -301,6 +360,15 @@ public class Planner extends View implements Observer {
 		if (observable instanceof Profile) {
 			this.termsExist.set(((Profile) observable).terms.size() > 0);
 			this.coursesExist.set(((Profile) observable).coursesExist());
+
+			if (this.activeViewBox != null) {
+
+				// this.activeViewBox.setBackground(new Background(new BackgroundImage(
+				// new Image(Main.class.getResourceAsStream("active2.png")),
+				// BackgroundRepeat.NO_REPEAT,
+				// BackgroundRepeat.NO_REPEAT, BackgroundPosition.DEFAULT,
+				// BackgroundSize.DEFAULT)));
+			}
 		}
 	}
 

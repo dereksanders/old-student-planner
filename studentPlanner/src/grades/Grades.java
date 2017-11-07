@@ -10,6 +10,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.geometry.Insets;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
@@ -93,12 +94,12 @@ public class Grades extends View implements Observer {
 		scroll = new ScrollPane();
 
 		displayGrades = new VBox(10);
-		displayGrades
-				.setStyle("-fx-border-width: 1; -fx-border-color: #ccc; -fx-padding: 10; -fx-background-color: #fff");
+		displayGrades.setStyle("-fx-background-color: #fff");
+		displayGrades.setPadding(new Insets(0, 0, 0, 5));
 
 		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
 		scroll.setContent(body);
-		scroll.setStyle("-fx-padding: 10;");
+		scroll.setStyle("-fx-background: #" + Style.colorToHex(Style.appWhite) + "; -fx-background-insets: 0;");
 
 		header.getChildren().addAll(title);
 		gbp.setTop(header);
@@ -259,21 +260,38 @@ public class Grades extends View implements Observer {
 
 		Label courseSummaryTitle = new Label("Course Summary - " + selected.toString());
 		Style.setTitleStyle(courseSummaryTitle);
+		courseSummaryTitle
+				.setStyle(courseSummaryTitle.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appWhite) + ";");
+
+		VBox h1 = new VBox();
+		VBox h2 = new VBox();
+		VBox h3 = new VBox();
 
 		Label deliverableCol = new Label("Deliverable");
-		deliverableCol.setStyle("-fx-font-weight: bold;");
-		Label gradeCol = new Label("Grade");
-		gradeCol.setStyle("-fx-font-weight: bold;");
-		Label weightCol = new Label("Weight");
-		weightCol.setStyle("-fx-font-weight: bold;");
+		h1.getChildren().add(deliverableCol);
+		h1.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
+		h1.setPadding(new Insets(5, 0, 0, 5));
 
-		displayGrades.getChildren().addAll(courseSummaryTitle);
+		Label gradeCol = new Label("Grade");
+		h2.getChildren().add(gradeCol);
+		h2.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
+		h2.setPadding(new Insets(5, 0, 0, 5));
+
+		Label weightCol = new Label("Weight");
+		h3.getChildren().add(weightCol);
+		h3.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
+		h3.setPadding(new Insets(5, 0, 0, 5));
+
+		HBox courseTitleContainer = new HBox();
+		courseTitleContainer.getChildren().add(courseSummaryTitle);
+		courseTitleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
+		displayGrades.getChildren().addAll(courseTitleContainer);
 
 		GridPane eventGrid = new GridPane();
 
-		eventGrid.add(deliverableCol, 0, 0);
-		eventGrid.add(gradeCol, 1, 0);
-		eventGrid.add(weightCol, 2, 0);
+		eventGrid.add(h1, 0, 0);
+		eventGrid.add(h2, 1, 0);
+		eventGrid.add(h3, 2, 0);
 		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
 		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
 		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
@@ -287,9 +305,25 @@ public class Grades extends View implements Observer {
 			Label gradeDesc = new Label("" + sel.grade + "%");
 			Label worthDesc = new Label("" + sel.weight + "%");
 
-			eventGrid.add(eventDesc, 0, i + 1);
-			eventGrid.add(gradeDesc, 1, i + 1);
-			eventGrid.add(worthDesc, 2, i + 1);
+			HBox event = new HBox();
+			HBox gradeVal = new HBox();
+			HBox worth = new HBox();
+
+			event.getChildren().add(eventDesc);
+			event.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
+			event.setPadding(new Insets(5, 0, 0, 5));
+
+			gradeVal.getChildren().add(gradeDesc);
+			gradeVal.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
+			gradeVal.setPadding(new Insets(5, 0, 0, 5));
+
+			worth.getChildren().add(worthDesc);
+			worth.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
+			worth.setPadding(new Insets(5, 0, 0, 5));
+
+			eventGrid.add(event, 0, i + 1);
+			eventGrid.add(gradeVal, 1, i + 1);
+			eventGrid.add(worth, 2, i + 1);
 			eventGrid.getRowConstraints().add(new RowConstraints(30));
 		}
 

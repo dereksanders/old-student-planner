@@ -18,6 +18,14 @@ public class Pretty {
 		return s;
 	}
 
+	public static String veryShortDate(LocalDate d) {
+
+		String date = abbreviateMonth(d.getMonthValue()) + " " + d.getDayOfMonth()
+				+ getDateEnding("" + d.getDayOfMonth());
+
+		return date;
+	}
+
 	public static String getDateEnding(String date) {
 		if (date.endsWith("1") && !date.endsWith("11")) {
 			return "st";

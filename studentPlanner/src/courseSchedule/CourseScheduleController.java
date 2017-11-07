@@ -30,6 +30,8 @@ public class CourseScheduleController extends ProfileController {
 	/**
 	 * Show current week.
 	 *
+	 * FIXME: This should not manipulate GUI elements - breaks MVC paradigm.
+	 *
 	 * @param showCurrentWeek
 	 *            the show current week
 	 */
@@ -39,6 +41,7 @@ public class CourseScheduleController extends ProfileController {
 
 			/* Disable selecting a different week. */
 			schedule.selectWeek.setVisible(false);
+			schedule.selectWeek.setManaged(false);
 
 			LocalDate present = Clock.now.toLocalDate();
 			schedule.selectWeek.setValue(present);
@@ -48,6 +51,7 @@ public class CourseScheduleController extends ProfileController {
 		/* If the new value is to allow choosing a different week. */
 		else {
 			schedule.selectWeek.setVisible(true);
+			schedule.selectWeek.setManaged(true);
 			schedule.selectWeek.requestFocus();
 		}
 	}

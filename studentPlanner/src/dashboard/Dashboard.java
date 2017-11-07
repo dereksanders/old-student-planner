@@ -1,16 +1,22 @@
 package dashboard;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
+import java.util.PriorityQueue;
 
 import core.Clock;
 import core.Style;
 import core.View;
 import courseSchedule.TodaysMeetings;
 import courseSchedule.TodaysMeetingsController;
+import javafx.geometry.Insets;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import model.CalendarEvent;
 import model.Profile;
 import termCalendar.UpcomingEvents;
 import termCalendar.UpcomingEventsController;
@@ -45,19 +51,54 @@ public class Dashboard extends View implements Observer {
 		Style.setTitleStyle(title);
 		header.getChildren().addAll(title, date);
 
-		main.setTop(header);
+		// main.setTop(header);
 
-		VBox body = new VBox();
+		HBox body = new HBox();
+
+		VBox priorities = new VBox();
+		VBox allEventCards = new VBox();
+
+		ArrayList<LocalDate> datesWithEvents = new ArrayList<>();
+
+		if (this.controller.profile.termInProgress != null) {
+
+			for (Object d : this.controller.profile.termInProgress.dateEvents.keys) {
+				if (d != null && d instanceof LocalDate) {
+					datesWithEvents.add((LocalDate) d);
+				}
+			}
+		}
+
+		datesWithEvents.sort(null);
+
+		for (LocalDate d : datesWithEvents) {
+
+			PriorityQueue<CalendarEvent> dq = this.controller.profile.termInProgress.dateEvents.get(d);
+
+			for (CalendarEvent e : dq) {
+
+				EventCard ec = new EventCard(e);
+
+				// TODO: Add drag behaviour to EventCard (should follow mouse movement while
+				// being dragged).
+
+				allEventCards.getChildren().add(ec.layout);
+			}
+		}
+
+		// TODO: Add drop behaviour to priorities.
+
+		body.getChildren().addAll(priorities, allEventCards);
 
 		main.setCenter(body);
 
 		this.todaysMeetings = new TodaysMeetings(new TodaysMeetingsController(this.controller.profile));
-		main.setBottom(todaysMeetings.mainLayout);
+		main.setLeft(todaysMeetings.mainLayout);
 
 		this.upcomingEvents = new UpcomingEvents(new UpcomingEventsController(this.controller.profile));
 		main.setRight(upcomingEvents.mainLayout);
 
-		Style.addPadding(main);
+		main.setPadding(new Insets(0, 0, 0, 20));
 
 		return main;
 	}

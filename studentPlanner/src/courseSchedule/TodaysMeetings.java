@@ -1,5 +1,6 @@
 package courseSchedule;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
@@ -9,11 +10,16 @@ import core.Clock;
 import core.Listing;
 import core.Style;
 import core.View;
+import javafx.event.EventHandler;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import model.CourseMeeting;
 import model.Meeting;
 import model.Profile;
 
@@ -22,7 +28,7 @@ public class TodaysMeetings extends View implements Observer {
 	private TodaysMeetingsController controller;
 	private Observable profile;
 
-	public VBox todaysMeetings = new VBox(5);
+	public VBox todaysMeetings = new VBox();
 
 	public TodaysMeetings(TodaysMeetingsController controller) {
 
@@ -39,7 +45,7 @@ public class TodaysMeetings extends View implements Observer {
 
 		BorderPane main = new BorderPane();
 
-		todaysMeetings.setStyle("-fx-background-color: #fff; -fx-padding: 10;");
+		todaysMeetings.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
 		BorderPane.setAlignment(todaysMeetings, Pos.CENTER);
 
 		main.setCenter(todaysMeetings);
@@ -50,10 +56,15 @@ public class TodaysMeetings extends View implements Observer {
 
 		todaysMeetings.getChildren().clear();
 
-		Label todaysMeetingsTitle = new Label("Today's Meetings");
-		Style.setTitleStyle(todaysMeetingsTitle);
+		Label title = new Label("Today's Meetings");
+		Style.setTitleStyle(title);
+		title.setStyle(title.getStyle() + "-fx-text-fill: #fff;");
 
-		todaysMeetings.getChildren().add(todaysMeetingsTitle);
+		VBox titleContainer = new VBox();
+		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + "; -fx-padding: 10;");
+		titleContainer.getChildren().add(title);
+
+		todaysMeetings.getChildren().add(titleContainer);
 
 		if (controller.profile.currentlySelectedTerm != null) {
 
@@ -69,7 +80,49 @@ public class TodaysMeetings extends View implements Observer {
 
 				for (Meeting m : meetings) {
 
-					todaysMeetings.getChildren().add(new Listing(Color.web(m.color), m.toString()).show());
+					VBox timeContainer = new VBox();
+
+					timeContainer.getChildren().add(new Label("In " + (m.start.getHour() - Clock.now.getHour())
+							+ " hours" + " (" + m.start + " - " + m.end + "):"));
+					timeContainer.setStyle(
+							"-fx-background-color: #" + Style.colorToHex(Style.appYellow) + "; -fx-padding: 10;");
+
+					todaysMeetings.getChildren().add(timeContainer);
+
+					VBox meetingContainer = new VBox();
+					HBox meetingInfo = null;
+
+					if (m instanceof CourseMeeting) {
+
+						if (m.location.isEmpty()) {
+
+							meetingInfo = new Listing(Color.web(m.color),
+									"" + ((CourseMeeting) m).course + " " + m.meetingType).show();
+
+						} else {
+
+							meetingInfo = new Listing(Color.web(m.color),
+									"" + ((CourseMeeting) m).course + " " + m.meetingType + " in " + m.location).show();
+
+						}
+
+					} else {
+
+						meetingInfo = new Listing(Color.web(m.color), "" + m.name + " " + m.meetingType).show();
+					}
+
+					meetingInfo.setOnMouseClicked(new EventHandler<MouseEvent>() {
+						@Override
+						public void handle(MouseEvent t) {
+
+							new EditInstanceOrSet(LocalDateTime.of(m.date, m.start),
+									new CourseScheduleController(controller.profile));
+						}
+					});
+
+					meetingContainer.getChildren().add(meetingInfo);
+					meetingContainer.setPadding(new Insets(10, 10, 10, 10));
+					todaysMeetings.getChildren().add(meetingContainer);
 				}
 
 			} else {

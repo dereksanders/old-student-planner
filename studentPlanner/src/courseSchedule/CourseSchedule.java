@@ -15,6 +15,7 @@ import core.View;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.HPos;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.control.Button;
@@ -94,7 +95,9 @@ public class CourseSchedule extends View implements Observer {
 		BorderPane csbp = new BorderPane();
 
 		this.scheduleScroll = new ScrollPane();
+		this.scheduleScroll.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 		this.scheduleGrid = new GridPane();
+		this.scheduleGrid.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 
 		/* Initialize time labels along the axis of the schedule. */
 		this.times = new Label[48];
@@ -104,9 +107,6 @@ public class CourseSchedule extends View implements Observer {
 			times[i + 1] = new Label(hour + ":30");
 			hour++;
 		}
-
-		Label title = new Label("Weekly Schedule");
-		Style.setTitleStyle(title);
 
 		/* Select week */
 
@@ -129,6 +129,7 @@ public class CourseSchedule extends View implements Observer {
 		 * initially be disabled.
 		 */
 		selectWeek.setVisible(false);
+		selectWeek.setManaged(false);
 
 		showCurrentWeek.selectedProperty().addListener(new ChangeListener<Boolean>() {
 			@Override
@@ -137,22 +138,21 @@ public class CourseSchedule extends View implements Observer {
 			}
 		});
 
-		HBox headerLayout = new HBox(20);
-		headerLayout.getChildren().addAll(title, showCurrentWeek, selectWeek);
+		VBox right = new VBox(10);
+		this.todaysMeetings = new TodaysMeetings(new TodaysMeetingsController(this.controller.profile));
+		right.getChildren().addAll(showCurrentWeek, selectWeek, this.todaysMeetings.mainLayout);
+		right.setMinWidth(218);
+		csbp.setRight(right);
 
-		this.legend = new VBox(10);
-
-		csbp.setTop(headerLayout);
 		csbp.setCenter(scheduleScroll);
 
-		this.todaysMeetings = new TodaysMeetings(new TodaysMeetingsController(this.controller.profile));
-		csbp.setBottom(todaysMeetings.mainLayout);
-
-		csbp.setRight(legend);
+		this.legend = new VBox(0);
+		csbp.setBottom(legend);
 		BorderPane.setAlignment(legend, Pos.BOTTOM_LEFT);
 		BorderPane.setAlignment(scheduleScroll, Pos.BOTTOM_LEFT);
 
-		csbp.setStyle("-fx-background-color: #fff; -fx-padding: 10;");
+		csbp.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite));
+		csbp.setPadding(new Insets(0, 0, 0, 20));
 
 		return csbp;
 	}
@@ -167,20 +167,34 @@ public class CourseSchedule extends View implements Observer {
 			this.legend.setManaged(true);
 
 			if (this.controller.profile.currentlySelectedTerm.courses.size() > 0) {
-				Label legendTitle = new Label("Legend");
+				HBox legendTitleContainer = new HBox();
+				Label legendTitle = new Label("Courses - " + this.controller.profile.currentlySelectedTerm.name + " ("
+						+ this.controller.profile.currentlySelectedTerm.start.getYear() + ")");
 				Style.setTitleStyle(legendTitle);
-				this.legend.getChildren().add(legendTitle);
-				this.legend.setStyle("-fx-background-color: #fff; -fx-border-color: #"
-						+ Style.colorToHex(Style.borderColor) + "; -fx-border-width: 1px; -fx-padding: 5;");
+				legendTitle
+						.setStyle(legendTitle.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appBlack) + ";");
+				legendTitleContainer.getChildren().add(legendTitle);
+				legendTitleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
+				legendTitleContainer.setPadding(new Insets(10, 0, 0, 10));
+				this.legend.getChildren().add(legendTitleContainer);
+				this.legend.setStyle("-fx-background-color: #fff;");
 			} else {
-				this.legend.setStyle("-fx-background-color: #fff; -fx-border-color: #"
-						+ Style.colorToHex(Style.borderColor) + "; -fx-border-width: 0px; -fx-padding: 5;");
+				this.legend.setStyle("-fx-background-color: #fff;");
 			}
+
+			HBox courses = new HBox(10);
 
 			for (Course c : this.controller.profile.currentlySelectedTerm.courses) {
 
-				legend.getChildren().add(new Listing(Color.web(c.color), c.toString()).show());
+				HBox courseInfo = new Listing(Color.web(c.color), c.toString()).show();
+
+				courses.getChildren().add(courseInfo);
 			}
+
+			courses.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
+			courses.setPadding(new Insets(10, 10, 10, 10));
+
+			legend.getChildren().add(courses);
 
 		} else {
 
@@ -244,8 +258,7 @@ public class CourseSchedule extends View implements Observer {
 			 */
 			if (firstOfWeek.plusDays(i).isEqual(Clock.now.toLocalDate())) {
 
-				dayLabel.setStyle(dayLabel.getStyle() + "-fx-font-family: Verdana;" + "-fx-font-style: italic;"
-						+ "-fx-text-fill: #" + Style.colorToHex(Style.appBlue) + ";");
+				dayLabel.setStyle(dayLabel.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appBlue) + ";");
 			}
 
 			scheduleGrid.add(dayLabel, i + 1, 0);
@@ -286,7 +299,7 @@ public class CourseSchedule extends View implements Observer {
 							+ Style.colorToHex(Style.appGrey) + ";");
 
 				} else {
-					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #fff;");
+					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #eee;");
 				}
 
 				if (i == 0 && j == 0) {
@@ -322,6 +335,9 @@ public class CourseSchedule extends View implements Observer {
 			drawWeeksMeetings(term, firstOfWeek);
 		}
 
+		this.scheduleGrid.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
+		this.scheduleScroll
+				.setStyle("-fx-background: #" + Style.colorToHex(Style.appWhite) + "; -fx-background-insets: 0;");
 		this.scheduleScroll.setContent(scheduleGrid);
 		this.scheduleScroll.setMaxWidth(730);
 	}

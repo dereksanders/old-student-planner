@@ -10,11 +10,10 @@ import core.View;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.geometry.HPos;
-import javafx.geometry.Pos;
+import javafx.geometry.Insets;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.Border;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
@@ -73,18 +72,19 @@ public class TermCalendar extends View implements Observer {
 		 */
 		tcbp.visibleProperty().bind(selectedTermNotNull);
 
-		Label termCal = new Label("Term Calendar");
-		Style.setTitleStyle(termCal);
-		HBox header = new HBox(50);
+		// Label termCal = new Label("Term Calendar");
+		// Style.setTitleStyle(termCal);
+		// HBox header = new HBox(50);
 
-		header.getChildren().add(termCal);
-		tcbp.setTop(header);
+		// header.getChildren().add(termCal);
+		// tcbp.setTop(header);
 		tcbp.setCenter(termViewBox);
 
 		this.upcomingEvents = new UpcomingEvents(new UpcomingEventsController(this.controller.profile));
 		tcbp.setRight(upcomingEvents.mainLayout);
 
-		tcbp.setStyle("-fx-padding: 10;");
+		tcbp.setPadding(new Insets(0, 0, 0, 20));
+		tcbp.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 
 		return tcbp;
 	}
@@ -98,10 +98,6 @@ public class TermCalendar extends View implements Observer {
 	 */
 	private ScrollPane drawCalendar(Term term) {
 
-		/*
-		 * TODO: Fix issue #13. The scroll-bar of the ScrollPane cuts off the edges of
-		 * the calendar when there are more than 4 months.
-		 */
 		ScrollPane termCalendar = new ScrollPane();
 
 		/*
@@ -111,7 +107,7 @@ public class TermCalendar extends View implements Observer {
 				- term.start.getMonthValue() + 1; // length of the term in
 													// months
 
-		VBox area = new VBox();
+		VBox area = new VBox(10);
 		HBox curBox = null;
 
 		for (int i = 0; i < numMonths; i++) {
@@ -125,12 +121,20 @@ public class TermCalendar extends View implements Observer {
 			LocalDate firstOfMonth = LocalDate.of(term.start.plusMonths(i).getYear(),
 					term.start.plusMonths(i).getMonthValue(), 1);
 
+			VBox titleContainer = new VBox();
+
 			/* Month name, e.g. July */
 			Label title = new Label(firstOfMonth.getMonth().toString().substring(0, 1)
 					+ firstOfMonth.getMonth().toString().substring(1).toLowerCase() + ", " + firstOfMonth.getYear());
-			title.setStyle(title.getStyle() + "-fx-font-size: 12.0pt;" + "-fx-font-weight: bold;");
-			BorderPane.setAlignment(title, Pos.CENTER);
-			curMonthCalendar.setTop(title);
+			title.setStyle(title.getStyle() + "-fx-font-size: 12.0pt;" + "-fx-text-fill: #"
+					+ Style.colorToHex(Style.appWhite) + ";");
+
+			titleContainer.getChildren().add(title);
+			titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
+			titleContainer.setPadding(new Insets(2, 0, 2, 10));
+
+			// BorderPane.setAlignment(title, Pos.CENTER);
+			curMonthCalendar.setTop(titleContainer);
 
 			int daysInMonth = firstOfMonth.lengthOfMonth();
 			int firstWeekDay = firstOfMonth.getDayOfWeek().getValue() - 1;
@@ -150,21 +154,28 @@ public class TermCalendar extends View implements Observer {
 																	// (weekday)
 					if (k == 0) {
 
+						VBox dayContainer = new VBox();
+
 						Label dayLabel = new Label(intToDay(j));
-						dayLabel.setStyle("-fx-font-size: 10.0pt;");
+						dayLabel.setStyle("-fx-font-size: 10.0pt");
+
+						dayContainer.getChildren().add(dayLabel);
+						dayContainer.setStyle("-fx-background-color: " + Style.colorToHex(Style.appGrey) + ";");
+						dayContainer.setPadding(new Insets(0, 0, 0, 8));
+
 						GridPane.setHalignment(dayLabel, HPos.CENTER);
-						monthGrid.add(dayLabel, j, k);
+						monthGrid.add(dayContainer, j, k);
 					}
 					if (!numbering && j == firstWeekDay) {
 						numbering = true;
 					} else if (!numbering) {
 						Button emptyDay = new Button();
 						emptyDay.setStyle(emptyDay.getStyle() + "-fx-background-color: #"
-								+ Style.colorToHex(Style.appGrey) + ";");
+								+ Style.colorToHex(Style.appGrey) + ";-fx-background-radius: 0;");
 						if (j != firstWeekDay - 1) {
-							emptyDay.setBorder(new Border(Style.noRightBorderStroke));
+							// emptyDay.setBorder(new Border(Style.noRightBorderStroke));
 						} else {
-							emptyDay.setBorder(new Border(Style.fullBorderStroke));
+							// emptyDay.setBorder(new Border(Style.fullBorderStroke));
 						}
 						emptyDay.setMinWidth(40);
 						emptyDay.setMinHeight(40);
@@ -187,9 +198,8 @@ public class TermCalendar extends View implements Observer {
 							}
 						} else {
 							add.setStyle(add.getStyle() + "-fx-text-fill: #444;" + "-fx-font-size: 12.4pt;");
-							add.setStyle(add.getStyle()
-									+ "-fx-background-color: linear-gradient(from 25% 25% to 100% 100%, #fff, #ccc);"
-									+ "-fx-background-radius: 0.0;");
+							add.setStyle(add.getStyle() + "-fx-background-color: " + Style.colorToHex(Style.appGrey)
+									+ ";-fx-background-radius: 0.0;");
 						}
 						final int cDate = date;
 						final int offset = i;
@@ -207,7 +217,9 @@ public class TermCalendar extends View implements Observer {
 					}
 				}
 			}
+
 			curMonthCalendar.setCenter(monthGrid);
+
 			if (i % 2 == 0) {
 				curBox = new HBox(20);
 				curBox.getChildren().add(curMonthCalendar);
@@ -220,6 +232,8 @@ public class TermCalendar extends View implements Observer {
 			}
 		}
 
+		area.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
+
 		termCalendar.setContent(area);
 		termCalendar.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 
@@ -229,7 +243,8 @@ public class TermCalendar extends View implements Observer {
 			termCalendar.setMinWidth(602);
 		}
 
-		termCalendar.setStyle(termCalendar.getStyle() + "-fx-padding: 10;");
+		termCalendar
+				.setStyle(termCalendar.getStyle() + "-fx-padding: 0; -fx-background-color: #fff; -fx-border-width: 0;");
 
 		return termCalendar;
 	}

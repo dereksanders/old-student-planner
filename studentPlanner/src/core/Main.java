@@ -14,6 +14,7 @@ import javafx.application.Application;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
+import planner.Planner.VIEW_INDEX;
 import termCalendar.TermCalendar;
 import termCalendar.TermCalendarController;
 
@@ -62,6 +63,9 @@ public class Main extends Application {
 		GradesPlotController gradesPlotController = new GradesPlotController(driver.active);
 		GradesPlot gradesPlot = new GradesPlot(gradesPlotController);
 		driver.planner.addView(gradesPlot);
+
+		// The program should launch with the dashboard showing.
+		driver.planner.viewPane.setCenter(driver.planner.views.get(VIEW_INDEX.DASHBOARD.val).mainLayout);
 
 		// This is unlikely to be null as by this point, the Clock should have had
 		// enough time to tick once.

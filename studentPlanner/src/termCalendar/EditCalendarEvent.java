@@ -67,6 +67,14 @@ public class EditCalendarEvent {
 		display();
 	}
 
+	public EditCalendarEvent(CalendarEvent currentlySelected, LocalDate date, TermCalendarController controller) {
+
+		this.currentlySelected = currentlySelected;
+		this.date = date;
+		this.controller = controller;
+		display();
+	}
+
 	/**
 	 * Display.
 	 */

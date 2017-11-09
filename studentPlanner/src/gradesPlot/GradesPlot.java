@@ -96,7 +96,7 @@ public class GradesPlot extends View implements Observer {
 		Tab termGradesTab = new Tab();
 		termGradesTab.setText("Term Averages");
 		termGradesTab.setClosable(false);
-		termGradesTab.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow));
+		termGradesTab.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 		termGradesTab.setContent(termGradesPane);
 
 		// Set up deptCourses pie chart.
@@ -106,7 +106,7 @@ public class GradesPlot extends View implements Observer {
 		Tab deptCoursesTab = new Tab();
 		deptCoursesTab.setText("Courses Taken by Dept.");
 		deptCoursesTab.setClosable(false);
-		deptCoursesTab.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow));
+		deptCoursesTab.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 		deptCoursesTab.setContent(deptCoursesPane);
 
 		// Set up deptGrades bar chart.
@@ -122,7 +122,7 @@ public class GradesPlot extends View implements Observer {
 		Tab deptGradesTab = new Tab();
 		deptGradesTab.setText("Department Averages");
 		deptGradesTab.setClosable(false);
-		deptGradesTab.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow));
+		deptGradesTab.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");
 		deptGradesTab.setContent(deptGradesPane);
 
 		selectGraph.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appWhite) + ";");

@@ -82,8 +82,62 @@ public class TodaysMeetings extends View implements Observer {
 
 					VBox timeContainer = new VBox();
 
-					timeContainer.getChildren().add(new Label("In " + (m.start.getHour() - Clock.now.getHour())
-							+ " hours" + " (" + m.start + " - " + m.end + "):"));
+					int hours = m.start.getHour() - Clock.now.getHour();
+					int mins = m.start.getMinute() - Clock.now.getMinute();
+
+					Label timeUntil = null;
+
+					if (hours > 0 || mins > 0) {
+
+						if (hours > 0 && mins > 0) {
+
+							timeUntil = new Label("In " + hours + " hours, " + mins + " mins " + " (" + m.start + " - "
+									+ m.end + "):");
+
+						} else if (hours > 1 && mins < 0) {
+
+							hours--;
+							mins = 60 + mins;
+
+							timeUntil = new Label("In " + hours + " hours, " + mins + " mins " + " (" + m.start + " - "
+									+ m.end + "):");
+
+						} else if (hours == 1 && mins < 0) {
+
+							hours--;
+							mins = 60 + mins;
+
+							timeUntil = new Label("In " + mins + " mins " + " (" + m.start + " - " + m.end + "):");
+
+						} else if (hours == 0 && mins > 0) {
+
+							mins = 60 + mins;
+
+							timeUntil = new Label("In " + mins + " mins " + " (" + m.start + " - " + m.end + "):");
+
+						} else {
+
+							hours = hours * -1;
+							hours--;
+							mins = 60 - mins;
+
+							// The meeting's start time has passed.
+							timeUntil = new Label(
+									hours + " hours, " + mins + " mins ago " + " (" + m.start + " - " + m.end + "):");
+						}
+
+					} else {
+
+						hours = hours * -1;
+						mins = mins * -1;
+
+						// The meeting's start time has passed.
+						timeUntil = new Label(
+								hours + " hours, " + mins + " mins ago " + " (" + m.start + " - " + m.end + "):");
+					}
+
+					timeContainer.getChildren().add(timeUntil);
+
 					timeContainer.setStyle(
 							"-fx-background-color: #" + Style.colorToHex(Style.appYellow) + "; -fx-padding: 10;");
 

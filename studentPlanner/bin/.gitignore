@@ -1,9 +1,10 @@
-/planner/
 /core/
+/courseSchedule/
 /dashboard/
 /grades/
-/courseSchedule/
-/model/
-/termCalendar/
 /gradesPlot/
+/model/
+/planner/
+/termCalendar/
+/tests/
 /utility/

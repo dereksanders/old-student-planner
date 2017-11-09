@@ -204,7 +204,6 @@ public class Term implements Comparable<Term>, Serializable {
 
 			if (c.getLastTerm().equals(this)) {
 
-				System.out.println(c + "'s last term is " + this);
 				this.avg += c.cumulativeGrade;
 				this.avgSoFar += c.gradeSoFar;
 				numCoursesEnding++;
@@ -212,6 +211,7 @@ public class Term implements Comparable<Term>, Serializable {
 		}
 
 		if (numCoursesEnding > 0) {
+
 			this.avg = this.avg / numCoursesEnding;
 			this.avgSoFar = this.avgSoFar / numCoursesEnding;
 		}

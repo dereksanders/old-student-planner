@@ -86,16 +86,16 @@ public class Grades extends View implements Observer {
 		Style.setComboBoxStyle(chooseCourse);
 
 		Label gSelectedLabel = new Label("Currently selected: ");
-		classGrades = new HBox(50);
+		classGrades = new HBox(10);
 		classGrades.getChildren().addAll(gSelectedLabel, chooseCourse);
 
-		selectedDisplay = new HBox(50);
+		selectedDisplay = new HBox(10);
 
 		scroll = new ScrollPane();
 
-		displayGrades = new VBox(10);
-		displayGrades.setStyle("-fx-background-color: #fff");
-		displayGrades.setPadding(new Insets(0, 0, 0, 5));
+		displayGrades = new VBox(5);
+		displayGrades.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey));
+		displayGrades.setPadding(new Insets(0, 0, 5, 0));
 
 		body.getChildren().addAll(chooseTerm, classGrades, selectedDisplay, displayGrades);
 		scroll.setContent(body);
@@ -129,7 +129,7 @@ public class Grades extends View implements Observer {
 			}
 		});
 
-		gbp.setStyle("-fx-padding: 10;");
+		gbp.setPadding(new Insets(0, 0, 0, 20));
 
 		return gbp;
 	}
@@ -144,6 +144,11 @@ public class Grades extends View implements Observer {
 
 		Label termSummaryTitle = new Label("Term Summary - " + selected.name + " (" + selected.start.getYear() + ")");
 		Style.setTitleStyle(termSummaryTitle);
+		termSummaryTitle.setStyle(termSummaryTitle.getStyle() + "-fx-text-fill: #fff;");
+		HBox titleContainer = new HBox();
+		titleContainer.getChildren().add(termSummaryTitle);
+		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
+		titleContainer.setPadding(new Insets(0, 0, 0, 10));
 
 		/* Term summary */
 
@@ -174,7 +179,11 @@ public class Grades extends View implements Observer {
 			Label gradeSoFarDesc = new Label(sel.gradeSoFar + "%");
 			Label cumulativeGradeDesc = new Label(sel.cumulativeGrade + "%");
 
-			courseGrid.add(new Listing(Color.web(sel.color), sel.toString()).show(), 0, i + 1);
+			HBox courseInfo = new Listing(Color.web(sel.color), sel.toString()).show();
+
+			courseGrid.add(courseInfo, 0, i + 1);
+			GridPane.setValignment(courseInfo, VPos.TOP);
+			courseGrid.setPadding(new Insets(0, 0, 0, 10));
 			courseGrid.add(gradeSoFarDesc, 1, i + 1);
 			GridPane.setValignment(gradeSoFarDesc, VPos.TOP);
 			courseGrid.add(cumulativeGradeDesc, 2, i + 1);
@@ -182,19 +191,25 @@ public class Grades extends View implements Observer {
 			courseGrid.getRowConstraints().add(new RowConstraints(30));
 		}
 
-		HBox gradeSoFarBox = new HBox();
 		Label gradeSoFarTitle = new Label("Average so far: ");
 		gradeSoFarTitle.setStyle("-fx-font-weight: bold;");
-		Label gradeSoFar = new Label("" + selected.avgSoFar + "%");
-		gradeSoFarBox.getChildren().addAll(gradeSoFarTitle, gradeSoFar);
 
-		HBox cumulativeGradeBox = new HBox();
+		Label gradeSoFar = new Label("" + selected.avgSoFar + "%");
+
+		HBox gradeSoFarBox = new HBox();
+		gradeSoFarBox.getChildren().addAll(gradeSoFarTitle, gradeSoFar);
+		gradeSoFarBox.setPadding(new Insets(0, 0, 0, 10));
+
 		Label cumulativeGradeTitle = new Label("Cumulative average: ");
 		cumulativeGradeTitle.setStyle("-fx-font-weight: bold;");
-		Label cumulativeGrade = new Label("" + selected.avg + "%");
-		cumulativeGradeBox.getChildren().addAll(cumulativeGradeTitle, cumulativeGrade);
 
-		displayGrades.getChildren().addAll(termSummaryTitle, courseGrid, gradeSoFarBox, cumulativeGradeBox);
+		Label cumulativeGrade = new Label("" + selected.avg + "%");
+
+		HBox cumulativeGradeBox = new HBox();
+		cumulativeGradeBox.getChildren().addAll(cumulativeGradeTitle, cumulativeGrade);
+		cumulativeGradeBox.setPadding(new Insets(0, 0, 0, 10));
+
+		displayGrades.getChildren().addAll(titleContainer, courseGrid, gradeSoFarBox, cumulativeGradeBox);
 	}
 
 	/**
@@ -261,37 +276,34 @@ public class Grades extends View implements Observer {
 		Label courseSummaryTitle = new Label("Course Summary - " + selected.toString());
 		Style.setTitleStyle(courseSummaryTitle);
 		courseSummaryTitle
-				.setStyle(courseSummaryTitle.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appWhite) + ";");
+				.setStyle(courseSummaryTitle.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appWhite));
+		HBox titleContainer = new HBox();
+		titleContainer.getChildren().add(courseSummaryTitle);
+		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
+		titleContainer.setPadding(new Insets(0, 0, 0, 10));
 
-		VBox h1 = new VBox();
-		VBox h2 = new VBox();
-		VBox h3 = new VBox();
-
-		Label deliverableCol = new Label("Deliverable");
-		h1.getChildren().add(deliverableCol);
-		h1.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
-		h1.setPadding(new Insets(5, 0, 0, 5));
-
-		Label gradeCol = new Label("Grade");
-		h2.getChildren().add(gradeCol);
-		h2.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
-		h2.setPadding(new Insets(5, 0, 0, 5));
-
-		Label weightCol = new Label("Weight");
-		h3.getChildren().add(weightCol);
-		h3.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
-		h3.setPadding(new Insets(5, 0, 0, 5));
-
-		HBox courseTitleContainer = new HBox();
-		courseTitleContainer.getChildren().add(courseSummaryTitle);
-		courseTitleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
-		displayGrades.getChildren().addAll(courseTitleContainer);
+		displayGrades.getChildren().addAll(titleContainer);
 
 		GridPane eventGrid = new GridPane();
 
-		eventGrid.add(h1, 0, 0);
-		eventGrid.add(h2, 1, 0);
-		eventGrid.add(h3, 2, 0);
+		Label deliverableCol = new Label("Deliverable");
+		deliverableCol.setStyle("-fx-font-weight: bold;");
+		deliverableCol.setPadding(new Insets(0, 0, 0, 10));
+
+		Label gradeCol = new Label("Grade");
+		gradeCol.setStyle("-fx-font-weight: bold;");
+		gradeCol.setPadding(new Insets(0, 0, 0, 10));
+
+		Label weightCol = new Label("Weight");
+		weightCol.setStyle("-fx-font-weight: bold;");
+		weightCol.setPadding(new Insets(0, 0, 0, 10));
+
+		eventGrid.add(deliverableCol, 0, 0);
+		GridPane.setValignment(deliverableCol, VPos.TOP);
+		eventGrid.add(gradeCol, 1, 0);
+		GridPane.setValignment(gradeCol, VPos.TOP);
+		eventGrid.add(weightCol, 2, 0);
+		GridPane.setValignment(weightCol, VPos.TOP);
 		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
 		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
 		eventGrid.getColumnConstraints().add(new ColumnConstraints(200));
@@ -302,42 +314,38 @@ public class Grades extends View implements Observer {
 			CourseEvent sel = selected.events.get(i);
 
 			Label eventDesc = new Label(sel.name);
+			eventDesc.setPadding(new Insets(0, 0, 0, 10));
 			Label gradeDesc = new Label("" + sel.grade + "%");
+			gradeDesc.setPadding(new Insets(0, 0, 0, 10));
 			Label worthDesc = new Label("" + sel.weight + "%");
+			worthDesc.setPadding(new Insets(0, 0, 0, 10));
 
-			HBox event = new HBox();
-			HBox gradeVal = new HBox();
-			HBox worth = new HBox();
-
-			event.getChildren().add(eventDesc);
-			event.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
-			event.setPadding(new Insets(5, 0, 0, 5));
-
-			gradeVal.getChildren().add(gradeDesc);
-			gradeVal.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
-			gradeVal.setPadding(new Insets(5, 0, 0, 5));
-
-			worth.getChildren().add(worthDesc);
-			worth.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
-			worth.setPadding(new Insets(5, 0, 0, 5));
-
-			eventGrid.add(event, 0, i + 1);
-			eventGrid.add(gradeVal, 1, i + 1);
-			eventGrid.add(worth, 2, i + 1);
+			eventGrid.add(eventDesc, 0, i + 1);
+			GridPane.setValignment(eventDesc, VPos.TOP);
+			eventGrid.add(gradeDesc, 1, i + 1);
+			GridPane.setValignment(gradeDesc, VPos.TOP);
+			eventGrid.add(worthDesc, 2, i + 1);
+			GridPane.setValignment(worthDesc, VPos.TOP);
 			eventGrid.getRowConstraints().add(new RowConstraints(30));
 		}
 
-		HBox gradeSoFarBox = new HBox();
 		Label gradeSoFarTitle = new Label("Grade so far: ");
 		gradeSoFarTitle.setStyle("-fx-font-weight: bold;");
-		Label gradeSoFar = new Label("" + selected.gradeSoFar + "%");
-		gradeSoFarBox.getChildren().addAll(gradeSoFarTitle, gradeSoFar);
 
-		HBox cumulativeGradeBox = new HBox();
+		Label gradeSoFar = new Label("" + selected.gradeSoFar + "%");
+
+		HBox gradeSoFarBox = new HBox();
+		gradeSoFarBox.getChildren().addAll(gradeSoFarTitle, gradeSoFar);
+		gradeSoFarBox.setPadding(new Insets(0, 0, 0, 10));
+
 		Label cumulativeGradeTitle = new Label("Cumulative grade: ");
 		cumulativeGradeTitle.setStyle("-fx-font-weight: bold;");
+
 		Label cumulativeGrade = new Label("" + selected.cumulativeGrade + "%");
+
+		HBox cumulativeGradeBox = new HBox();
 		cumulativeGradeBox.getChildren().addAll(cumulativeGradeTitle, cumulativeGrade);
+		cumulativeGradeBox.setPadding(new Insets(0, 0, 0, 10));
 
 		displayGrades.getChildren().addAll(eventGrid, gradeSoFarBox, cumulativeGradeBox);
 

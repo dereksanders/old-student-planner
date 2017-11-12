@@ -44,9 +44,7 @@ public class Term implements Comparable<Term>, Serializable {
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
 
 	// Dashboard
-	public ArrayList<CalendarEvent> todaysPriorities;
-	public ArrayList<CalendarEvent> yesterdaysPriorities;
-	public LocalDate prioritiesLastSet;
+	public ArrayList<CalendarEvent> priorities;
 
 	/* Course Schedule params */
 	public int maxDay;
@@ -73,6 +71,8 @@ public class Term implements Comparable<Term>, Serializable {
 		this.dayMeetings = new GenericLinkedHashTable<>(300, false);
 		this.dateEvents = new GenericLinkedHashTable<>(300, true);
 		this.nonCourseMeetingSets = new ArrayList<>();
+
+		this.priorities = new ArrayList<>();
 
 		/* Default course schedule params */
 		this.minStart = LocalTime.of(8, 30);

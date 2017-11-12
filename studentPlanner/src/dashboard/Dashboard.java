@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
-import core.Clock;
 import core.Listing;
 import core.Style;
 import core.View;
@@ -24,20 +23,16 @@ import model.CalendarEvent;
 import model.Profile;
 import termCalendar.UpcomingEvents;
 import termCalendar.UpcomingEventsController;
-import utility.Pretty;
 
 public class Dashboard extends View implements Observer {
 
 	Observable profile;
 	DashboardController controller;
 
-	private Label title = new Label("Dashboard");
 	private UpcomingEvents upcomingEvents;
 	private TodaysMeetings todaysMeetings;
-	private ArrayList<CalendarEvent> termEvents;
+	protected ArrayList<CalendarEvent> termEvents;
 
-	// TODO: What if event within priorities is removed?
-	protected ArrayList<CalendarEvent> priorities;
 	private VBox priorityList;
 	protected ChoiceBox<CalendarEvent> chooseEvent;
 
@@ -56,40 +51,22 @@ public class Dashboard extends View implements Observer {
 
 		BorderPane main = new BorderPane();
 
-		VBox header = new VBox();
-		Label date = new Label(Pretty.prettyDate(Clock.now.toLocalDate()));
-		Style.setTitleStyle(title);
-		header.getChildren().addAll(title, date);
-
-		// main.setTop(header);
-
 		VBox todaysPriorities = new VBox(10);
-		this.priorities = new ArrayList<>();
 
 		Label dashTitle = new Label("What are your priorities today?");
 		Style.setTitleStyle(dashTitle);
 
 		this.termEvents = new ArrayList<>();
-
-		if (this.controller.profile.currentlySelectedTerm != null) {
-
-			for (LocalDate d : this.controller.profile.currentlySelectedTerm.dateEvents.sortedKeys) {
-
-				this.termEvents.addAll(this.controller.profile.currentlySelectedTerm.dateEvents.get(d));
-			}
-		}
-
 		this.chooseEvent = new ChoiceBox<>();
 		Style.setChoiceBoxStyle(chooseEvent);
+		updateChooseEvent();
 
-		this.chooseEvent.setItems(FXCollections.observableArrayList(this.termEvents));
-
-		Button add = new Button("Add");
+		Button add = new Button("+");
 		Style.setButtonStyle(add);
 
 		add.setOnAction(e -> {
 			if (chooseEvent.getValue() != null) {
-				this.controller.addPriority(e);
+				this.controller.addPriority(chooseEvent.getValue());
 			}
 		});
 
@@ -130,7 +107,9 @@ public class Dashboard extends View implements Observer {
 			}
 		}
 
-		this.chooseEvent.setItems(FXCollections.observableArrayList(termEvents));
+		this.termEvents.removeAll(this.controller.profile.currentlySelectedTerm.priorities);
+
+		this.chooseEvent.setItems(FXCollections.observableArrayList(this.termEvents));
 	}
 
 	private void updatePriorityList() {
@@ -142,16 +121,61 @@ public class Dashboard extends View implements Observer {
 
 		this.priorityList.getChildren().add(prioritiesTitle);
 
-		for (int i = 0; i < priorities.size(); i++) {
+		if (this.controller.profile.currentlySelectedTerm != null) {
 
-			HBox priorityListing = new HBox(10);
+			for (int i = 0; i < this.controller.profile.currentlySelectedTerm.priorities.size(); i++) {
 
-			Label number = new Label("" + (i + 1));
+				HBox priorityListing = new HBox(10);
 
-			priorityListing.getChildren().addAll(number,
-					new Listing(Color.web(this.priorities.get(i).color), this.priorities.get(i).toString()).show());
+				Label number = new Label("" + (i + 1));
 
-			this.priorityList.getChildren().add(priorityListing);
+				priorityListing.getChildren().addAll(number,
+						new Listing(Color.web(this.controller.profile.currentlySelectedTerm.priorities.get(i).color),
+								this.controller.profile.currentlySelectedTerm.priorities.get(i).toString()).show());
+
+				HBox options = new HBox(10);
+
+				int buttonSize = 32;
+
+				Button up = new Button("^");
+				Button down = new Button("v");
+				Button del = new Button("x");
+
+				Style.setButtonStyle(up);
+				Style.setButtonStyle(down);
+				Style.setButtonStyle(del);
+
+				up.setMinSize(buttonSize, buttonSize);
+				up.setMaxSize(buttonSize, buttonSize);
+				down.setMinSize(buttonSize, buttonSize);
+				down.setMaxSize(buttonSize, buttonSize);
+				del.setMinSize(buttonSize, buttonSize);
+				del.setMaxSize(buttonSize, buttonSize);
+
+				final int index = i;
+				up.setOnAction(e -> {
+
+					this.controller
+							.increasePriority(this.controller.profile.currentlySelectedTerm.priorities.get(index));
+				});
+
+				down.setOnAction(e -> {
+
+					this.controller
+							.decreasePriority(this.controller.profile.currentlySelectedTerm.priorities.get(index));
+				});
+
+				del.setOnAction(e -> {
+
+					this.controller.deletePriority(this.controller.profile.currentlySelectedTerm.priorities.get(index));
+				});
+
+				options.getChildren().addAll(up, down, del);
+
+				priorityListing.getChildren().add(options);
+
+				this.priorityList.getChildren().addAll(priorityListing);
+			}
 		}
 	}
 

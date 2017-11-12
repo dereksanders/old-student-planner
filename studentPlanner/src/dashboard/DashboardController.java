@@ -1,7 +1,7 @@
 package dashboard;
 
 import core.ProfileController;
-import javafx.event.ActionEvent;
+import model.CalendarEvent;
 import model.Profile;
 
 public class DashboardController extends ProfileController {
@@ -13,12 +13,48 @@ public class DashboardController extends ProfileController {
 		super(profile);
 	}
 
-	public void addPriority(ActionEvent e) {
+	public void addPriority(CalendarEvent e) {
 
-		this.dashboard.priorities.add(this.dashboard.chooseEvent.getValue());
+		this.profile.currentlySelectedTerm.priorities.add(e);
 
-		// The profile itself has not been modified, so only the dashboard view needs to
-		// be refreshed.
+		// Only the dashboard view is affected by changes to the term's priorities.
+		this.dashboard.refresh();
+	}
+
+	public void deletePriority(CalendarEvent e) {
+
+		this.profile.currentlySelectedTerm.priorities.remove(e);
+
+		this.dashboard.refresh();
+	}
+
+	public void increasePriority(CalendarEvent e) {
+
+		int prevIndex = this.profile.currentlySelectedTerm.priorities.indexOf(e);
+
+		if (prevIndex != 0) {
+
+			CalendarEvent temp = this.profile.currentlySelectedTerm.priorities.get(prevIndex - 1);
+			this.profile.currentlySelectedTerm.priorities.remove(prevIndex - 1);
+
+			this.profile.currentlySelectedTerm.priorities.add(prevIndex, temp);
+		}
+
+		this.dashboard.refresh();
+	}
+
+	public void decreasePriority(CalendarEvent e) {
+
+		int prevIndex = this.profile.currentlySelectedTerm.priorities.indexOf(e);
+
+		if (prevIndex != this.profile.currentlySelectedTerm.priorities.size() - 1) {
+
+			this.profile.currentlySelectedTerm.priorities.add(prevIndex,
+					this.profile.currentlySelectedTerm.priorities.get(prevIndex + 1));
+
+			this.profile.currentlySelectedTerm.priorities.remove(prevIndex + 2);
+		}
+
 		this.dashboard.refresh();
 	}
 }

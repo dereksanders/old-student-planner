@@ -4,18 +4,22 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
-import java.util.PriorityQueue;
 
 import core.Clock;
+import core.Listing;
 import core.Style;
 import core.View;
 import courseSchedule.TodaysMeetings;
 import courseSchedule.TodaysMeetingsController;
+import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import model.CalendarEvent;
 import model.Profile;
 import termCalendar.UpcomingEvents;
@@ -30,6 +34,12 @@ public class Dashboard extends View implements Observer {
 	private Label title = new Label("Dashboard");
 	private UpcomingEvents upcomingEvents;
 	private TodaysMeetings todaysMeetings;
+	private ArrayList<CalendarEvent> termEvents;
+
+	// TODO: What if event within priorities is removed?
+	protected ArrayList<CalendarEvent> priorities;
+	private VBox priorityList;
+	protected ChoiceBox<CalendarEvent> chooseEvent;
 
 	public Dashboard(DashboardController controller) {
 
@@ -53,54 +63,96 @@ public class Dashboard extends View implements Observer {
 
 		// main.setTop(header);
 
-		HBox body = new HBox();
+		VBox todaysPriorities = new VBox(10);
+		this.priorities = new ArrayList<>();
 
-		VBox priorities = new VBox();
-		VBox allEventCards = new VBox();
+		Label dashTitle = new Label("What are your priorities today?");
+		Style.setTitleStyle(dashTitle);
 
-		ArrayList<LocalDate> datesWithEvents = new ArrayList<>();
+		this.termEvents = new ArrayList<>();
 
-		if (this.controller.profile.termInProgress != null) {
+		if (this.controller.profile.currentlySelectedTerm != null) {
 
-			for (Object d : this.controller.profile.termInProgress.dateEvents.keys) {
-				if (d != null && d instanceof LocalDate) {
-					datesWithEvents.add((LocalDate) d);
-				}
+			for (LocalDate d : this.controller.profile.currentlySelectedTerm.dateEvents.sortedKeys) {
+
+				this.termEvents.addAll(this.controller.profile.currentlySelectedTerm.dateEvents.get(d));
 			}
 		}
 
-		datesWithEvents.sort(null);
+		this.chooseEvent = new ChoiceBox<>();
+		Style.setChoiceBoxStyle(chooseEvent);
 
-		for (LocalDate d : datesWithEvents) {
+		this.chooseEvent.setItems(FXCollections.observableArrayList(this.termEvents));
 
-			PriorityQueue<CalendarEvent> dq = this.controller.profile.termInProgress.dateEvents.get(d);
+		Button add = new Button("Add");
+		Style.setButtonStyle(add);
 
-			for (CalendarEvent e : dq) {
-
-				EventCard ec = new EventCard(e);
-
-				// TODO: Add drag behaviour to EventCard (should follow mouse movement while
-				// being dragged).
-
-				allEventCards.getChildren().add(ec.layout);
+		add.setOnAction(e -> {
+			if (chooseEvent.getValue() != null) {
+				this.controller.addPriority(e);
 			}
-		}
+		});
 
-		// TODO: Add drop behaviour to priorities.
+		HBox addPriority = new HBox(10);
 
-		body.getChildren().addAll(priorities, allEventCards);
+		addPriority.getChildren().addAll(this.chooseEvent, add);
 
-		main.setCenter(body);
+		this.priorityList = new VBox(10);
+		updatePriorityList();
+
+		todaysPriorities.getChildren().addAll(dashTitle, addPriority, this.priorityList);
 
 		this.todaysMeetings = new TodaysMeetings(new TodaysMeetingsController(this.controller.profile));
-		main.setLeft(todaysMeetings.mainLayout);
-
 		this.upcomingEvents = new UpcomingEvents(new UpcomingEventsController(this.controller.profile));
-		main.setRight(upcomingEvents.mainLayout);
+
+		HBox importantInfo = new HBox(10);
+
+		importantInfo.getChildren().addAll(todaysMeetings.mainLayout, upcomingEvents.mainLayout);
+
+		main.setCenter(todaysPriorities);
+		main.setRight(importantInfo);
 
 		main.setPadding(new Insets(0, 0, 0, 20));
 
 		return main;
+	}
+
+	private void updateChooseEvent() {
+
+		this.chooseEvent.getItems().clear();
+		this.termEvents.clear();
+
+		if (this.controller.profile.currentlySelectedTerm != null) {
+
+			for (LocalDate d : this.controller.profile.currentlySelectedTerm.dateEvents.sortedKeys) {
+
+				this.termEvents.addAll(this.controller.profile.currentlySelectedTerm.dateEvents.get(d));
+			}
+		}
+
+		this.chooseEvent.setItems(FXCollections.observableArrayList(termEvents));
+	}
+
+	private void updatePriorityList() {
+
+		this.priorityList.getChildren().clear();
+
+		Label prioritiesTitle = new Label("Priorities");
+		Style.setTitleStyle(prioritiesTitle);
+
+		this.priorityList.getChildren().add(prioritiesTitle);
+
+		for (int i = 0; i < priorities.size(); i++) {
+
+			HBox priorityListing = new HBox(10);
+
+			Label number = new Label("" + (i + 1));
+
+			priorityListing.getChildren().addAll(number,
+					new Listing(Color.web(this.priorities.get(i).color), this.priorities.get(i).toString()).show());
+
+			this.priorityList.getChildren().add(priorityListing);
+		}
 	}
 
 	@Override
@@ -108,6 +160,8 @@ public class Dashboard extends View implements Observer {
 
 		if (arg0 instanceof Profile) {
 
+			updateChooseEvent();
+			updatePriorityList();
 		}
 	}
 

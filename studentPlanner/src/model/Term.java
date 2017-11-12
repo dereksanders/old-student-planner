@@ -43,6 +43,11 @@ public class Term implements Comparable<Term>, Serializable {
 	public GenericLinkedHashTable<LocalDate, Meeting> dayMeetings;
 	public GenericLinkedHashTable<LocalDate, CalendarEvent> dateEvents;
 
+	// Dashboard
+	public ArrayList<CalendarEvent> todaysPriorities;
+	public ArrayList<CalendarEvent> yesterdaysPriorities;
+	public LocalDate prioritiesLastSet;
+
 	/* Course Schedule params */
 	public int maxDay;
 	public LocalTime minStart;

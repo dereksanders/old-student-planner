@@ -14,6 +14,7 @@ public class Driver {
 	public Clock clock;
 	public String saveDir;
 	public String backupDir;
+	public static String saveExtension = ".pro";
 
 	public Planner planner;
 	protected Profile active;
@@ -35,7 +36,7 @@ public class Driver {
 		/*
 		 * Find the last modified file. If it does not exist, returns null.
 		 */
-		File lastModified = IOManager.getLastModifiedFile(saveDir);
+		File lastModified = IOManager.getLastModifiedFile(saveDir, Driver.saveExtension);
 
 		/* If no profiles exist, create a new one. */
 		if (lastModified == null) {

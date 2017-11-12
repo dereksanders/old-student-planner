@@ -167,6 +167,28 @@ public class IOManager {
 		}
 	}
 
+	public static void saveObject(Object o, String dir, String extension) {
+
+		// Create save directory if it does not already exist.
+		if (!Files.exists(Paths.get(dir))) {
+			try {
+				Files.createDirectory(Paths.get(dir));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+
+		try {
+			File f = new File(dir + "//" + o.toString() + extension);
+			FileOutputStream fos = new FileOutputStream(f);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			oos.writeObject(o);
+			oos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
 	/**
 	 * Load object.
 	 *
@@ -224,6 +246,39 @@ public class IOManager {
 	}
 
 	/**
+	 * Gets the last modified file with the specified extension.
+	 *
+	 * @param directory
+	 *            the directory
+	 * @return the last modified file
+	 */
+	public static File getLastModifiedFile(String directory, String extension) {
+
+		File dir = new File(directory);
+		File[] files = findAllFiles(dir, extension);
+
+		if (files.length == 0) {
+
+			System.out.println("No files found in directory. Returning null.");
+			return null;
+
+		} else {
+
+			File lastModified = files[0];
+
+			if (files.length > 1) {
+				for (int i = 1; i < files.length; i++) {
+					if (files[i].lastModified() < lastModified.lastModified()) {
+
+						lastModified = files[i];
+					}
+				}
+			}
+			return lastModified;
+		}
+	}
+
+	/**
 	 * Find all files.
 	 *
 	 * @param dir
@@ -240,6 +295,32 @@ public class IOManager {
 			@Override
 			public boolean accept(File f) {
 				return f.isFile();
+			}
+		});
+
+		return files;
+	}
+
+	/**
+	 * Find all files with the specified extension.
+	 *
+	 * @param dir
+	 *            the dir
+	 * @return the file[]
+	 */
+	private static File[] findAllFiles(File dir, String extension) {
+
+		if (!dir.exists()) {
+			createDirectory(dir.getPath());
+		}
+
+		File[] files = dir.listFiles(new FileFilter() {
+
+			@Override
+			public boolean accept(File f) {
+
+				String path = f.getPath();
+				return path.endsWith(extension);
 			}
 		});
 

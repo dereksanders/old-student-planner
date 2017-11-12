@@ -1,6 +1,7 @@
 package utility;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.PriorityQueue;
 
@@ -21,6 +22,7 @@ public class GenericLinkedHashTable<G, H> implements Serializable {
 
 	public int n;
 	public G[] keys;
+	public ArrayList<G> sortedKeys;
 	public PriorityQueue<H>[] valQueues;
 	private boolean sortReversed;
 	private int occupied;
@@ -42,6 +44,7 @@ public class GenericLinkedHashTable<G, H> implements Serializable {
 		this.keys = (G[]) new Object[n];
 		this.valQueues = new PriorityQueue[n];
 		this.sortReversed = sortReversed;
+		this.sortedKeys = new ArrayList<>();
 	}
 
 	/**
@@ -72,6 +75,13 @@ public class GenericLinkedHashTable<G, H> implements Serializable {
 					this.valQueues[index] = new PriorityQueue<H>();
 				}
 				inserted = true;
+
+				this.sortedKeys.add(key);
+				if (sortReversed) {
+					this.sortedKeys.sort(Collections.reverseOrder());
+				} else {
+					this.sortedKeys.sort(null);
+				}
 
 			} else if (!this.keys[index].equals(key)) {
 

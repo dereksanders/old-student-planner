@@ -10,19 +10,27 @@ import core.Style;
 import core.View;
 import courseSchedule.TodaysMeetings;
 import courseSchedule.TodaysMeetingsController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
+import javafx.geometry.VPos;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import model.CalendarEvent;
+import model.CourseEvent;
 import model.Profile;
 import termCalendar.UpcomingEvents;
 import termCalendar.UpcomingEventsController;
+import utility.Pretty;
 
 public class Dashboard extends View implements Observer {
 
@@ -31,8 +39,7 @@ public class Dashboard extends View implements Observer {
 
 	private UpcomingEvents upcomingEvents;
 	private TodaysMeetings todaysMeetings;
-	protected ArrayList<CalendarEvent> termEvents;
-
+	protected ArrayList<CalendarEvent> unfinishedEvents;
 	private VBox priorityList;
 	protected ChoiceBox<CalendarEvent> chooseEvent;
 
@@ -56,13 +63,15 @@ public class Dashboard extends View implements Observer {
 		Label dashTitle = new Label("What are your priorities today?");
 		Style.setTitleStyle(dashTitle);
 
-		this.termEvents = new ArrayList<>();
+		this.unfinishedEvents = new ArrayList<>();
 		this.chooseEvent = new ChoiceBox<>();
 		Style.setChoiceBoxStyle(chooseEvent);
 		updateChooseEvent();
 
 		Button add = new Button("+");
 		Style.setButtonStyle(add);
+		add.setMinSize(32, 32);
+		add.setMaxSize(32, 32);
 
 		add.setOnAction(e -> {
 			if (chooseEvent.getValue() != null) {
@@ -87,7 +96,7 @@ public class Dashboard extends View implements Observer {
 		importantInfo.getChildren().addAll(todaysMeetings.mainLayout, upcomingEvents.mainLayout);
 
 		main.setCenter(todaysPriorities);
-		main.setRight(importantInfo);
+		main.setBottom(importantInfo);
 
 		main.setPadding(new Insets(0, 0, 0, 20));
 
@@ -97,19 +106,28 @@ public class Dashboard extends View implements Observer {
 	private void updateChooseEvent() {
 
 		this.chooseEvent.getItems().clear();
-		this.termEvents.clear();
+		this.unfinishedEvents.clear();
 
 		if (this.controller.profile.currentlySelectedTerm != null) {
 
 			for (LocalDate d : this.controller.profile.currentlySelectedTerm.dateEvents.sortedKeys) {
 
-				this.termEvents.addAll(this.controller.profile.currentlySelectedTerm.dateEvents.get(d));
+				for (CalendarEvent e : this.controller.profile.currentlySelectedTerm.dateEvents.get(d)) {
+
+					if (e instanceof CourseEvent) {
+
+						if (((CourseEvent) e).state != CourseEvent.STATES.SUBMITTED.val
+								&& ((CourseEvent) e).state != CourseEvent.STATES.GRADED.val)
+
+							this.unfinishedEvents.add(e);
+					}
+				}
 			}
 		}
 
-		this.termEvents.removeAll(this.controller.profile.currentlySelectedTerm.priorities);
+		this.unfinishedEvents.removeAll(this.controller.profile.currentlySelectedTerm.priorities);
 
-		this.chooseEvent.setItems(FXCollections.observableArrayList(this.termEvents));
+		this.chooseEvent.setItems(FXCollections.observableArrayList(this.unfinishedEvents));
 	}
 
 	private void updatePriorityList() {
@@ -121,19 +139,120 @@ public class Dashboard extends View implements Observer {
 
 		this.priorityList.getChildren().add(prioritiesTitle);
 
+		GridPane priorityGrid = new GridPane();
+
+		Label priCol = new Label("Priority");
+		priCol.setStyle("-fx-font-weight: bold;");
+		Label delCol = new Label("Deliverable");
+		delCol.setStyle("-fx-font-weight: bold;");
+		Label dueCol = new Label("Due Time");
+		dueCol.setStyle("-fx-font-weight: bold;");
+		Label state = new Label("State");
+		state.setStyle("-fx-font-weight: bold;");
+		Label optCol = new Label("Options");
+		optCol.setStyle("-fx-font-weight: bold;");
+
+		priorityGrid.add(priCol, 0, 0);
+		priorityGrid.add(delCol, 1, 0);
+		priorityGrid.add(dueCol, 2, 0);
+		priorityGrid.add(state, 3, 0);
+		priorityGrid.add(optCol, 4, 0);
+
+		priorityGrid.getColumnConstraints().add(new ColumnConstraints(75));
+		priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+		priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+		priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+		priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+		priorityGrid.getRowConstraints().add(new RowConstraints(10));
+
+		this.priorityList.getChildren().add(priorityGrid);
+
 		if (this.controller.profile.currentlySelectedTerm != null) {
 
 			for (int i = 0; i < this.controller.profile.currentlySelectedTerm.priorities.size(); i++) {
 
-				HBox priorityListing = new HBox(10);
+				CalendarEvent current = this.controller.profile.currentlySelectedTerm.priorities.get(i);
+
+				priorityGrid = new GridPane();
 
 				Label number = new Label("" + (i + 1));
 
-				priorityListing.getChildren().addAll(number,
-						new Listing(Color.web(this.controller.profile.currentlySelectedTerm.priorities.get(i).color),
-								this.controller.profile.currentlySelectedTerm.priorities.get(i).toString()).show());
+				HBox priorityInfo = null;
 
-				HBox options = new HBox(10);
+				if (current instanceof CourseEvent) {
+
+					priorityInfo = new Listing(Color.web(current.color),
+							((CourseEvent) current).course + " " + current.name).show();
+
+				} else {
+
+					priorityInfo = new Listing(Color.web(current.color), current.name).show();
+				}
+
+				Label dueTime = new Label(
+						Pretty.veryShortDate(current.end.toLocalDate()) + " at " + current.end.toLocalTime());
+
+				priorityGrid.add(number, 0, i + 1);
+				GridPane.setValignment(number, VPos.TOP);
+
+				priorityGrid.add(priorityInfo, 1, i + 1);
+				GridPane.setValignment(priorityInfo, VPos.TOP);
+
+				priorityGrid.add(dueTime, 2, i + 1);
+				GridPane.setValignment(dueTime, VPos.TOP);
+
+				String[] courseEventStates = { "Not Started", "In Progress", "Submitted" };
+
+				ArrayList<String> states = new ArrayList<>();
+				for (String s : courseEventStates) {
+					states.add(s);
+				}
+
+				if (current instanceof CourseEvent) {
+
+					ChoiceBox<String> chooseState = new ChoiceBox<>(FXCollections.observableArrayList(states));
+					Style.setChoiceBoxStyle(chooseState);
+
+					if (((CourseEvent) current).state == CourseEvent.STATES.NOT_STARTED.val) {
+
+						chooseState.setValue(courseEventStates[0]);
+
+					} else if (((CourseEvent) current).state == CourseEvent.STATES.IN_PROGRESS.val) {
+
+						chooseState.setValue(courseEventStates[1]);
+
+					} else {
+
+						// Submitted or Graded event should not be in priorities.
+						// this.controller.deletePriority(current);
+					}
+
+					chooseState.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
+						@Override
+						public void changed(ObservableValue<? extends Number> observable, Number oldIndex,
+								Number newIndex) {
+
+							if (newIndex.intValue() != -1) {
+
+								if (newIndex.intValue() == 0) {
+
+									controller.updateState((CourseEvent) current, CourseEvent.STATES.NOT_STARTED.val);
+
+								} else if (newIndex.intValue() == 1) {
+
+									controller.updateState((CourseEvent) current, CourseEvent.STATES.IN_PROGRESS.val);
+
+								} else if (newIndex.intValue() == 2) {
+
+									controller.updateState((CourseEvent) current, CourseEvent.STATES.SUBMITTED.val);
+								}
+							}
+						}
+					});
+
+					priorityGrid.add(chooseState, 3, i + 1);
+					GridPane.setValignment(chooseState, VPos.TOP);
+				}
 
 				int buttonSize = 32;
 
@@ -170,11 +289,20 @@ public class Dashboard extends View implements Observer {
 					this.controller.deletePriority(this.controller.profile.currentlySelectedTerm.priorities.get(index));
 				});
 
+				HBox options = new HBox(10);
 				options.getChildren().addAll(up, down, del);
 
-				priorityListing.getChildren().add(options);
+				priorityGrid.add(options, 4, i + 1);
+				GridPane.setValignment(options, VPos.TOP);
 
-				this.priorityList.getChildren().addAll(priorityListing);
+				priorityGrid.getColumnConstraints().add(new ColumnConstraints(75));
+				priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+				priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+				priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+				priorityGrid.getColumnConstraints().add(new ColumnConstraints(150));
+				priorityGrid.getRowConstraints().add(new RowConstraints(10));
+
+				this.priorityList.getChildren().add(priorityGrid);
 			}
 		}
 	}

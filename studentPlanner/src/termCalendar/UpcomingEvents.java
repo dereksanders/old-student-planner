@@ -139,8 +139,7 @@ public class UpcomingEvents extends View implements Observer {
 
 						if (e instanceof CourseEvent) {
 
-							eventInfo = new Listing(Color.web(e.color),
-									((CourseEvent) e).course.toString() + " " + e.toString()).show();
+							eventInfo = new Listing(Color.web(e.color), e.toString()).show();
 
 						} else {
 

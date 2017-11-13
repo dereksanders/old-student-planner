@@ -60,4 +60,10 @@ public class CourseEvent extends CalendarEvent {
 		this.weight = weight;
 		this.state = STATES.NOT_STARTED.val;
 	}
+
+	@Override
+	public String toString() {
+
+		return this.course + " " + super.toString();
+	}
 }

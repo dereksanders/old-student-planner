@@ -2,6 +2,7 @@ package dashboard;
 
 import core.ProfileController;
 import model.CalendarEvent;
+import model.CourseEvent;
 import model.Profile;
 
 public class DashboardController extends ProfileController {
@@ -56,5 +57,17 @@ public class DashboardController extends ProfileController {
 		}
 
 		this.dashboard.refresh();
+	}
+
+	public void updateState(CourseEvent e, int state) {
+
+		e.state = state;
+
+		if (state == CourseEvent.STATES.SUBMITTED.val) {
+
+			this.profile.currentlySelectedTerm.priorities.remove(e);
+		}
+
+		this.profile.update();
 	}
 }

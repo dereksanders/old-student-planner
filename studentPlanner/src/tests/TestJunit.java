@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import core.Driver;
-import core.Main;
 import core.ProfileController;
 import core.Style;
 import model.Course;
@@ -26,13 +24,13 @@ public class TestJunit {
 		test = new Profile("Test");
 		pc = new ProfileController(test);
 		pc.profile.currentlySelectedDate = LocalDate.now();
-		Main.driver = new Driver("test", "test//backup");
 	}
 
 	@Test
 	public void addTerm() {
 
 		summer = new Term("Summer", LocalDate.of(2017, 5, 1), LocalDate.of(2017, 8, 31));
+		pc.profile.currentlySelectedTerm = summer;
 		pc.addTerm(summer);
 	}
 

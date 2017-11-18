@@ -59,7 +59,7 @@ public class UpcomingEvents extends View implements Observer {
 		BorderPane main = new BorderPane();
 
 		VBox titleContainer = new VBox();
-		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + "; -fx-padding: 10;");
+		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + "; -fx-padding: 5;");
 
 		Style.setTitleStyle(title);
 		title.setStyle(title.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appWhite) + ";");
@@ -82,7 +82,7 @@ public class UpcomingEvents extends View implements Observer {
 
 		chooseThreshold.setValue(this.controller.profile.showWithinThreshold);
 		showWithinThresholdDays.getChildren().addAll(showWithin, chooseThreshold, days);
-		showWithinThresholdDays.setPadding(new Insets(0, 10, 0, 10));
+		showWithinThresholdDays.setPadding(new Insets(0, 5, 0, 5));
 		upcomingEvents.getChildren().addAll(titleContainer, showWithinThresholdDays, eventsWithinThreshold);
 		upcomingEvents.setStyle("-fx-background-color: " + Style.colorToHex(Style.appGrey) + ";");
 		BorderPane.setAlignment(upcomingEvents, Pos.CENTER);
@@ -124,7 +124,7 @@ public class UpcomingEvents extends View implements Observer {
 
 					dateContainer.getChildren().add(dateOfEvents);
 					dateContainer.setStyle(
-							"-fx-background-color: #" + Style.colorToHex(Style.appYellow) + "; -fx-padding: 10;");
+							"-fx-background-color: #" + Style.colorToHex(Style.appYellow) + "; -fx-padding: 5;");
 
 					this.eventsWithinThreshold.getChildren().add(dateContainer);
 
@@ -156,7 +156,7 @@ public class UpcomingEvents extends View implements Observer {
 						});
 
 						eventContainer.getChildren().add(eventInfo);
-						eventContainer.setPadding(new Insets(0, 10, 0, 10));
+						eventContainer.setPadding(new Insets(0, 5, 0, 5));
 
 						this.eventsWithinThreshold.getChildren().add(eventContainer);
 					}
@@ -167,7 +167,7 @@ public class UpcomingEvents extends View implements Observer {
 		if (!eventsExist) {
 
 			Label empty = new Label("No upcoming events!");
-			empty.setPadding(new Insets(0, 10, 0, 10));
+			empty.setPadding(new Insets(0, 5, 0, 5));
 
 			this.eventsWithinThreshold.getChildren().add(empty);
 		}

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 
+import core.Main;
 import core.ProfileController;
 import core.Style;
 import core.View;
@@ -17,6 +18,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
@@ -42,7 +45,7 @@ public class Planner extends View implements Observer {
 	public static String hoverColor = Style.colorToHex(Style.appGreen);
 
 	private volatile static Planner uniqueInstance;
-	private static int initialWidth = 1050;
+	private static int initialWidth = 1154;
 	private static int initialHeight = 850;
 
 	public ProfileController pc;
@@ -119,6 +122,14 @@ public class Planner extends View implements Observer {
 
 		VBox db = new VBox(0);
 		db.setPadding(new Insets(10, 20, 10, 20));
+
+		ImageView dbIcon = new ImageView();
+		dbIcon.setImage(new Image(Main.class.getResourceAsStream("home.png")));
+		dbIcon.setFitWidth(70);
+		dbIcon.setPreserveRatio(true);
+		dbIcon.setSmooth(true);
+		dbIcon.setCache(true);
+
 		Label dashboardTitle = new Label("Home");
 		Style.setSmallTitleStyle(dashboardTitle);
 		dashboardTitle.setStyle(dashboardTitle.getStyle());
@@ -129,7 +140,7 @@ public class Planner extends View implements Observer {
 			this.activeViewBox = db;
 		});
 
-		db.getChildren().addAll(dashboardTitle);
+		db.getChildren().addAll(dbIcon, dashboardTitle);
 		db.setAlignment(Pos.CENTER);
 
 		db.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -150,6 +161,14 @@ public class Planner extends View implements Observer {
 
 		VBox cs = new VBox(0);
 		cs.setPadding(new Insets(10, 20, 10, 20));
+
+		ImageView csIcon = new ImageView();
+		csIcon.setImage(new Image(Main.class.getResourceAsStream("clock.png")));
+		csIcon.setFitWidth(70);
+		csIcon.setPreserveRatio(true);
+		csIcon.setSmooth(true);
+		csIcon.setCache(true);
+
 		Label csTitle = new Label("Course Schedule");
 		Style.setSmallTitleStyle(csTitle);
 
@@ -159,7 +178,7 @@ public class Planner extends View implements Observer {
 			this.activeViewBox = cs;
 		});
 
-		cs.getChildren().addAll(csTitle);
+		cs.getChildren().addAll(csIcon, csTitle);
 		cs.setAlignment(Pos.CENTER);
 
 		cs.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -180,6 +199,14 @@ public class Planner extends View implements Observer {
 
 		VBox tc = new VBox(0);
 		tc.setPadding(new Insets(10, 20, 10, 20));
+
+		ImageView tcIcon = new ImageView();
+		tcIcon.setImage(new Image(Main.class.getResourceAsStream("calendar.png")));
+		tcIcon.setFitWidth(70);
+		tcIcon.setPreserveRatio(true);
+		tcIcon.setSmooth(true);
+		tcIcon.setCache(true);
+
 		Label tcTitle = new Label("Term Calendar");
 		Style.setSmallTitleStyle(tcTitle);
 
@@ -189,7 +216,7 @@ public class Planner extends View implements Observer {
 			this.activeViewBox = tc;
 		});
 
-		tc.getChildren().addAll(tcTitle);
+		tc.getChildren().addAll(tcIcon, tcTitle);
 		tc.setAlignment(Pos.CENTER);
 
 		tc.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -210,6 +237,14 @@ public class Planner extends View implements Observer {
 
 		VBox g = new VBox(0);
 		g.setPadding(new Insets(10, 20, 10, 20));
+
+		ImageView gIcon = new ImageView();
+		gIcon.setImage(new Image(Main.class.getResourceAsStream("calculator.png")));
+		gIcon.setFitWidth(70);
+		gIcon.setPreserveRatio(true);
+		gIcon.setSmooth(true);
+		gIcon.setCache(true);
+
 		Label gTitle = new Label("Grades");
 		Style.setSmallTitleStyle(gTitle);
 
@@ -219,7 +254,7 @@ public class Planner extends View implements Observer {
 			this.activeViewBox = g;
 		});
 
-		g.getChildren().addAll(gTitle);
+		g.getChildren().addAll(gIcon, gTitle);
 		g.setAlignment(Pos.CENTER);
 
 		g.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -240,6 +275,14 @@ public class Planner extends View implements Observer {
 
 		VBox gp = new VBox(0);
 		gp.setPadding(new Insets(10, 20, 10, 20));
+
+		ImageView gpIcon = new ImageView();
+		gpIcon.setImage(new Image(Main.class.getResourceAsStream("bar.png")));
+		gpIcon.setFitWidth(70);
+		gpIcon.setPreserveRatio(true);
+		gpIcon.setSmooth(true);
+		gpIcon.setCache(true);
+
 		Label gpTitle = new Label("Grades Plot");
 		Style.setSmallTitleStyle(gpTitle);
 
@@ -249,7 +292,7 @@ public class Planner extends View implements Observer {
 			this.activeViewBox = gp;
 		});
 
-		gp.getChildren().addAll(gpTitle);
+		gp.getChildren().addAll(gpIcon, gpTitle);
 		gp.setAlignment(Pos.CENTER);
 
 		gp.setOnMouseEntered(new EventHandler<MouseEvent>() {

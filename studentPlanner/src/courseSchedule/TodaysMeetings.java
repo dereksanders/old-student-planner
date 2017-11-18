@@ -46,6 +46,7 @@ public class TodaysMeetings extends View implements Observer {
 		BorderPane main = new BorderPane();
 
 		todaysMeetings.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey) + ";");
+		todaysMeetings.setPadding(new Insets(0, 0, 0, 0));
 		BorderPane.setAlignment(todaysMeetings, Pos.CENTER);
 
 		main.setCenter(todaysMeetings);
@@ -61,7 +62,8 @@ public class TodaysMeetings extends View implements Observer {
 		title.setStyle(title.getStyle() + "-fx-text-fill: #fff;");
 
 		VBox titleContainer = new VBox();
-		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + "; -fx-padding: 10;");
+		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
+		titleContainer.setPadding(new Insets(0, 0, 0, 10));
 		titleContainer.getChildren().add(title);
 
 		todaysMeetings.getChildren().add(titleContainer);
@@ -138,8 +140,8 @@ public class TodaysMeetings extends View implements Observer {
 
 					timeContainer.getChildren().add(timeUntil);
 
-					timeContainer.setStyle(
-							"-fx-background-color: #" + Style.colorToHex(Style.appYellow) + "; -fx-padding: 10;");
+					timeContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appYellow) + ";");
+					timeContainer.setPadding(new Insets(5, 5, 5, 10));
 
 					todaysMeetings.getChildren().add(timeContainer);
 
@@ -182,6 +184,7 @@ public class TodaysMeetings extends View implements Observer {
 			} else {
 
 				Label empty = new Label("No meetings today!");
+				empty.setPadding(new Insets(5, 0, 5, 10));
 				todaysMeetings.getChildren().add(empty);
 			}
 

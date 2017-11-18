@@ -84,6 +84,12 @@ public class Dashboard extends View implements Observer {
 		addPriority.getChildren().addAll(this.chooseEvent, add);
 
 		this.priorityList = new VBox(10);
+		this.priorityList.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGrey));
+		this.priorityList.setPadding(new Insets(0, 0, 10, 0));
+
+		// This makes the priority list fit its contents width-wise.
+		this.priorityList.setMaxWidth(1);
+
 		updatePriorityList();
 
 		todaysPriorities.getChildren().addAll(dashTitle, addPriority, this.priorityList);
@@ -91,12 +97,13 @@ public class Dashboard extends View implements Observer {
 		this.todaysMeetings = new TodaysMeetings(new TodaysMeetingsController(this.controller.profile));
 		this.upcomingEvents = new UpcomingEvents(new UpcomingEventsController(this.controller.profile));
 
-		HBox importantInfo = new HBox(10);
+		this.todaysMeetings.mainLayout.setMaxWidth(675);
 
-		importantInfo.getChildren().addAll(todaysMeetings.mainLayout, upcomingEvents.mainLayout);
+		VBox centre = new VBox(10);
+		centre.getChildren().addAll(todaysPriorities, this.todaysMeetings.mainLayout);
 
-		main.setCenter(todaysPriorities);
-		main.setBottom(importantInfo);
+		main.setCenter(centre);
+		main.setRight(upcomingEvents.mainLayout);
 
 		main.setPadding(new Insets(0, 0, 0, 20));
 
@@ -136,26 +143,41 @@ public class Dashboard extends View implements Observer {
 
 		Label prioritiesTitle = new Label("Priorities");
 		Style.setTitleStyle(prioritiesTitle);
+		prioritiesTitle.setStyle(prioritiesTitle.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appWhite));
 
-		this.priorityList.getChildren().add(prioritiesTitle);
+		HBox titleContainer = new HBox();
+		titleContainer.setStyle("-fx-background-color: #" + Style.colorToHex(Style.appGreen) + ";");
+		titleContainer.setPadding(new Insets(0, 0, 0, 10));
+		titleContainer.getChildren().add(prioritiesTitle);
+
+		this.priorityList.getChildren().add(titleContainer);
 
 		GridPane priorityGrid = new GridPane();
 
 		Label priCol = new Label("Priority");
 		priCol.setStyle("-fx-font-weight: bold;");
+		priCol.setPadding(new Insets(0, 0, 0, 10));
+
 		Label delCol = new Label("Deliverable");
 		delCol.setStyle("-fx-font-weight: bold;");
+		delCol.setPadding(new Insets(0, 0, 0, 10));
+
 		Label dueCol = new Label("Due Time");
 		dueCol.setStyle("-fx-font-weight: bold;");
-		Label state = new Label("State");
-		state.setStyle("-fx-font-weight: bold;");
+		dueCol.setPadding(new Insets(0, 0, 0, 10));
+
+		Label stateCol = new Label("State");
+		stateCol.setStyle("-fx-font-weight: bold;");
+		stateCol.setPadding(new Insets(0, 0, 0, 10));
+
 		Label optCol = new Label("Options");
 		optCol.setStyle("-fx-font-weight: bold;");
+		optCol.setPadding(new Insets(0, 0, 0, 10));
 
 		priorityGrid.add(priCol, 0, 0);
 		priorityGrid.add(delCol, 1, 0);
 		priorityGrid.add(dueCol, 2, 0);
-		priorityGrid.add(state, 3, 0);
+		priorityGrid.add(stateCol, 3, 0);
 		priorityGrid.add(optCol, 4, 0);
 
 		priorityGrid.getColumnConstraints().add(new ColumnConstraints(75));
@@ -176,6 +198,7 @@ public class Dashboard extends View implements Observer {
 				priorityGrid = new GridPane();
 
 				Label number = new Label("" + (i + 1));
+				number.setPadding(new Insets(0, 0, 0, 10));
 
 				HBox priorityInfo = null;
 
@@ -189,8 +212,11 @@ public class Dashboard extends View implements Observer {
 					priorityInfo = new Listing(Color.web(current.color), current.name).show();
 				}
 
+				priorityInfo.setPadding(new Insets(0, 0, 0, 10));
+
 				Label dueTime = new Label(
 						Pretty.veryShortDate(current.end.toLocalDate()) + " at " + current.end.toLocalTime());
+				dueTime.setPadding(new Insets(0, 0, 0, 10));
 
 				priorityGrid.add(number, 0, i + 1);
 				GridPane.setValignment(number, VPos.TOP);
@@ -291,6 +317,7 @@ public class Dashboard extends View implements Observer {
 
 				HBox options = new HBox(10);
 				options.getChildren().addAll(up, down, del);
+				options.setPadding(new Insets(0, 0, 0, 10));
 
 				priorityGrid.add(options, 4, i + 1);
 				GridPane.setValignment(options, VPos.TOP);

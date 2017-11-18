@@ -259,6 +259,13 @@ public class AddCalendarEvent {
 
 		typeChoice.setValue(types.get(0));
 
+		if (this.controller.profile.currentlySelectedTerm.courses.size() == 0) {
+
+			personal.setSelected(true);
+			personal.setVisible(false);
+			personal.setManaged(false);
+		}
+
 		/* Update selectable end-times whenever start-times are altered. */
 		startTimes.getSelectionModel().selectedIndexProperty().addListener(new ChangeListener<Number>() {
 			@Override

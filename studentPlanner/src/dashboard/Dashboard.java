@@ -123,9 +123,9 @@ public class Dashboard extends View implements Observer {
 					}
 				}
 			}
-		}
 
-		this.unfinishedEvents.removeAll(this.controller.profile.currentlySelectedTerm.priorities);
+			this.unfinishedEvents.removeAll(this.controller.profile.currentlySelectedTerm.priorities);
+		}
 
 		this.chooseEvent.setItems(FXCollections.observableArrayList(this.unfinishedEvents));
 	}

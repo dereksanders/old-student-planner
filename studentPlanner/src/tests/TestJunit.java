@@ -3,7 +3,8 @@ package tests;
 import java.time.LocalDate;
 import java.util.ArrayList;
 
-import org.junit.*;
+import org.junit.BeforeClass;
+import org.junit.Test;
 
 import core.Driver;
 import core.Main;

@@ -86,8 +86,15 @@ public class Term implements Comparable<Term>, Serializable {
 	public void updateParams() {
 
 		if (resetParams()) {
-			this.minStart = this.minStart.minusMinutes(30);
-			this.maxEnd = this.maxEnd.plusMinutes(30);
+
+			if (!this.minStart.equals(LocalTime.of(0, 0))) {
+				this.minStart = this.minStart.minusMinutes(30);
+			}
+
+			if (!this.maxEnd.equals(LocalTime.of(23, 30))) {
+				this.maxEnd = this.maxEnd.plusMinutes(30);
+			}
+
 		} else {
 			this.minStart = LocalTime.of(8, 30);
 			this.maxEnd = LocalTime.of(15, 00);

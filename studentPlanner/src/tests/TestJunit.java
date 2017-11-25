@@ -23,14 +23,18 @@ public class TestJunit {
 
 		test = new Profile("Test");
 		pc = new ProfileController(test);
+
 		pc.profile.currentlySelectedDate = LocalDate.now();
 	}
 
 	@Test
-	public void addTerm() {
+	public void addTerm() throws InterruptedException {
 
 		summer = new Term("Summer", LocalDate.of(2017, 5, 1), LocalDate.of(2017, 8, 31));
 		pc.profile.currentlySelectedTerm = summer;
+
+		Thread.sleep(2000);
+
 		pc.addTerm(summer);
 	}
 

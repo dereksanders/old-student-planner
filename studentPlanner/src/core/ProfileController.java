@@ -15,6 +15,7 @@ import model.Course;
 import model.CourseEvent;
 import model.Meeting;
 import model.MeetingSet;
+import model.NullTerm;
 import model.Profile;
 import model.Term;
 
@@ -106,12 +107,10 @@ public class ProfileController {
 
 				this.profile.terms.add(added);
 
-				if (this.profile.termInProgress == null) {
+				if (findTerm(LocalDate.now()).equals(added)) {
 
-					if (findTerm(Clock.now.toLocalDate()).equals(added)) {
-
-						this.profile.termInProgress = added;
-					}
+					// The new term must be during the current date.
+					this.profile.termInProgress = added;
 				}
 
 				if (this.profile.terms.size() == 1) {
@@ -143,6 +142,7 @@ public class ProfileController {
 
 		profile.terms.sort(null);
 		profile.update();
+
 	}
 
 	/**
@@ -176,20 +176,16 @@ public class ProfileController {
 							.showAndWait();
 		}
 
-		if (this.profile.termInProgress == null) {
+		if (findTerm(LocalDate.now()).equals(original)) {
 
-			if (findTerm(Clock.now.toLocalDate()).equals(original)) {
-
-				this.profile.termInProgress = original;
-			}
+			this.profile.termInProgress = original;
 
 		} else if (editingTermInProgress) {
 
-			if (!findTerm(Clock.now.toLocalDate()).equals(original)) {
-
-				this.profile.termInProgress = null;
-			}
+			// The term being edited is no longer in progress.
+			this.profile.termInProgress = new NullTerm(null, null, null);
 		}
+
 	}
 
 	/**
@@ -210,7 +206,7 @@ public class ProfileController {
 
 		if (this.profile.terms.isEmpty()) {
 
-			setCurrentlySelectedDate(Clock.now.toLocalDate());
+			setCurrentlySelectedDate(LocalDate.now());
 
 		} else {
 
@@ -220,7 +216,7 @@ public class ProfileController {
 
 		if (deletingTermInProgress) {
 
-			this.profile.termInProgress = null;
+			this.profile.termInProgress = new NullTerm(null, null, null);
 		}
 
 		this.profile.update();
@@ -235,7 +231,7 @@ public class ProfileController {
 	 */
 	public Term findTerm(LocalDate date) {
 
-		Term found = null;
+		Term found = new NullTerm(null, null, null);
 
 		for (Term t : profile.terms) {
 			if ((t.start.isBefore(date) || t.start.equals(date)) && (t.end.isAfter(date) || t.end.equals(date))) {
@@ -563,7 +559,7 @@ public class ProfileController {
 			((CourseEvent) added).course = course;
 
 			// If the user is adding an event that finished in the past, mark it submitted.
-			if (added.end.isBefore(Clock.now)) {
+			if (added.end.isBefore(LocalDateTime.now())) {
 
 				((CourseEvent) added).state = CourseEvent.STATES.SUBMITTED.val;
 
@@ -645,7 +641,7 @@ public class ProfileController {
 	 */
 	public void markEventsComplete(LocalDateTime endDateTime) {
 
-		if (this.profile.termInProgress != null) {
+		if (!this.profile.termInProgress.isNull()) {
 
 			for (Course c : this.profile.termInProgress.courses) {
 
@@ -669,6 +665,6 @@ public class ProfileController {
 
 	public void updateTermInProgress() {
 
-		this.profile.termInProgress = findTerm(Clock.now.toLocalDate());
+		this.profile.termInProgress = findTerm(LocalDate.now());
 	}
 }

@@ -7,7 +7,6 @@ import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import core.Clock;
 import core.Listing;
 import core.Style;
 import core.Time;
@@ -81,7 +80,7 @@ public class CourseSchedule extends View implements Observer {
 		this.observable.addObserver(this);
 
 		this.mainLayout = initLayout();
-		this.controller.setCurrentlySelectedDate(Clock.now.toLocalDate());
+		this.controller.setCurrentlySelectedDate(LocalDate.now());
 	}
 
 	/**
@@ -161,7 +160,7 @@ public class CourseSchedule extends View implements Observer {
 
 		this.legend.getChildren().clear();
 
-		if (this.controller.profile.currentlySelectedTerm != null) {
+		if (!this.controller.profile.currentlySelectedTerm.isNull()) {
 
 			this.legend.setVisible(true);
 			this.legend.setManaged(true);
@@ -215,7 +214,7 @@ public class CourseSchedule extends View implements Observer {
 
 		scheduleGrid.getChildren().clear();
 
-		if (term != null) {
+		if (!term.isNull()) {
 
 			/*
 			 * The # of days in the schedule should be equal to the int value of
@@ -256,7 +255,7 @@ public class CourseSchedule extends View implements Observer {
 			/*
 			 * The current day is italicized in blue.
 			 */
-			if (firstOfWeek.plusDays(i).isEqual(Clock.now.toLocalDate())) {
+			if (firstOfWeek.plusDays(i).isEqual(LocalDate.now())) {
 
 				dayLabel.setStyle(dayLabel.getStyle() + "-fx-text-fill: #" + Style.colorToHex(Style.appBlue) + ";");
 			}
@@ -294,7 +293,7 @@ public class CourseSchedule extends View implements Observer {
 				/*
 				 * Times past the current time will be grey, future times white.
 				 */
-				if (Clock.now.isAfter(cell)) {
+				if (LocalDateTime.now().isAfter(cell)) {
 					meetingButtons[i][j].setStyle(meetingButtons[i][j].getStyle() + "-fx-background-color: #"
 							+ Style.colorToHex(Style.appGrey) + ";");
 
@@ -316,7 +315,7 @@ public class CourseSchedule extends View implements Observer {
 
 				meetingButtons[i][j].setOnAction(e -> {
 
-					if (this.controller.profile.currentlySelectedTerm != null) {
+					if (!this.controller.profile.currentlySelectedTerm.isNull()) {
 
 						if (controller.timeIsOccupied(cell)) {
 
@@ -331,7 +330,7 @@ public class CourseSchedule extends View implements Observer {
 			}
 		}
 
-		if (term != null) {
+		if (!term.isNull()) {
 			drawWeeksMeetings(term, firstOfWeek);
 		}
 
@@ -470,7 +469,7 @@ public class CourseSchedule extends View implements Observer {
 			 */
 
 			LocalDate currentlySelected = ((Profile) arg0).currentlySelectedDate;
-			LocalDate current = Clock.now.toLocalDate();
+			LocalDate current = LocalDate.now();
 
 			LocalDate currentlySelectedFirstOfWeek = currentlySelected
 					.minusDays(currentlySelected.getDayOfWeek().getValue() - 1);

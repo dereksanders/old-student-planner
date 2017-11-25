@@ -295,7 +295,7 @@ public class TermCalendar extends View implements Observer {
 	@Override
 	public void update(Observable arg0, Object arg1) {
 		if (arg0 instanceof Profile) {
-			if (((Profile) arg0).currentlySelectedTerm != null) {
+			if (!((Profile) arg0).currentlySelectedTerm.isNull()) {
 
 				selectedTermNotNull.set(true);
 				termViewBox.getChildren().clear();

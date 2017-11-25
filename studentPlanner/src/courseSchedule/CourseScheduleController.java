@@ -3,7 +3,6 @@ package courseSchedule;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import core.Clock;
 import core.ProfileController;
 import model.Meeting;
 import model.MeetingSet;
@@ -43,7 +42,7 @@ public class CourseScheduleController extends ProfileController {
 			schedule.selectWeek.setVisible(false);
 			schedule.selectWeek.setManaged(false);
 
-			LocalDate present = Clock.now.toLocalDate();
+			LocalDate present = LocalDate.now();
 			schedule.selectWeek.setValue(present);
 			updateWeekSelected(present);
 		}

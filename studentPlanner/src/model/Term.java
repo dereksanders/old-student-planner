@@ -153,6 +153,10 @@ public class Term implements Comparable<Term>, Serializable {
 		}
 	}
 
+	public boolean isNull() {
+		return false;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -161,7 +165,7 @@ public class Term implements Comparable<Term>, Serializable {
 	@Override
 	public boolean equals(Object o) {
 
-		if (o instanceof Term) {
+		if (o instanceof Term && !((Term) o).isNull()) {
 
 			if (this.start.isEqual(((Term) o).start) && this.end.isEqual(((Term) o).end)) {
 				return true;

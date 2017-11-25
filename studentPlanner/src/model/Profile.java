@@ -20,9 +20,8 @@ public class Profile extends Observable implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	public String name;
-	public Term currentlySelectedTerm;
 
-	// TODO
+	public Term currentlySelectedTerm;
 	public Term termInProgress;
 
 	/* Gets initialized in Driver#start to current date. */
@@ -47,6 +46,10 @@ public class Profile extends Observable implements Serializable {
 		this.name = name;
 		this.terms = new ArrayList<>();
 		this.recentlyUsedColors = new ArrayList<>();
+		this.lastQuit = LocalDate.now();
+
+		this.currentlySelectedTerm = new NullTerm(null, null, null);
+		this.termInProgress = new NullTerm(null, null, null);
 	}
 
 	/**

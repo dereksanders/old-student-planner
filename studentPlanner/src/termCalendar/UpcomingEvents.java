@@ -1,12 +1,12 @@
 package termCalendar;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import core.Clock;
 import core.Listing;
 import core.Style;
 import core.View;
@@ -104,7 +104,7 @@ public class UpcomingEvents extends View implements Observer {
 			for (int i = 0; i <= controller.profile.showWithinThreshold; i++) {
 
 				PriorityQueue<CalendarEvent> de = controller.profile.currentlySelectedTerm.dateEvents
-						.get(Clock.now.toLocalDate().plusDays(i));
+						.get(LocalDate.now().plusDays(i));
 
 				if (de != null && !de.isEmpty()) {
 
@@ -118,8 +118,7 @@ public class UpcomingEvents extends View implements Observer {
 					} else if (i == 1) {
 						dateOfEvents.setText("Tomorrow:");
 					} else {
-						dateOfEvents.setText(
-								i + " Days (" + Pretty.veryShortDate(Clock.now.toLocalDate().plusDays(i)) + "):");
+						dateOfEvents.setText(i + " Days (" + Pretty.veryShortDate(LocalDate.now().plusDays(i)) + "):");
 					}
 
 					dateContainer.getChildren().add(dateOfEvents);

@@ -1,6 +1,8 @@
 package core;
 
 import java.io.File;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 import model.Profile;
 import planner.Planner;
@@ -11,7 +13,7 @@ import utility.IOManager;
  */
 public class Driver {
 
-	public Clock clock;
+	public TaskScheduler clock;
 	public String saveDir;
 	public String backupDir;
 	public static String saveExtension = ".pro";
@@ -26,7 +28,7 @@ public class Driver {
 		this.backupDir = backupDir;
 		this.active = initProfile();
 		this.pc = new ProfileController(this.active);
-		this.clock = new Clock(this.pc);
+		this.clock = TaskScheduler.getInstance(LocalDateTime.of(this.active.lastQuit, LocalTime.of(0, 0)), this.pc);
 		this.planner = Planner.getInstance(this.active, this.pc);
 	}
 

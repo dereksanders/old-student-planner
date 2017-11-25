@@ -1,12 +1,12 @@
 package courseSchedule;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Observable;
 import java.util.Observer;
 import java.util.PriorityQueue;
 
-import core.Clock;
 import core.Listing;
 import core.Style;
 import core.View;
@@ -71,8 +71,7 @@ public class TodaysMeetings extends View implements Observer {
 		if (controller.profile.currentlySelectedTerm != null) {
 
 			/* Priority queue of today's meetings */
-			PriorityQueue<Meeting> td = controller.profile.currentlySelectedTerm.dayMeetings
-					.get(Clock.now.toLocalDate());
+			PriorityQueue<Meeting> td = controller.profile.currentlySelectedTerm.dayMeetings.get(LocalDate.now());
 
 			if (td != null && !td.isEmpty()) {
 
@@ -84,8 +83,8 @@ public class TodaysMeetings extends View implements Observer {
 
 					VBox timeContainer = new VBox();
 
-					int hours = m.start.getHour() - Clock.now.getHour();
-					int mins = m.start.getMinute() - Clock.now.getMinute();
+					int hours = m.start.getHour() - LocalDateTime.now().getHour();
+					int mins = m.start.getMinute() - LocalDateTime.now().getMinute();
 
 					Label timeUntil = null;
 

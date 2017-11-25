@@ -22,6 +22,10 @@ public class Main extends Application {
 
 	public static Driver driver;
 
+	public static String saveDir = "res";
+	public static String backupDir = "res//backup";
+	public static String saveExtension = ".pro";
+
 	/**
 	 * The main method.
 	 *
@@ -37,7 +41,7 @@ public class Main extends Application {
 		@SuppressWarnings("unused")
 		final JFXPanel fxPanel = new JFXPanel();
 
-		driver = new Driver("res", "res//backup");
+		driver = new Driver();
 
 		/* Dashboard */
 		DashboardController dashboardController = new DashboardController(driver.active);

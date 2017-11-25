@@ -5,7 +5,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Observable;
 
-import core.Driver;
 import core.Main;
 import utility.IOManager;
 
@@ -83,13 +82,13 @@ public class Profile extends Observable implements Serializable {
 	 * Saves this profile.
 	 */
 	public void save() {
-		IOManager.saveObject(this, Main.driver.saveDir, Driver.saveExtension);
-		IOManager.saveObject(this, Main.driver.backupDir, Driver.saveExtension);
+		IOManager.saveObject(this, Main.saveDir, Main.saveExtension);
+		IOManager.saveObject(this, Main.backupDir, Main.saveExtension);
 	}
 
 	public void save(String saveDir, String backupDir) {
-		IOManager.saveObject(this, saveDir, Driver.saveExtension);
-		IOManager.saveObject(this, backupDir, Driver.saveExtension);
+		IOManager.saveObject(this, saveDir, Main.saveExtension);
+		IOManager.saveObject(this, backupDir, Main.saveExtension);
 	}
 
 	/*

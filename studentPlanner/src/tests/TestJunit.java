@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import core.Main;
 import core.ProfileController;
 import core.Style;
 import model.Course;
@@ -25,6 +26,9 @@ public class TestJunit {
 		pc = new ProfileController(test);
 
 		pc.profile.currentlySelectedDate = LocalDate.now();
+
+		Main.saveDir = "test";
+		Main.backupDir = "test//backup";
 	}
 
 	@Test

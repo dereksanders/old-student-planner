@@ -26,6 +26,9 @@ public class Main extends Application {
 	public static String backupDir = "res//backup";
 	public static String saveExtension = ".pro";
 
+	public static String logFile = "res//log.txt";
+	public static Logger logger;
+
 	/**
 	 * The main method.
 	 *
@@ -42,6 +45,7 @@ public class Main extends Application {
 		final JFXPanel fxPanel = new JFXPanel();
 
 		driver = new Driver();
+		logger = new Logger(logFile);
 
 		/* Dashboard */
 		DashboardController dashboardController = new DashboardController(driver.active);

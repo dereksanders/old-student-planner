@@ -143,6 +143,7 @@ public class ProfileController {
 		profile.terms.sort(null);
 		profile.update();
 
+		Main.logger.post("addTerm", "Added term: " + added);
 	}
 
 	/**
@@ -220,6 +221,8 @@ public class ProfileController {
 		}
 
 		this.profile.update();
+
+		Main.logger.post("deleteTerm", "Deleted term: " + deleted);
 	}
 
 	/**

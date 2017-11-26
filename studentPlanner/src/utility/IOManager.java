@@ -12,6 +12,7 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 /**
  * The Class IOManager.
@@ -35,6 +36,18 @@ public class IOManager {
 		try {
 
 			Files.write(Paths.get("./" + filename), text.getBytes());
+
+		} catch (IOException e) {
+
+			e.printStackTrace();
+		}
+	}
+
+	public static void appendToFile(String text, String filename) {
+
+		try {
+
+			Files.write(Paths.get("./" + filename), text.getBytes(), StandardOpenOption.APPEND);
 
 		} catch (IOException e) {
 

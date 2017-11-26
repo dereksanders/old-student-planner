@@ -1,0 +1,28 @@
+2017-11-25T21:22:48.373
+addTerm
+Added term: dsfdfs (2017/11/02 - 2018/01/23)
+
+2017-11-25T21:22:49.668
+deleteTerm
+Deleted term: iii (2017/11/16 - 2017/11/30)
+
+2017-11-25T21:22:50.920
+deleteTerm
+Deleted term: fgh (2017/11/01 - 2017/11/15)
+
+2017-11-25T21:22:55.058
+addTerm
+Added term: fdsdfs (2017/11/01 - 2017/12/26)
+
+2017-11-25T21:23:00.814
+deleteTerm
+Deleted term: fdsdfs (2017/11/01 - 2017/12/26)
+
+2017-11-25T21:23:10.591
+addTerm
+Added term: fds (2017/11/01 - 2017/11/30)
+
+2017-11-25T21:23:12.282
+deleteTerm
+Deleted term: fds (2017/11/01 - 2017/11/30)
+

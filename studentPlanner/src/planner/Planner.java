@@ -45,8 +45,8 @@ public class Planner extends View implements Observer {
 	public static String hoverColor = Style.colorToHex(Style.appGreen);
 
 	private volatile static Planner uniqueInstance;
-	private static int initialWidth = 1154;
-	private static int initialHeight = 850;
+	private static int initialWidth = 1280;
+	private static int initialHeight = 960;
 
 	public ProfileController pc;
 	public Observable observable;

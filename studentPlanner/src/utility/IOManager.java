@@ -16,6 +16,8 @@ import java.nio.file.StandardOpenOption;
 
 /**
  * The Class IOManager.
+ * 
+ * @author Derek Sanders
  */
 
 public class IOManager {

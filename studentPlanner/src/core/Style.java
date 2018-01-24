@@ -101,7 +101,7 @@ public class Style {
 		// "; -fx-text-fill: #000;"
 		// + "-fx-background-radius: 0");
 		box.setStyle(
-				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
+				"-fx-background-color: linear-gradient(#fff, #fff); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -110,7 +110,7 @@ public class Style {
 		// "; -fx-text-fill: #000;"
 		// + "-fx-background-radius: 0");
 		box.setStyle(
-				"-fx-background-color: linear-gradient(#eee, #ddd); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
+				"-fx-background-color: linear-gradient(#fff, #fff); -fx-text-fill: #000; -fx-border-width: 1; -fx-border-color: #ccc");
 	}
 
 	public static void addPadding(Node n) {

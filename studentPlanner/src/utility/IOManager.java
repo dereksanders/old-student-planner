@@ -341,4 +341,16 @@ public class IOManager {
 
 		return files;
 	}
+
+	/**
+	 * File exists.
+	 *
+	 * @param path
+	 *            the path
+	 * @return true, if file exists
+	 */
+	public static boolean fileExists(String path) {
+
+		return new File(path).exists();
+	}
 }

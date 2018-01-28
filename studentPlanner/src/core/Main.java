@@ -18,6 +18,11 @@ import planner.Planner.VIEW_INDEX;
 import termCalendar.TermCalendar;
 import termCalendar.TermCalendarController;
 
+/**
+ * The Class Main.
+ * 
+ * GUI initialization.
+ */
 public class Main extends Application {
 
 	public static Driver driver;

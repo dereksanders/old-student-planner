@@ -9,7 +9,9 @@ import planner.Planner;
 import utility.IOManager;
 
 /**
- * The Class Planner.
+ * The Class Driver.
+ * 
+ * Backend initialization.
  */
 public class Driver {
 
